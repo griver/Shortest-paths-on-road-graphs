@@ -15,10 +15,8 @@ public:
     void on_resize        (int width, int height);
     void on_paint        ();
     
-    bool is_ready ();
 private:
     scoped_ptr<visualizer> pvis_;
     coord<int> mouse_coord;
     string str;
-    bool ready_;
 };

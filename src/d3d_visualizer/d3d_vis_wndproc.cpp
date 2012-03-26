@@ -5,6 +5,11 @@
 
 client* g_pClient = NULL;
 
+void d3d_vis::set_client(client* pcl)
+{
+    g_pClient = pcl;
+}
+
 LRESULT CALLBACK d3d_vis_wndproc ( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
 
@@ -18,7 +23,7 @@ LRESULT CALLBACK d3d_vis_wndproc ( HWND hwnd, UINT message, WPARAM wparam, LPARA
         break;
     }
 
-    if (g_pClient != NULL && g_pClient->is_ready())    
+    if (g_pClient != NULL)    
     {
         switch( message )
         {

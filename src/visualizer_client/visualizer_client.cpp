@@ -2,61 +2,175 @@
 #include "../shared/client.h"
 #include "../shared/visualizer.h"
 #include "visualizer_client.h"
+#include "old_loader.h"
 
-visualizer *create_visualizer(client*);
+visualizer *create_visualizer(draw_scope **ppscope);
 
-visualizer_client::visualizer_client ()
-: ready_ (false)
+visualizer_client::visualizer_client(const std::string &filename)
+:   dragging_(false)
+,   last_coord_(0,0)
+,   draw_lit_(false)
+//,   draw_reaches_(false)
+
 {
-    visualizer *p = create_visualizer(this);
-    pvis_.reset(p);
-    assert (pvis_ != NULL);
-    pvis_->set_color(0xff000000);
-    pvis_->set_bg_color(0xffffffff);
-    ready_ = true;
+    pd_.reset(create_visualizer(&pscope_));
+    
+    coord<long> mins, maxs;
+
+    my_graph::load_graph (filename + ".co", g);
+    mins = my_graph::g_loader_mins;
+    maxs = my_graph::g_loader_maxs;
+    my_graph::load_graph (filename + ".gr", g);
+    //my_graph::load_graph (filename + ".re", g);
+
+    std::cout << "Mins: " << mins << "\n";
+    std::cout << "Maxs: " << maxs << "\n";
+
+    vb = pd_->create_vb(g.v_count());
+    ib = pd_->create_ib(g.e_count());
+
+    ib_lit1 = pd_->create_ib(g.e_count());
+    ib_lit2 = pd_->create_ib(g.e_count());
+    ib_path = pd_->create_ib(g.e_count());
+
+    build_graph();
+
+    pd_->set_client(this);
 }
 
 visualizer_client::~visualizer_client()
 {
+    std::cout << "Deleting client...\n";
+    pd_->free_vb (vb);
+    pd_->free_ib (ib);
+    pd_->free_ib (ib_lit1);
+    pd_->free_ib (ib_lit2);
+    pd_->free_ib (ib_path);
 }
 
-bool visualizer_client::is_ready ()
+void visualizer_client::build_graph()
 {
-    return ready_;
+    size_t index;
+
+    b_vertex *pv = pd_->lock_vb(vb, 0, g.v_count());
+
+    index = 0;
+    for (vis_graph::v_iterator it = g.v_begin(); it != g.v_end(); ++it, ++index)
+    {
+        vis_vertex_data& data = it->second.get_data();
+
+        pv[index].x = data.c.x;
+        pv[index].y = data.c.y;
+        pv[index].z = 0;
+
+        int color = 0xFFFF0000;//std::min(static_cast<int>((static_cast<double>(data.reach) / reach_limiter) * 1000.0), 255);
+
+        //pv[index].color = D3DCOLOR_XRGB(color, 128-color/2, 128-color/2);
+
+        data.buffer_index_ = index;
+    }
+
+    pd_->unlock_vb (vb);
+
+    b_edge* pe = pd_->lock_ib(ib, 0, g.e_count());
+
+
+    index = 0;
+    for (vis_graph::e_iterator it = g.e_begin(); it != g.e_end(); ++it, ++index)
+    {
+        vis_edge_data& data = it->second.get_data();
+
+        pe[index].v1 = it->second.get_v1().get_data().buffer_index_;
+        pe[index].v2 = it->second.get_v2().get_data().buffer_index_;
+
+        data.buffer_index_ = index;
+    }
+
+    pd_->unlock_ib (ib);
 }
 
-void visualizer_client::on_mouse_move (int x, int y)
+void visualizer_client::on_mouse_move(int x, int y)
 {
-    mouse_coord = coord<int>(x, y);
-    on_paint();
+    coord<int> screen (x, y);
+    if (dragging_)
+    {
+        pscope_->drag (screen, last_coord_);
+        on_paint();
+    }
+    last_coord_ = screen;
 }
 
 void visualizer_client::on_mouse_down (int x, int y, int button)
 {
-
+    coord<int> screen (x, y);
+    if (button == 0)
+    {
+        test_hover (screen);
+        selected_ = hover_;
+        if (selected_)
+        {
+            const vis_vertex_data &data = g.get_vertex(*selected_).get_data();
+            std::cout << "Origin: " << data.orig << ", reach: " << data.reach << "\n";
+        }
+    }
+    else if (button == 1)
+    {
+        dragging_ = true;
+        last_coord_ = screen;
+    }
+    on_paint();
 }
 
 void visualizer_client::on_mouse_up (int x, int y, int button)
 {
-
-}
-
-void visualizer_client::on_key_down (int key)
-{
-    if ((key >= 'a' && key <= 'z') || (key >= 'A' && key <= 'Z'))
-        str += static_cast<char>(key);
+    coord<int> screen (x, y);
+    dragging_ = false;
+    last_coord_ = screen;
     on_paint();
 }
 
-void visualizer_client::on_resize (int width, int height)
+void visualizer_client::on_key_down(int key)
 {
-
+    const float ZOOM = 1.2f;
+    switch (key)
+    {
+    case VK_PRIOR:
+        pscope_->zoom(ZOOM, last_coord_);
+        break;
+    case VK_NEXT:
+        pscope_->zoom(1.0f / ZOOM, last_coord_);
+        break;
+    }
+    on_paint();
 }
 
-void visualizer_client::on_paint ()
+void visualizer_client::on_resize(int width, int height)
 {
-    pvis_->draw_begin();
-    pvis_->draw_text(coord<int>(0, 0), str);
-    pvis_->draw_line(coord<int>(0, 0), mouse_coord);
-    pvis_->draw_end();
+    pd_->resize(width, height);
+    on_paint();
+}
+
+void visualizer_client::on_paint()
+{
+    pd_->draw_begin();
+
+    pd_->set_color(0xffc0c0c0);
+    pd_->draw_buffers(vb, g.v_count(), ib, g.e_count());
+
+    pd_->draw_end();
+}
+
+void visualizer_client::test_hover( coord<int> c )
+{
+    for (vis_graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it )
+    {
+        coord<int> d = pscope_->world2screen(it->second.get_data().c);
+        if (std::max (abs (d.x - c.x), abs (d.y - c.y)) <= 3)
+        {
+            hover_.reset (it->second.get_id());
+            return;
+        }
+
+    }
+    hover_.reset();
 }

@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-    visualizer_client cl;
+    visualizer_client cl ("USA-road-d.NY");
 
     MSG msg;
     ZeroMemory( &msg, sizeof( msg ) );

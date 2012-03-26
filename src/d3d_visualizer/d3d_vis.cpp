@@ -9,15 +9,13 @@ LRESULT CALLBACK d3d_vis_wndproc ( HWND hwnd, UINT message, WPARAM wparam, LPARA
 
 extern client* g_pClient;
 
-d3d_vis::d3d_vis (int width, int height, client *pclient)
+d3d_vis::d3d_vis (int width, int height)
     : pd3d_ (d3d_singleton::get_inst())
     , color_ (D3DCOLOR_XRGB(0,0,0))
     , bg_color_ (D3DCOLOR_XRGB(255,255,255))
     , ofs_ (0.0f, 0.0f)
     , scale_ (1.0f)
 {
-
-    g_pClient = pclient;
 
     hwnd_ = create_window_from_console(width, height, d3d_vis_wndproc);
     d3d_init ();
@@ -27,24 +25,7 @@ d3d_vis::d3d_vis (int width, int height, client *pclient)
 
     update_matrices();
 
-    D3DVERTEXELEMENT9 dwDeclSingle[] =
-    {
-        {0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-        {1,  0,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,    0} ,
-        D3DDECL_END()
-    };
-
-    D3DVERTEXELEMENT9 dwDeclMulti[] =
-    {
-        {0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-        {0,  12,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,   0},
-        D3DDECL_END()
-    };
-
-    assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
-    assert (pvdeclsingle_ != NULL);
-    assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
-    assert (pvdeclmulti_ != NULL);
+    set_mini_resources();
 
     assert (SUCCEEDED(pdevice_->CreateVertexBuffer(sizeof (DWORD), 0, 0, D3DPOOL_MANAGED, &psinglecolor_, NULL)));
     assert (SUCCEEDED(pdevice_->CreateVertexBuffer(sizeof (b_vertex) * 5, 0, 0, D3DPOOL_MANAGED, &prect_, NULL)));
@@ -57,12 +38,11 @@ d3d_vis::d3d_vis (int width, int height, client *pclient)
 
 d3d_vis::~d3d_vis()
 {
+    release_mini_resources();
+
     safe_release(prect_);
     safe_release(psinglecolor_);
-    safe_release(pvdeclsingle_);
     safe_release(pfont_);
-    safe_release(pvdeclsingle_);
-    safe_release(pvdeclmulti_);
     safe_release(pdevice_);
 }
 
@@ -164,6 +144,7 @@ void d3d_vis::set_color( unsigned int color )
     assert(SUCCEEDED(psinglecolor_->Unlock ()));
     color_ = color;
     assert(SUCCEEDED(pdevice_->SetVertexDeclaration(pvdeclsingle_)));
+    //assert (SUCCEEDED(pdevice_->SetStreamSource(1, psinglecolor_, 0, 0)));
 }
 
 
@@ -332,12 +313,10 @@ void d3d_vis::resize(int width, int height)
     d3dpp_.BackBufferHeight = height;
 
 
-    //pdevice_->SetVertexDeclaration(NULL);
 
-    //assert (pvdeclsingle_->Release() == 0);
-    //assert (pvdeclmulti_->Release() == 0);
-
+    release_mini_resources();
     assert (SUCCEEDED(pdevice_->Reset(&d3dpp_)));
+    set_mini_resources();
     //assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
     //assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
     assert (SUCCEEDED(pdevice_->SetStreamSource(1, psinglecolor_, 0, 0)));
@@ -365,7 +344,42 @@ void d3d_vis::safe_release (IUnknown* p)
     }
 }
 
-visualizer *create_visualizer(client* pcl) 
+
+
+void d3d_vis::release_mini_resources ()
 {
-    return new d3d_vis (800, 600, pcl);
+    pdevice_->SetVertexDeclaration(NULL);
+    assert (pvdeclsingle_->Release() == 0);
+    assert (pvdeclmulti_->Release() == 0);
+}
+
+void d3d_vis::set_mini_resources ()
+{
+    D3DVERTEXELEMENT9 dwDeclSingle[] =
+    {
+        {0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {1,  0,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,    0} ,
+        D3DDECL_END()
+    };
+
+    D3DVERTEXELEMENT9 dwDeclMulti[] =
+    {
+        {0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {0,  12,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,   0},
+        D3DDECL_END()
+    };
+
+    assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
+    assert (pvdeclsingle_ != NULL);
+    assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
+    assert (pvdeclmulti_ != NULL);
+}
+
+
+
+visualizer *create_visualizer(draw_scope **ppscope) 
+{
+    d3d_vis *p = new d3d_vis (800, 600);
+    *ppscope = p;
+    return p;
 }

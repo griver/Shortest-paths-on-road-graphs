@@ -12,5 +12,5 @@ public:
     virtual void on_resize        (int width, int height)        = 0;
     virtual void on_paint        ()                            = 0;
 
-    virtual bool is_ready        ()                            = 0;
+    //virtual bool is_ready        ()                            = 0;
 };

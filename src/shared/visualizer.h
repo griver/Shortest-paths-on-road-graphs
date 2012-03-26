@@ -49,6 +49,7 @@ public:
     virtual void unlock_ib      (ib_id) = 0;
 
     virtual void resize (int width, int height) = 0;
+    virtual void set_client (client* pcl) = 0;
 };
 
 

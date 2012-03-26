@@ -5,12 +5,13 @@
 
 namespace my_graph
 {
-#ifdef _DEBUG
-    const size_t MAX_VERTS = 10000;
-#else
+#if defined (NDEBUG)
     const size_t MAX_VERTS = std::numeric_limits<size_t>::max();
+#else
+    const size_t MAX_VERTS = 10000;
 #endif
-    const size_t buf_size = 1024*1024;
+
+    //const size_t buf_size = 1024*1024;
 
     coord<long> g_loader_mins, g_loader_maxs;
 
@@ -126,7 +127,7 @@ namespace my_graph
             return;
         }
 
-        if (verts_read_ % 10000 == 0)
+        if (verts_read_ % 1000 == 0)
         {
             std::cout << verts_read_ << " verts read\n";
         }

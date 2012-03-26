@@ -3,26 +3,20 @@
 #include "../shared/visualizer.h"
 #include "hello_client.h"
 
-visualizer *create_visualizer(client*);
+visualizer *create_visualizer();
 
 visualizer_client::visualizer_client ()
-: ready_ (false)
+    : pvis_ (create_visualizer ())
 {
-    visualizer *p = create_visualizer(this);
-    pvis_.reset(p);
     assert (pvis_ != NULL);
     pvis_->set_color(0xff000000);
     pvis_->set_bg_color(0xffffffff);
-    ready_ = true;
+
+    pvis_->set_client(this);
 }
 
 visualizer_client::~visualizer_client()
 {
-}
-
-bool visualizer_client::is_ready ()
-{
-    return ready_;
 }
 
 void visualizer_client::on_mouse_move (int x, int y)

@@ -27,7 +27,7 @@ using boost::scoped_ptr;
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
-#if defined (NDEBUG)
+#if defined (NDEBUG) || !defined (_WIN32)
     #define USE_BOOST_HASHMAP
 #else
     #define USE_TR1_HASHMAP

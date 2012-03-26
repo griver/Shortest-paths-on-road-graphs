@@ -8,9 +8,10 @@
 
 
 
-struct d3d_vis : draw_scope, visualizer
+class d3d_vis : public draw_scope, public visualizer
 {
-    d3d_vis (int width, int height, client *pclient);
+public:
+    d3d_vis (int width, int height);
     virtual ~d3d_vis();
 
     vb_id   create_vb   (size_t);
@@ -46,6 +47,7 @@ struct d3d_vis : draw_scope, visualizer
     void drag (coord<int>, coord<int>);
     void zoom (float, coord<int>);
 
+    void set_client (client* pcl);
 
 private:
     void d3d_init ();
@@ -59,12 +61,14 @@ private:
 
     void static safe_release (IUnknown* p);
 
+    void release_mini_resources ();
+    void set_mini_resources ();
+
 private:
     shared_ptr<d3d_singleton> pd3d_;
     D3DPRESENT_PARAMETERS d3dpp_;
 
     HWND                hwnd_;
-    //LPDIRECT3D9         pd3d_;
     LPDIRECT3DDEVICE9   pdevice_;
     LPD3DXFONT          pfont_;
     LPDIRECT3DVERTEXDECLARATION9 pvdeclsingle_, pvdeclmulti_;
