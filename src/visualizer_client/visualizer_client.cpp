@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../shared/client.h"
 #include "../shared/visualizer.h"
-#include "hello_client.h"
+#include "visualizer_client.h"
 
 visualizer *create_visualizer(client*);
 

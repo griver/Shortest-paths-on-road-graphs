@@ -10,41 +10,41 @@ LRESULT CALLBACK d3d_vis_wndproc ( HWND hwnd, UINT message, WPARAM wparam, LPARA
 extern client* g_pClient;
 
 d3d_vis::d3d_vis (int width, int height, client *pclient)
-	: pd3d_ (d3d_singleton::get_inst())
-	, color_ (D3DCOLOR_XRGB(0,0,0))
-	, bg_color_ (D3DCOLOR_XRGB(255,255,255))
-	, ofs_ (0.0f, 0.0f)
-	, scale_ (1.0f)
+    : pd3d_ (d3d_singleton::get_inst())
+    , color_ (D3DCOLOR_XRGB(0,0,0))
+    , bg_color_ (D3DCOLOR_XRGB(255,255,255))
+    , ofs_ (0.0f, 0.0f)
+    , scale_ (1.0f)
 {
 
-	g_pClient = pclient;
+    g_pClient = pclient;
 
-	hwnd_ = create_window_from_console(width, height, d3d_vis_wndproc);
-	d3d_init ();
+    hwnd_ = create_window_from_console(width, height, d3d_vis_wndproc);
+    d3d_init ();
 
-	assert (SUCCEEDED(D3DXCreateFont( pdevice_, 16, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &pfont_ )));
-	assert (pfont_ != NULL);
+    assert (SUCCEEDED(D3DXCreateFont( pdevice_, 16, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &pfont_ )));
+    assert (pfont_ != NULL);
 
-	update_matrices();
+    update_matrices();
 
-	D3DVERTEXELEMENT9 dwDeclSingle[] =
-	{
-		{0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		{1,  0,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,    0} ,
-		D3DDECL_END()
-	};
+    D3DVERTEXELEMENT9 dwDeclSingle[] =
+    {
+        {0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {1,  0,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,    0} ,
+        D3DDECL_END()
+    };
 
-	D3DVERTEXELEMENT9 dwDeclMulti[] =
-	{
-		{0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-		{0,  12,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,   0},
-		D3DDECL_END()
-	};
+    D3DVERTEXELEMENT9 dwDeclMulti[] =
+    {
+        {0,  0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
+        {0,  12,  D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR,   0},
+        D3DDECL_END()
+    };
 
-	assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
-	assert (pvdeclsingle_ != NULL);
+    assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
+    assert (pvdeclsingle_ != NULL);
     assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
-	assert (pvdeclmulti_ != NULL);
+    assert (pvdeclmulti_ != NULL);
 
     assert (SUCCEEDED(pdevice_->CreateVertexBuffer(sizeof (DWORD), 0, 0, D3DPOOL_MANAGED, &psinglecolor_, NULL)));
     assert (SUCCEEDED(pdevice_->CreateVertexBuffer(sizeof (b_vertex) * 5, 0, 0, D3DPOOL_MANAGED, &prect_, NULL)));
@@ -57,40 +57,40 @@ d3d_vis::d3d_vis (int width, int height, client *pclient)
 
 d3d_vis::~d3d_vis()
 {
-	safe_release(prect_);
+    safe_release(prect_);
     safe_release(psinglecolor_);
     safe_release(pvdeclsingle_);
     safe_release(pfont_);
-	safe_release(pvdeclsingle_);
-	safe_release(pvdeclmulti_);
-	safe_release(pdevice_);
+    safe_release(pvdeclsingle_);
+    safe_release(pvdeclmulti_);
+    safe_release(pdevice_);
 }
 
 void d3d_vis::d3d_init()
 {
-	D3DDISPLAYMODE d3ddm;
-	pd3d_->get()->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &d3ddm );
+    D3DDISPLAYMODE d3ddm;
+    pd3d_->get()->GetAdapterDisplayMode( D3DADAPTER_DEFAULT, &d3ddm );
 
-	// Set up the structure used to create the D3DDevice
-	ZeroMemory(&d3dpp_, sizeof(D3DPRESENT_PARAMETERS));
-	d3dpp_.Windowed = TRUE;
-	d3dpp_.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dpp_.BackBufferFormat = d3ddm.Format;
-	d3dpp_.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+    // Set up the structure used to create the D3DDevice
+    ZeroMemory(&d3dpp_, sizeof(D3DPRESENT_PARAMETERS));
+    d3dpp_.Windowed = TRUE;
+    d3dpp_.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    d3dpp_.BackBufferFormat = d3ddm.Format;
+    d3dpp_.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-	// Create the D3DDevice
-	assert (SUCCEEDED(pd3d_->get()->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd_,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-		&d3dpp_, &pdevice_ )));
-	assert (pdevice_ != NULL);
+    // Create the D3DDevice
+    assert (SUCCEEDED(pd3d_->get()->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd_,
+        D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+        &d3dpp_, &pdevice_ )));
+    assert (pdevice_ != NULL);
 
-	// Turn off culling, so we see the front and back of the triangle
-	assert (SUCCEEDED(pdevice_->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE )));
+    // Turn off culling, so we see the front and back of the triangle
+    assert (SUCCEEDED(pdevice_->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE )));
 
-	// Turn off D3D lighting, since we are providing our own vertex colors
-	assert (SUCCEEDED(pdevice_->SetRenderState( D3DRS_LIGHTING, FALSE )));
+    // Turn off D3D lighting, since we are providing our own vertex colors
+    assert (SUCCEEDED(pdevice_->SetRenderState( D3DRS_LIGHTING, FALSE )));
 
-	//assert (SUCCEEDED(g_pd3dDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE )));
+    //assert (SUCCEEDED(g_pd3dDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE )));
 }
 
 vb_id d3d_vis::create_vb( size_t size )
@@ -104,7 +104,7 @@ vb_id d3d_vis::create_vb( size_t size )
         &res,
         NULL)));
 
-	vbs_.push_back(res);
+    vbs_.push_back(res);
     return vbs_.size() - 1;
 }
 
@@ -120,18 +120,18 @@ ib_id d3d_vis::create_ib( size_t size )
         NULL)));
 
 
-	ibs_.push_back(res);
-	return ibs_.size() - 1;
+    ibs_.push_back(res);
+    return ibs_.size() - 1;
 }
 
 void d3d_vis::free_vb( vb_id i )
 {
-	safe_release(vbs_[i]);
+    safe_release(vbs_[i]);
 }
 
 void d3d_vis::free_ib( ib_id i )
 {
-	safe_release(ibs_[i]);
+    safe_release(ibs_[i]);
 }
 
 void d3d_vis::draw_text( coord<int> c, const std::string& str)
@@ -146,7 +146,7 @@ void d3d_vis::draw_text( coord<int> c, const std::string& str)
 void d3d_vis::draw_begin()
 {
     assert(SUCCEEDED(pdevice_->Clear( 0, NULL, D3DCLEAR_TARGET, 
-		bg_color_, 1.0f, 0 )));
+        bg_color_, 1.0f, 0 )));
     assert(SUCCEEDED(pdevice_->BeginScene()));
 }
 
@@ -161,7 +161,7 @@ void d3d_vis::set_color( unsigned int color )
     unsigned int *ptr;
     assert(SUCCEEDED(psinglecolor_->Lock(0, sizeof (DWORD), reinterpret_cast<void**>(&ptr), 0)));
     *ptr = color;
-	assert(SUCCEEDED(psinglecolor_->Unlock ()));
+    assert(SUCCEEDED(psinglecolor_->Unlock ()));
     color_ = color;
     assert(SUCCEEDED(pdevice_->SetVertexDeclaration(pvdeclsingle_)));
 }
@@ -174,7 +174,7 @@ void d3d_vis::unset_color()
 
 void d3d_vis::set_bg_color( unsigned int color )
 {
-	bg_color_ = color;
+    bg_color_ = color;
 }
 
 void d3d_vis::draw_rect( coord<int> ui, coord<int> vi )
@@ -320,52 +320,52 @@ void d3d_vis::unlock_ib( ib_id peb )
 
 void d3d_vis::resize(int width, int height)
 {
-	
-	/*D3DPRESENT_PARAMETERS d3dpp;
+    
+    /*D3DPRESENT_PARAMETERS d3dpp;
     ZeroMemory( &d3dpp, sizeof( d3dpp ) );
     d3dpp.Windowed = TRUE;
     d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
     d3dpp.BackBufferFormat = d3ddm.Format;
-	d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;*/
+    d3dpp.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;*/
 
-	d3dpp_.BackBufferWidth  = width;
-	d3dpp_.BackBufferHeight = height;
+    d3dpp_.BackBufferWidth  = width;
+    d3dpp_.BackBufferHeight = height;
 
 
-	//pdevice_->SetVertexDeclaration(NULL);
+    //pdevice_->SetVertexDeclaration(NULL);
 
-	//assert (pvdeclsingle_->Release() == 0);
-	//assert (pvdeclmulti_->Release() == 0);
+    //assert (pvdeclsingle_->Release() == 0);
+    //assert (pvdeclmulti_->Release() == 0);
 
-	assert (SUCCEEDED(pdevice_->Reset(&d3dpp_)));
-	//assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
-	//assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
-	assert (SUCCEEDED(pdevice_->SetStreamSource(1, psinglecolor_, 0, 0)));
-	
-	unset_color();
-	update_matrices();
+    assert (SUCCEEDED(pdevice_->Reset(&d3dpp_)));
+    //assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
+    //assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
+    assert (SUCCEEDED(pdevice_->SetStreamSource(1, psinglecolor_, 0, 0)));
+    
+    unset_color();
+    update_matrices();
 }
 
 void d3d_vis::update_matrices()
 {
-	RECT myrect;
-	GetClientRect (hwnd_, &myrect);
-	D3DXMATRIX proj;
-	D3DXMatrixOrthoOffCenterRH (&proj, 0, (float)myrect.right, (float)myrect.bottom, 0, -1.0f, 1.0f);
-	assert(SUCCEEDED(pdevice_->SetTransform (D3DTS_PROJECTION, &proj)));
+    RECT myrect;
+    GetClientRect (hwnd_, &myrect);
+    D3DXMATRIX proj;
+    D3DXMatrixOrthoOffCenterRH (&proj, 0, (float)myrect.right, (float)myrect.bottom, 0, -1.0f, 1.0f);
+    assert(SUCCEEDED(pdevice_->SetTransform (D3DTS_PROJECTION, &proj)));
 }
 
 
 void d3d_vis::safe_release (IUnknown* p)
 {
-	if (p != NULL)
-	{
-		p->Release();
-		p = NULL;
-	}
+    if (p != NULL)
+    {
+        p->Release();
+        p = NULL;
+    }
 }
 
 visualizer *create_visualizer(client* pcl) 
 {
-	return new d3d_vis (800, 600, pcl);
+    return new d3d_vis (800, 600, pcl);
 }

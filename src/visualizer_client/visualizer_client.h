@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../shared/visualizer.h"
 #include "../shared/client.h"
 
 class visualizer_client : public client
@@ -14,7 +15,7 @@ public:
     void on_key_down    (int key);
     void on_resize        (int width, int height);
     void on_paint        ();
-    
+
     bool is_ready ();
 private:
     scoped_ptr<visualizer> pvis_;

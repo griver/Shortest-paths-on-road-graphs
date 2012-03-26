@@ -104,7 +104,7 @@ namespace my_graph
 
 
         //typedef typename vertex_indexed<vertex>::map vertex_map;
-		typedef unordered_map<vertex_id, vertex> vertex_map;
+        typedef unordered_map<vertex_id, vertex> vertex_map;
         typedef typename vertex_map::iterator v_iterator;
         typedef typename vertex_map::const_iterator v_const_iterator;
 
@@ -129,8 +129,8 @@ namespace my_graph
         inline size_t v_count () const;
         inline size_t e_count () const;
 
-        bool add_vertex		(vertex_id id, const vertex_data &data);
-		//vertex  &add_vertex (const vertex_data &data);
+        bool add_vertex        (vertex_id id, const vertex_data &data);
+        //vertex  &add_vertex (const vertex_data &data);
         //edge    &add_edge   (vertex &v1, vertex& v2, const edge_data   &data);
         edge    &add_edge   (vertex_id iv1, vertex_id iv2, const edge_data   &data);
 
@@ -308,7 +308,7 @@ namespace my_graph
     template <class V, class E>
     graph_base<V, E>::graph_base () 
         : 
-	    //free_vertex_    (0), 
+        //free_vertex_    (0), 
         free_edge_      (0)
     {
 
@@ -347,7 +347,7 @@ namespace my_graph
     }
 
 #if 0
-	template <class V, class E>
+    template <class V, class E>
     vertex_base<V, E>& graph_base<V, E>::add_vertex(const vertex_data& data)
     {
 //        std::cout << free_vertex_ << "\n" << std::flush;
@@ -358,16 +358,16 @@ namespace my_graph
     }
 #endif
 
-	template <class V, class E>
-	bool graph_base<V, E>::add_vertex(vertex_id id, const vertex_data& data)
-	{
-		if (vertices_.find(id) != vertices_.end())
-			return false;
+    template <class V, class E>
+    bool graph_base<V, E>::add_vertex(vertex_id id, const vertex_data& data)
+    {
+        if (vertices_.find(id) != vertices_.end())
+            return false;
 
-		//vertices_[id] = vertex (id, data);
-		vertices_.insert(typename vertex_map::value_type(id, vertex (id, data)));
-		return true;
-	}
+        //vertices_[id] = vertex (id, data);
+        vertices_.insert(typename vertex_map::value_type(id, vertex (id, data)));
+        return true;
+    }
 
     /*
     my_graph<V, E>::edge& my_graph<V, E>::add_edge(my_graph<V, E>::vertex &v1, my_graph<V, E>::vertex &v2, const edge_data& data)
