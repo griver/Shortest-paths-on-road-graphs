@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hello-world", "hello-world\hello-world.vcproj", "{D6E6A508-395A-4A58-8789-8F70ED66A216}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7D11D433-8671-4FF1-B9F9-D63F01B936B1} = {7D11D433-8671-4FF1-B9F9-D63F01B936B1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "d3d_visualizer", "d3d_visualizer\d3d_visualizer.vcproj", "{7D11D433-8671-4FF1-B9F9-D63F01B936B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6E6A508-395A-4A58-8789-8F70ED66A216}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D6E6A508-395A-4A58-8789-8F70ED66A216}.Debug|Win32.Build.0 = Debug|Win32
+		{D6E6A508-395A-4A58-8789-8F70ED66A216}.Release|Win32.ActiveCfg = Release|Win32
+		{D6E6A508-395A-4A58-8789-8F70ED66A216}.Release|Win32.Build.0 = Release|Win32
+		{7D11D433-8671-4FF1-B9F9-D63F01B936B1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D11D433-8671-4FF1-B9F9-D63F01B936B1}.Debug|Win32.Build.0 = Debug|Win32
+		{7D11D433-8671-4FF1-B9F9-D63F01B936B1}.Release|Win32.ActiveCfg = Release|Win32
+		{7D11D433-8671-4FF1-B9F9-D63F01B936B1}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
