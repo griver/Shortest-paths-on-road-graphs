@@ -11,24 +11,24 @@
 
 int main(int argc, char* argv[])
 {
-	{
-		hello_client cl;
+    {
+        visualizer_client cl;
 
-		MSG msg;
-		ZeroMemory( &msg, sizeof( msg ) );
-		while( msg.message != WM_QUIT )
-		{
-			if( GetMessage( &msg, NULL, 0U, 0U/*, PM_REMOVE*/ ) )
-			{
-				TranslateMessage( &msg );
-				DispatchMessage( &msg );
-			}
-			else
-			{
-			}
-		}
-	}
+        MSG msg;
+        ZeroMemory( &msg, sizeof( msg ) );
+        while( msg.message != WM_QUIT )
+        {
+            if( GetMessage( &msg, NULL, 0U, 0U/*, PM_REMOVE*/ ) )
+            {
+                TranslateMessage( &msg );
+                DispatchMessage( &msg );
+            }
+            else
+            {
+            }
+        }
+    }
 
-	return 0;
+    return 0;
 }
 

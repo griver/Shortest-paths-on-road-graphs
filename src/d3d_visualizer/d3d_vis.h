@@ -8,9 +8,10 @@
 
 
 
-struct d3d_vis : draw_scope, visualizer
+class d3d_vis : public draw_scope, public visualizer
 {
-    d3d_vis (int width, int height, client *pclient);
+public:
+    d3d_vis (int width, int height);
     virtual ~d3d_vis();
 
     vb_id   create_vb   (size_t);
@@ -26,7 +27,7 @@ struct d3d_vis : draw_scope, visualizer
 
     void set_color  (unsigned int);
     void unset_color ();
-	void set_bg_color  (unsigned int);
+    void set_bg_color  (unsigned int);
 
     void draw_rect  (coord<int>, coord<int>);
     void draw_line  (coord<int>, coord<int>);
@@ -46,25 +47,28 @@ struct d3d_vis : draw_scope, visualizer
     void drag (coord<int>, coord<int>);
     void zoom (float, coord<int>);
 
+    void set_client (client* pcl);
 
 private:
-	void d3d_init ();
-	void d3d_shutdown ();
+    void d3d_init ();
+    void d3d_shutdown ();
 
 private:
     void in_world ();
     void in_screen ();
 
-	void update_matrices ();
+    void update_matrices ();
 
-	void static safe_release (IUnknown* p);
+    void static safe_release (IUnknown* p);
+
+    void release_mini_resources ();
+    void set_mini_resources ();
 
 private:
-	shared_ptr<d3d_singleton> pd3d_;
-	D3DPRESENT_PARAMETERS d3dpp_;
+    shared_ptr<d3d_singleton> pd3d_;
+    D3DPRESENT_PARAMETERS d3dpp_;
 
-	HWND                hwnd_;
-    //LPDIRECT3D9         pd3d_;
+    HWND                hwnd_;
     LPDIRECT3DDEVICE9   pdevice_;
     LPD3DXFONT          pfont_;
     LPDIRECT3DVERTEXDECLARATION9 pvdeclsingle_, pvdeclmulti_;
@@ -72,11 +76,11 @@ private:
     LPDIRECT3DVERTEXBUFFER9 prect_;
 
     D3DCOLOR color_;
-	D3DCOLOR bg_color_;
+    D3DCOLOR bg_color_;
     
     coord<float> ofs_;
     float scale_;
 
-	std::vector<IDirect3DVertexBuffer9*> vbs_;
-	std::vector<IDirect3DIndexBuffer9*> ibs_;
+    std::vector<IDirect3DVertexBuffer9*> vbs_;
+    std::vector<IDirect3DIndexBuffer9*> ibs_;
 };
