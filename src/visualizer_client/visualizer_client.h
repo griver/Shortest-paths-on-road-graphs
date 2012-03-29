@@ -4,12 +4,13 @@
 #include "../shared/draw_scope.h"
 #include "../shared/client.h"
 #include "vis_graph.h"
+#include "../shared/common_algorithms/path.h"
 
 
 class visualizer_client : public client
 {
 public:
-    visualizer_client (const std::string &filename);
+    visualizer_client (const std::string &filename, visualizer *pvis, draw_scope *pscope);
     ~visualizer_client();
 
     void on_mouse_move  (int x, int y);
@@ -20,6 +21,10 @@ public:
     void on_resize      (int width, int height);
     void on_paint       ();
 
+    typedef boost::function<void(const vis_graph&, my_graph::vertex_id, my_graph::vertex_id, my_graph::path_map *, my_graph::path_map *)> algo_fn;
+
+    void register_algorithm (const string &name, const algo_fn &fn);
+
 private:
 
     void build_graph ();
@@ -29,6 +34,16 @@ private:
     void draw_vertex (my_graph::vertex_id, int frame, const std::string& str);
 
     void test_hover (coord<int>);
+
+
+    struct path_algorithm
+    {
+        string name;
+        algo_fn fn;
+    };
+
+    void run_algorithm (const path_algorithm &algorithm);
+
 
     /*void update_border_set (my_graph::edge_id, bool rev);
     void run_dijkstra ();
@@ -49,7 +64,7 @@ private:
 
     void crop ();*/
 private:
-    scoped_ptr<visualizer> pd_;
+    visualizer *pd_;
     draw_scope *pscope_;
     vb_id vb;
     ib_id ib, ib_lit1, ib_lit2, ib_path;
@@ -64,7 +79,11 @@ private:
 
     bool draw_lit_;
 
-    //my_graph::path_map lit1, lit2;
+
+    list<path_algorithm> algorithms_;
+    list<path_algorithm>::const_iterator algorithm_it_;
+
+    my_graph::path_map lit1, lit2;
     //my_graph::path_map path_;
     //my_graph::vertex_id path_last_;
 

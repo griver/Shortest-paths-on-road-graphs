@@ -1,20 +1,23 @@
 #pragma once
 
+#include "path.h"
+#include "my_heap.h"
+
 namespace my_graph
 {
 
 
     template <typename V, typename E>
-    class dijkstra
+    class dijkstra_class
     {
         typedef graph_base<V,E> graph;
 
     public:
-
         typedef boost::function<edge_weight(const edge_base<V,E>&)> weight_fn;
+
         typedef boost::function<void(edge_id, bool)> relax_callback_fn;
 
-        dijkstra (const graph& g, const weight_fn& wfn, path_map &out);
+        dijkstra_class (const graph& g, const weight_fn& wfn, path_map &out);
 
         bool done () const;
         void init (vertex_id first, bool reverse=false, const relax_callback_fn& relax_callback=NULL);
@@ -46,10 +49,10 @@ namespace my_graph
 
 
     template <typename V, typename E>
-    dijkstra<V,E>::dijkstra( const graph& g, const weight_fn& wfn, path_map &out ) 
+    dijkstra_class<V,E>::dijkstra_class( const graph& g, const weight_fn& wfn, path_map &out ) 
         :   pg_         (&g) 
         ,   wfn_        (wfn)
-        ,   q_          (boost::bind (&dijkstra<V,E>::update_index, this, _1, _2))
+        ,   q_          (boost::bind (&dijkstra_class<V,E>::update_index, this, _1, _2))
 
         ,   v_indices_  (g.v_count())
         ,   pout_        (&out)
@@ -59,7 +62,7 @@ namespace my_graph
 
 
     template <typename V, typename E>
-    void dijkstra<V,E>::init (vertex_id start, bool reverse, const relax_callback_fn& relax_callback)
+    void dijkstra_class<V,E>::init (vertex_id start, bool reverse, const relax_callback_fn& relax_callback)
     {
         q_.clear();
         q_.reserve (pg_->v_count());
@@ -82,7 +85,7 @@ namespace my_graph
 
 
     template <typename V, typename E>
-    vertex_id dijkstra<V,E>::iterate ()
+    vertex_id dijkstra_class<V,E>::iterate ()
     {
         heap_vertex hv = q_.get (0);
 
@@ -153,16 +156,32 @@ namespace my_graph
     }
 
     template <typename V, typename E>
-    bool dijkstra<V,E>::done() const
+    bool dijkstra_class<V,E>::done() const
     {
         return q_.empty();
     }
 
     template <typename V, typename E>
-    void dijkstra<V,E>::update_index( const heap_vertex& e, size_t i )
+    void dijkstra_class<V,E>::update_index( const heap_vertex& e, size_t i )
     {
         v_indices_[e.id] = i;
 
+    }
+
+    template <typename V, typename E> 
+    edge_weight stub_get_weight (const edge_base<V, E> &e)
+    {
+        return e.len;
+    }
+
+
+    template <typename V, typename E>
+    void run_dijkstra (const graph_base<V, E> &g, vertex_id start, vertex_id end, const typename dijkstra_class<V, E>::weight_fn& wfn, path_map *pout1, path_map *pout2)
+    {
+        dijkstra_class<V, E> d (g, wfn, *pout1);
+        d.init (start);
+        while (!d.done())
+            d.iterate();
     }
 
 }

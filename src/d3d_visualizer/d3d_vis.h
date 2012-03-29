@@ -25,9 +25,9 @@ public:
     void draw_begin ();
     void draw_end   ();
 
-    void set_color  (unsigned int);
+    void set_color  (unsigned char r, unsigned char g, unsigned char b);
     void unset_color ();
-    void set_bg_color  (unsigned int);
+    void set_bg_color  (unsigned char r, unsigned char g, unsigned char b);
 
     void draw_rect  (coord<int>, coord<int>);
     void draw_line  (coord<int>, coord<int>);

@@ -40,7 +40,7 @@ d3d_vis::d3d_vis (int width, int height)
 
     check_succeded (pdevice_->SetStreamSource(1, psinglecolor_, 0, 0));
 
-    set_color (0xFFFFFFFF);
+    set_color (255, 255, 255);
     in_screen();
 }
 
@@ -144,13 +144,12 @@ void d3d_vis::draw_end()
     check_succeded (pdevice_->Present( NULL, NULL, NULL, NULL ));
 }
 
-void d3d_vis::set_color( unsigned int color )
+void d3d_vis::set_color(unsigned char r, unsigned char g, unsigned char b)
 {
     unsigned int *ptr;
     check_succeded (psinglecolor_->Lock(0, sizeof (unsigned int), reinterpret_cast<void**>(&ptr), 0));
-    *ptr = color;
+    color_ = *ptr = D3DCOLOR_XRGB(r,g,b);
     check_succeded (psinglecolor_->Unlock ());
-    color_ = color;
     check_succeded (pdevice_->SetVertexDeclaration(pvdeclsingle_));
     //check_succeded (pdevice_->SetStreamSource(1, psinglecolor_, 0, 0));
 }
@@ -161,9 +160,9 @@ void d3d_vis::unset_color()
     check_succeded (pdevice_->SetVertexDeclaration(pvdeclmulti_));
 }
 
-void d3d_vis::set_bg_color( unsigned int color )
+void d3d_vis::set_bg_color(unsigned char r, unsigned char g, unsigned char b)
 {
-    bg_color_ = color;
+    bg_color_ = D3DCOLOR_XRGB(r,g,b);
 }
 
 void d3d_vis::draw_rect( coord<int> ui, coord<int> vi )

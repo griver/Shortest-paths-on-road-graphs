@@ -1,31 +1,28 @@
-// hello-world.cpp : Defines the entry point for the console application.
-//
 
 #include "stdafx.h"
-#include "../shared/client.h"
-#include "../shared/visualizer.h"
-#include "hello_client.h"
+#include "../visualizer_client/visualizer_client.h"
+#include "../shared/common_algorithms/dijkstra.h"
 
-
-
+visualizer *create_visualizer(draw_scope **ppscope);
 
 int main(int argc, char* argv[])
 {
-    {
-        visualizer_client cl;
+    draw_scope *pscope = NULL;
+    scoped_ptr<visualizer> pvis (create_visualizer(&pscope));
+    visualizer_client cl ("USA-road-d.NY", pvis.get(), pscope);
+    cl.register_algorithm("Dijkstra 2", boost::bind(my_graph::run_dijkstra<vis_vertex_data, vis_edge_data>, _1, _2, _3, get_vis_weight, _4, _5));
 
-        MSG msg;
-        ZeroMemory( &msg, sizeof( msg ) );
-        while( msg.message != WM_QUIT )
+    MSG msg;
+    ZeroMemory( &msg, sizeof( msg ) );
+    while( msg.message != WM_QUIT )
+    {
+        if( GetMessage( &msg, NULL, 0U, 0U/*, PM_REMOVE*/ ) )
         {
-            if( GetMessage( &msg, NULL, 0U, 0U/*, PM_REMOVE*/ ) )
-            {
-                TranslateMessage( &msg );
-                DispatchMessage( &msg );
-            }
-            else
-            {
-            }
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+        }
+        else
+        {
         }
     }
 

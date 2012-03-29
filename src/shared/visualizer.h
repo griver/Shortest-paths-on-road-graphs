@@ -37,8 +37,8 @@ public:
 
     virtual void draw_rect  (coord<int>, coord<int>) = 0;
     virtual void draw_line  (coord<int>, coord<int>) = 0;
-    virtual void set_bg_color  (unsigned int) = 0;
-    virtual void set_color  (unsigned int) = 0;
+    virtual void set_bg_color  (unsigned char r, unsigned char g, unsigned char b) = 0;
+    virtual void set_color  (unsigned char r, unsigned char g, unsigned char b) = 0;
     virtual void unset_color  () = 0;
 
 

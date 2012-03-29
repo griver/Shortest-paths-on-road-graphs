@@ -2,11 +2,7 @@
 
 #include "../shared/graph.h"
 #include "../shared/coord.h"
-
-namespace my_graph
-{
-    typedef float edge_weight;
-}
+#include "../shared/common_algorithms/path.h"
 
 struct vis_vertex_data
 {
@@ -27,6 +23,12 @@ struct vis_edge_data
     int buffer_index_;
     my_graph::edge_weight len_;
     long orig_len_;
+
 };
+
+inline my_graph::edge_weight get_vis_weight(const my_graph::edge_base<vis_vertex_data, vis_edge_data> &e)
+{
+    return e.get_data().len_;
+}
 
 typedef my_graph::graph_base<vis_vertex_data, vis_edge_data> vis_graph;

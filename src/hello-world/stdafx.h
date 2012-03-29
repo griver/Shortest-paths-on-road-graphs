@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "../shared/common.h"
 #include <Windows.h>
+#include "../shared/common.h"
 
 #include "../shared/graph.h"
