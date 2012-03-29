@@ -176,12 +176,24 @@ namespace my_graph
 
 
     template <typename V, typename E>
-    void run_dijkstra (const graph_base<V, E> &g, vertex_id start, vertex_id end, const typename dijkstra_class<V, E>::weight_fn& wfn, path_map *pout1, path_map *pout2)
+    void run_dijkstra (const typename dijkstra_class<V, E>::weight_fn& wfn, const graph_base<V, E> &g, vertex_id start, vertex_id end, path_map *pout1, path_map *pout2, path_map *ppath)
     {
         dijkstra_class<V, E> d (g, wfn, *pout1);
         d.init (start);
-        while (!d.done())
+        while (pout1->count(end) == 0 && !d.done())
             d.iterate();
+
+        if (pout1->count(end) == 0)
+            return;
+
+        vertex_id vid = end;
+        path_vertex pv = pout1->find(vid)->second;
+        while (pv.inc.is_initialized())
+        {
+            (*ppath)[pv.id] = pv;
+            vid = g.get_edge(*pv.inc).get_v1().get_id();
+            pv = pout1->find(vid)->second;
+        }
     }
 
 }

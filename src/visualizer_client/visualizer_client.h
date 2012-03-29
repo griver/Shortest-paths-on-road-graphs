@@ -21,15 +21,16 @@ public:
     void on_resize      (int width, int height);
     void on_paint       ();
 
-    typedef boost::function<void(const vis_graph&, my_graph::vertex_id, my_graph::vertex_id, my_graph::path_map *, my_graph::path_map *)> algo_fn;
+    typedef boost::function<void(const vis_graph&, my_graph::vertex_id, my_graph::vertex_id, my_graph::path_map *, my_graph::path_map *, my_graph::path_map *)> algo_fn;
 
     void register_algorithm (const string &name, const algo_fn &fn);
 
 private:
 
+    void clear_lit ();
     void build_graph ();
-    //void update_lit ();
-    //void update_path_map(const my_graph::path_map &m, ib_id ib_dst, b_edge* pe_src);
+    void update_lit ();
+    void update_path_map(const my_graph::path_map &m, ib_id ib_dst, b_edge* pe_src);
 
     void draw_vertex (my_graph::vertex_id, int frame, const std::string& str);
 
@@ -77,14 +78,12 @@ private:
     boost::optional<my_graph::vertex_id> selected_;
     boost::optional<my_graph::vertex_id> start_, end_;
 
-    bool draw_lit_;
-
 
     list<path_algorithm> algorithms_;
     list<path_algorithm>::const_iterator algorithm_it_;
 
-    my_graph::path_map lit1, lit2;
-    //my_graph::path_map path_;
+    my_graph::path_map lit1_, lit2_;
+    my_graph::path_map path_;
     //my_graph::vertex_id path_last_;
 
     /*typedef unordered_set<my_graph::edge_id> edge_set;

@@ -10,6 +10,7 @@ namespace my_graph
 #else
     const size_t MAX_VERTS = 10000;
 #endif
+    const size_t gran = 100000;
 
     //const size_t buf_size = 1024*1024;
 
@@ -68,7 +69,7 @@ namespace my_graph
         {
             size_t index = it - verts.begin();
 
-            if (index % 10000 == 0)
+            if (index % gran == 0)
             {
                 std::cout << index << " verts normalized\n";
 
@@ -127,7 +128,7 @@ namespace my_graph
             return;
         }
 
-        if (verts_read_ % 1000 == 0)
+        if (verts_read_ % gran == 0)
         {
             std::cout << verts_read_ << " verts read\n";
         }
@@ -163,7 +164,7 @@ namespace my_graph
             return;
         }
 
-        if (edges_read_ % 10000 == 0)
+        if (edges_read_ % gran == 0)
         {
             std::cout << edges_read_ << " edges read\n";
         }

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="hello-world"
+	Name="example"
 	ProjectGUID="{D6E6A508-395A-4A58-8789-8F70ED66A216}"
-	RootNamespace="helloworld"
+	RootNamespace="example"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="d3d9.lib d3dx9.lib dxerr.lib dxguid.lib "
+				AdditionalDependencies="winmm.lib d3d9.lib d3dx9.lib dxerr.lib dxguid.lib "
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="d3d9.lib d3dx9.lib dxerr.lib dxguid.lib "
+				AdditionalDependencies="winmm.lib d3d9.lib d3dx9.lib dxerr.lib dxguid.lib "
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -176,7 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\hello_world.cpp"
+				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File

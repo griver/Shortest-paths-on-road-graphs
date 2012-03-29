@@ -6,16 +6,14 @@
 
 #include "../shared/common_algorithms/dijkstra.h"
 
-client *create_client(const std::string &filename, visualizer *pvis, draw_scope *pscope)
+void run_vis_dijkstra (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
 {
-    return new visualizer_client (filename, pvis, pscope);
+    run_dijkstra(get_vis_weight, g, start, end, pout1, pout2, ppath);
 }
 
 visualizer_client::visualizer_client(const std::string &filename, visualizer *pvis, draw_scope *pscope)
 :   dragging_(false)
 ,   last_coord_(0,0)
-,   draw_lit_(false)
-//,   draw_reaches_(false)
 ,   pd_(pvis)
 ,   pscope_(pscope)
 
@@ -42,7 +40,8 @@ visualizer_client::visualizer_client(const std::string &filename, visualizer *pv
 
     pd_->set_client(this);
 
-    register_algorithm("Dijkstra", boost::bind(my_graph::run_dijkstra<vis_vertex_data, vis_edge_data>, _1, _2, _3, get_vis_weight, _4, _5));
+    register_algorithm("Dijkstra", run_vis_dijkstra);
+
     algorithm_it_ = algorithms_.begin();
 }
 
@@ -115,11 +114,11 @@ void visualizer_client::on_mouse_down (int x, int y, int button)
     {
         test_hover (screen);
         selected_ = hover_;
-        if (selected_)
+        /*if (selected_)
         {
             const vis_vertex_data &data = g.get_vertex(*selected_).get_data();
             std::cout << "Origin: " << data.orig << ", reach: " << data.reach << "\n";
-        }
+        }*/
     }
     else if (button == 1)
     {
@@ -150,9 +149,11 @@ void visualizer_client::on_key_down(int key)
         break;
     case '1':
         start_ = selected_;
+        clear_lit();
         break;
     case '2':
         end_ = selected_;
+        clear_lit();
         break;
     case VK_TAB:
         if (!algorithms_.empty ())
@@ -161,6 +162,11 @@ void visualizer_client::on_key_down(int key)
             if (algorithm_it_ == algorithms_.end())
                 algorithm_it_ = algorithms_.begin();
         }
+        clear_lit();
+        break;
+    case VK_SPACE:
+        if (!algorithms_.empty() && start_.is_initialized() && end_.is_initialized())
+            run_algorithm(*algorithm_it_);
         break;
     }
     on_paint();
@@ -173,7 +179,7 @@ void visualizer_client::on_wheel (int delta)
 
 void visualizer_client::on_resize(int width, int height)
 {
-    pd_->resize(width, height);
+    //pd_->resize(width, height);
     on_paint();
 }
 
@@ -183,6 +189,24 @@ void visualizer_client::on_paint()
 
     pd_->set_color(192, 192, 192);
     pd_->draw_buffers(vb, g.v_count(), ib, g.e_count());
+
+    if (!lit1_.empty())
+    {
+        pd_->set_color (255, 0, 0);
+        pd_->draw_buffers(vb, g.v_count(), ib_lit1, lit1_.size());
+    }
+
+    if (!lit2_.empty())
+    {
+        pd_->set_color (0, 0, 255);
+        pd_->draw_buffers(vb, g.v_count(), ib_lit2, lit2_.size());
+    }
+
+    if (!path_.empty())
+    {
+        pd_->set_color (0, 0, 0);
+        pd_->draw_buffers(vb, g.v_count(), ib_path, path_.size());
+    }
 
     if (selected_)
     {
@@ -247,6 +271,54 @@ void visualizer_client::register_algorithm(const string &name, const algo_fn &fn
 
 void visualizer_client::run_algorithm (const path_algorithm &algorithm)
 {
-    algorithm.fn(g, *start_, *end_, &lit1, &lit2);
+    lit1_.clear();
+    lit2_.clear();
+    path_.clear();
+
+    DWORD time = timeGetTime();
+    algorithm.fn(g, *start_, *end_, &lit1_, &lit2_, &path_);
+    time = timeGetTime() - time;
+    
+    cout << endl << algorithm.name << " ran for " << time << " ms." << endl;
+    cout << lit1_.size() + lit2_.size() << " verts visited." << endl;
+
+    update_lit();
 }
 
+
+void visualizer_client::update_path_map(const my_graph::path_map &m, ib_id ib_dst, b_edge* pe_src)
+{
+
+    b_edge* pe_dst = pd_->lock_ib(ib_dst, 0, g.e_count());
+
+    size_t index = 0;
+    for (my_graph::path_map::const_iterator it = m.begin(); it != m.end (); ++it, ++index)
+    {
+        if (!it->second.inc)
+            pe_dst[index] = pe_src[0];
+        else
+            pe_dst[index] = pe_src[g.get_edge(*(it->second.inc)).get_data().buffer_index_];
+    }
+
+    pd_->unlock_ib(ib_dst);
+
+
+}
+
+void visualizer_client::update_lit()
+{
+    b_edge* pe_src = pd_->lock_ib(ib, 0, g.e_count(), 0);
+
+    update_path_map(lit1_, ib_lit1, pe_src);
+    update_path_map(lit2_, ib_lit2, pe_src);
+    update_path_map(path_, ib_path, pe_src);
+
+    pd_->unlock_ib(ib);
+}
+
+void visualizer_client::clear_lit()
+{
+    lit1_.clear();
+    lit2_.clear();
+    path_.clear();
+}
