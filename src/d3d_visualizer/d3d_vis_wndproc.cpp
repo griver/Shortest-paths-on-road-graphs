@@ -45,6 +45,9 @@ LRESULT CALLBACK d3d_vis_wndproc ( HWND hwnd, UINT message, WPARAM wparam, LPARA
         case WM_RBUTTONUP:
             g_pClient->on_mouse_up(LOWORD(lparam), HIWORD(lparam), 1);
             break;
+        case WM_MOUSEWHEEL:
+            g_pClient->on_wheel(GET_WHEEL_DELTA_WPARAM(wparam));
+            break;
         case WM_SIZE:
             g_pClient->on_resize(LOWORD(lparam), HIWORD(lparam));
             break;

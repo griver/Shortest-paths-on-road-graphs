@@ -60,6 +60,7 @@ private:
     void update_matrices ();
 
     void static safe_release (IUnknown* p);
+    void static check_succeded (HRESULT hr);
 
     void release_mini_resources ();
     void set_mini_resources ();

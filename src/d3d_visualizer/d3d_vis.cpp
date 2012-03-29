@@ -15,22 +15,30 @@ d3d_vis::d3d_vis (int width, int height)
     , bg_color_ (D3DCOLOR_XRGB(255,255,255))
     , ofs_ (0.0f, 0.0f)
     , scale_ (1.0f)
+
+    , pdevice_      (NULL)
+    , pfont_        (NULL)
+    , pvdeclsingle_ (NULL)
+    , pvdeclmulti_  (NULL)
+    , psinglecolor_ (NULL)
+    , prect_        (NULL)
+
 {
 
     hwnd_ = create_window_from_console(width, height, d3d_vis_wndproc);
     d3d_init ();
 
-    assert (SUCCEEDED(D3DXCreateFont( pdevice_, 16, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &pfont_ )));
+    check_succeded (D3DXCreateFont( pdevice_, 16, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &pfont_ ));
     assert (pfont_ != NULL);
 
     update_matrices();
 
     set_mini_resources();
 
-    assert (SUCCEEDED(pdevice_->CreateVertexBuffer(sizeof (DWORD), 0, 0, D3DPOOL_MANAGED, &psinglecolor_, NULL)));
-    assert (SUCCEEDED(pdevice_->CreateVertexBuffer(sizeof (b_vertex) * 5, 0, 0, D3DPOOL_MANAGED, &prect_, NULL)));
+    check_succeded (pdevice_->CreateVertexBuffer(sizeof (DWORD), 0, 0, D3DPOOL_MANAGED, &psinglecolor_, NULL));
+    check_succeded (pdevice_->CreateVertexBuffer(sizeof (b_vertex) * 5, 0, 0, D3DPOOL_MANAGED, &prect_, NULL));
 
-    assert (SUCCEEDED(pdevice_->SetStreamSource(1, psinglecolor_, 0, 0)));
+    check_succeded (pdevice_->SetStreamSource(1, psinglecolor_, 0, 0));
 
     set_color (0xFFFFFFFF);
     in_screen();
@@ -59,30 +67,30 @@ void d3d_vis::d3d_init()
     d3dpp_.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
     // Create the D3DDevice
-    assert (SUCCEEDED(pd3d_->get()->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd_,
+    check_succeded(pd3d_->get()->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd_,
         D3DCREATE_SOFTWARE_VERTEXPROCESSING,
-        &d3dpp_, &pdevice_ )));
+        &d3dpp_, &pdevice_ ));
     assert (pdevice_ != NULL);
 
     // Turn off culling, so we see the front and back of the triangle
-    assert (SUCCEEDED(pdevice_->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE )));
+    check_succeded (pdevice_->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE ));
 
     // Turn off D3D lighting, since we are providing our own vertex colors
-    assert (SUCCEEDED(pdevice_->SetRenderState( D3DRS_LIGHTING, FALSE )));
+    check_succeded (pdevice_->SetRenderState( D3DRS_LIGHTING, FALSE ));
 
-    //assert (SUCCEEDED(g_pd3dDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE )));
+    //check_succeded (g_pd3dDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ));
 }
 
 vb_id d3d_vis::create_vb( size_t size )
 {
     IDirect3DVertexBuffer9 *res;
 
-    assert(SUCCEEDED(pdevice_->CreateVertexBuffer(  sizeof(b_vertex)*size, 
+    check_succeded(pdevice_->CreateVertexBuffer(  sizeof(b_vertex)*size, 
         0,
         b_vertex::fvf,
         D3DPOOL_MANAGED,
         &res,
-        NULL)));
+        NULL));
 
     vbs_.push_back(res);
     return vbs_.size() - 1;
@@ -92,12 +100,12 @@ ib_id d3d_vis::create_ib( size_t size )
 {
     IDirect3DIndexBuffer9 *res;
 
-    assert(SUCCEEDED(pdevice_->CreateIndexBuffer(   sizeof(b_edge)*size,
+    check_succeded(pdevice_->CreateIndexBuffer(   sizeof(b_edge)*size,
         0,
         D3DFMT_INDEX32,
         D3DPOOL_MANAGED,
         &res,
-        NULL)));
+        NULL));
 
 
     ibs_.push_back(res);
@@ -125,32 +133,32 @@ void d3d_vis::draw_text( coord<int> c, const std::string& str)
 
 void d3d_vis::draw_begin()
 {
-    assert(SUCCEEDED(pdevice_->Clear( 0, NULL, D3DCLEAR_TARGET, 
-        bg_color_, 1.0f, 0 )));
-    assert(SUCCEEDED(pdevice_->BeginScene()));
+    check_succeded(pdevice_->Clear( 0, NULL, D3DCLEAR_TARGET, 
+        bg_color_, 1.0f, 0 ));
+    check_succeded (pdevice_->BeginScene());
 }
 
 void d3d_vis::draw_end()
 {
-    assert(SUCCEEDED(pdevice_->EndScene()));
-    assert(SUCCEEDED(pdevice_->Present( NULL, NULL, NULL, NULL )));
+    check_succeded (pdevice_->EndScene());
+    check_succeded (pdevice_->Present( NULL, NULL, NULL, NULL ));
 }
 
 void d3d_vis::set_color( unsigned int color )
 {
     unsigned int *ptr;
-    assert(SUCCEEDED(psinglecolor_->Lock(0, sizeof (DWORD), reinterpret_cast<void**>(&ptr), 0)));
+    check_succeded (psinglecolor_->Lock(0, sizeof (unsigned int), reinterpret_cast<void**>(&ptr), 0));
     *ptr = color;
-    assert(SUCCEEDED(psinglecolor_->Unlock ()));
+    check_succeded (psinglecolor_->Unlock ());
     color_ = color;
-    assert(SUCCEEDED(pdevice_->SetVertexDeclaration(pvdeclsingle_)));
-    //assert (SUCCEEDED(pdevice_->SetStreamSource(1, psinglecolor_, 0, 0)));
+    check_succeded (pdevice_->SetVertexDeclaration(pvdeclsingle_));
+    //check_succeded (pdevice_->SetStreamSource(1, psinglecolor_, 0, 0));
 }
 
 
 void d3d_vis::unset_color()
 {
-    assert(SUCCEEDED(pdevice_->SetVertexDeclaration(pvdeclmulti_)));
+    check_succeded (pdevice_->SetVertexDeclaration(pvdeclmulti_));
 }
 
 void d3d_vis::set_bg_color( unsigned int color )
@@ -173,12 +181,12 @@ void d3d_vis::draw_rect( coord<int> ui, coord<int> vi )
     };
 
     b_vertex *ptr;
-    assert(SUCCEEDED(prect_->Lock(0, sizeof (b_vertex) * 5, reinterpret_cast<void**>(&ptr), 0)));
+    check_succeded (prect_->Lock(0, sizeof (b_vertex) * 5, reinterpret_cast<void**>(&ptr), 0));
     memcpy (ptr, vertices, sizeof (b_vertex) * 5);
-    assert(SUCCEEDED(prect_->Unlock()));
+    check_succeded (prect_->Unlock());
 
-    assert(SUCCEEDED(pdevice_->SetStreamSource(0, prect_, 0, sizeof (b_vertex))));
-    assert(SUCCEEDED(pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 4)));
+    check_succeded (pdevice_->SetStreamSource(0, prect_, 0, sizeof (b_vertex)));
+    check_succeded (pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 4));
 }
 
 void d3d_vis::draw_line( coord<int> ui, coord<int> vi )
@@ -193,12 +201,12 @@ void d3d_vis::draw_line( coord<int> ui, coord<int> vi )
     };
 
     b_vertex *ptr;
-    assert(SUCCEEDED(prect_->Lock(0, sizeof (b_vertex) * 2, reinterpret_cast<void**>(&ptr), 0)));
+    check_succeded (prect_->Lock(0, sizeof (b_vertex) * 2, reinterpret_cast<void**>(&ptr), 0));
     memcpy (ptr, vertices, sizeof (b_vertex) * 2);
-    assert(SUCCEEDED(prect_->Unlock()));
+    check_succeded (prect_->Unlock());
 
-    assert(SUCCEEDED(pdevice_->SetStreamSource(0, prect_, 0, sizeof (b_vertex))));
-    assert(SUCCEEDED(pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 1)));
+    check_succeded (pdevice_->SetStreamSource(0, prect_, 0, sizeof (b_vertex)));
+    check_succeded (pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 1));
 }
 
 
@@ -209,7 +217,7 @@ void d3d_vis::in_world()
     D3DXMatrixScaling       (&sc, scale_, scale_, scale_);
     D3DXMatrixTranslation   (&ofs, ofs_.x, ofs_.y, 0);
     world = sc*ofs;
-    assert(SUCCEEDED(pdevice_->SetTransform (D3DTS_WORLD, &world)));
+    check_succeded (pdevice_->SetTransform (D3DTS_WORLD, &world));
 }
 
 
@@ -217,7 +225,7 @@ void d3d_vis::in_screen()
 {
     D3DXMATRIX world;
     D3DXMatrixIdentity(&world);
-    assert(SUCCEEDED(pdevice_->SetTransform (D3DTS_WORLD, &world)));
+    check_succeded (pdevice_->SetTransform (D3DTS_WORLD, &world));
 }
 
 
@@ -225,9 +233,9 @@ void d3d_vis::draw_buffers( vb_id verts, size_t n_verts, ib_id inds, size_t n_in
 {
     in_world();
 
-    assert(SUCCEEDED(pdevice_->SetStreamSource(0, vbs_[verts], 0, sizeof (b_vertex))));
-    assert(SUCCEEDED(pdevice_->SetIndices(ibs_[inds])));
-    assert(SUCCEEDED(pdevice_->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, n_verts, 0, n_inds)));
+    check_succeded (pdevice_->SetStreamSource(0, vbs_[verts], 0, sizeof (b_vertex)));
+    check_succeded (pdevice_->SetIndices(ibs_[inds]));
+    check_succeded (pdevice_->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, n_verts, 0, n_inds));
 
     in_screen();
 }
@@ -280,7 +288,7 @@ b_vertex* d3d_vis::lock_vb( vb_id pvb, size_t start, size_t size, unsigned int f
 
 void d3d_vis::unlock_vb( vb_id pvb )
 {
-    assert(SUCCEEDED(vbs_[pvb]->Unlock()));
+    check_succeded (vbs_[pvb]->Unlock());
 }
 
 b_edge* d3d_vis::lock_ib( ib_id peb, size_t start, size_t size, unsigned int flags )
@@ -296,7 +304,7 @@ b_edge* d3d_vis::lock_ib( ib_id peb, size_t start, size_t size, unsigned int fla
 
 void d3d_vis::unlock_ib( ib_id peb )
 {
-    assert(SUCCEEDED(ibs_[peb]->Unlock()));
+    check_succeded (ibs_[peb]->Unlock());
 }
 
 void d3d_vis::resize(int width, int height)
@@ -315,11 +323,11 @@ void d3d_vis::resize(int width, int height)
 
 
     release_mini_resources();
-    assert (SUCCEEDED(pdevice_->Reset(&d3dpp_)));
+    check_succeded (pdevice_->Reset(&d3dpp_));
     set_mini_resources();
-    //assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
-    //assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
-    assert (SUCCEEDED(pdevice_->SetStreamSource(1, psinglecolor_, 0, 0)));
+    //check_succeded (pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_));
+    //check_succeded (pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_));
+    check_succeded (pdevice_->SetStreamSource(1, psinglecolor_, 0, 0));
     
     unset_color();
     update_matrices();
@@ -331,7 +339,7 @@ void d3d_vis::update_matrices()
     GetClientRect (hwnd_, &myrect);
     D3DXMATRIX proj;
     D3DXMatrixOrthoOffCenterRH (&proj, 0, (float)myrect.right, (float)myrect.bottom, 0, -1.0f, 1.0f);
-    assert(SUCCEEDED(pdevice_->SetTransform (D3DTS_PROJECTION, &proj)));
+    check_succeded (pdevice_->SetTransform (D3DTS_PROJECTION, &proj));
 }
 
 
@@ -344,13 +352,25 @@ void d3d_vis::safe_release (IUnknown* p)
     }
 }
 
+void d3d_vis::check_succeded (HRESULT hr)
+{
+    assert (SUCCEEDED(hr));
+    if (!SUCCEEDED(hr))
+    {
+        std::cerr << "Error!" << endl;
+    }
+}
+
 
 
 void d3d_vis::release_mini_resources ()
 {
+    ULONG res;
     pdevice_->SetVertexDeclaration(NULL);
-    assert (pvdeclsingle_->Release() == 0);
-    assert (pvdeclmulti_->Release() == 0);
+    res = pvdeclsingle_->Release();
+    assert (res == 0);
+    res = pvdeclmulti_->Release();
+    assert (res == 0);
 }
 
 void d3d_vis::set_mini_resources ()
@@ -369,9 +389,9 @@ void d3d_vis::set_mini_resources ()
         D3DDECL_END()
     };
 
-    assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_)));
+    check_succeded (pdevice_->CreateVertexDeclaration(dwDeclSingle, &pvdeclsingle_));
     assert (pvdeclsingle_ != NULL);
-    assert (SUCCEEDED(pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_)));
+    check_succeded (pdevice_->CreateVertexDeclaration(dwDeclMulti, &pvdeclmulti_));
     assert (pvdeclmulti_ != NULL);
 }
 

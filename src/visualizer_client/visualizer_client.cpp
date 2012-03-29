@@ -140,7 +140,18 @@ void visualizer_client::on_key_down(int key)
     case VK_NEXT:
         pscope_->zoom(1.0f / ZOOM, last_coord_);
         break;
+    case '1':
+        start_ = selected_;
+        break;
+    case '2':
+        end_ = selected_;
+        break;
     }
+    on_paint();
+}
+void visualizer_client::on_wheel (int delta)
+{
+    pscope_->zoom (pow(1.2f, delta / 120.0f), last_coord_);
     on_paint();
 }
 
@@ -156,6 +167,24 @@ void visualizer_client::on_paint()
 
     pd_->set_color(0xffc0c0c0);
     pd_->draw_buffers(vb, g.v_count(), ib, g.e_count());
+
+    if (selected_)
+    {
+        pd_->set_color(0xff000000);
+        draw_vertex(*selected_, 3, "");
+    }
+
+    if (start_)
+    {
+        pd_->set_color(0xffff0000);
+        draw_vertex(*start_, 2, "start");
+    }
+    if (end_)
+    {
+        pd_->set_color(0xff0000ff);
+        draw_vertex(*end_, 2, "end");
+    }
+
 
     pd_->draw_end();
 }
@@ -173,4 +202,14 @@ void visualizer_client::test_hover( coord<int> c )
 
     }
     hover_.reset();
+}
+
+
+void visualizer_client::draw_vertex( my_graph::vertex_id id, int frame, const std::string& str )
+{
+    coord<int> vert_coord = pscope_->world2screen(g.get_vertex(id).get_data().c);
+    coord<int> eps (frame, frame);
+    pd_->draw_rect(vert_coord - eps, vert_coord + eps);
+    if (!str.empty())
+        pd_->draw_text(vert_coord, str);
 }

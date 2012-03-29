@@ -9,6 +9,7 @@ d3d_singleton::d3d_singleton()
 
 d3d_singleton::~d3d_singleton()
 {
+    cout << "d3d release" << endl;
     p_->Release();
 }
 

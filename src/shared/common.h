@@ -1,5 +1,8 @@
 #pragma once
 
+#include <list>
+using std::list;
+
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -40,9 +43,9 @@ using boost::shared_ptr;
     #include <unordered_set>
     using std::tr1::unordered_set;
 #elif defined ( USE_BOOST_HASHMAP )
-    #include <boost/unordered_map>
+    #include <boost/unordered_map.hpp>
     using boost::unordered_map;
-    #include <boost/unordered_set>
+    #include <boost/unordered_set.hpp>
     using boost::unordered_set;
 #else
     #error No hash map is selected: USE_TR1_HASHMAP or USE_BOOST_HASHMAP should be defined!

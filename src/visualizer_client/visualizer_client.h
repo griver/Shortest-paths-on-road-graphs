@@ -12,12 +12,13 @@ public:
     visualizer_client (const std::string &filename);
     ~visualizer_client();
 
-    void on_mouse_move    (int x, int y);
-    void on_mouse_down    (int x, int y, int button);
+    void on_mouse_move  (int x, int y);
+    void on_mouse_down  (int x, int y, int button);
     void on_mouse_up    (int x, int y, int button);
     void on_key_down    (int key);
-    void on_resize        (int width, int height);
-    void on_paint        ();
+    void on_wheel       (int delta);
+    void on_resize      (int width, int height);
+    void on_paint       ();
 
 private:
 
@@ -25,7 +26,7 @@ private:
     //void update_lit ();
     //void update_path_map(const my_graph::path_map &m, ib_id ib_dst, b_edge* pe_src);
 
-    //void draw_vertex (my_graph::vertex_id, int frame, const std::string& str);
+    void draw_vertex (my_graph::vertex_id, int frame, const std::string& str);
 
     void test_hover (coord<int>);
 
