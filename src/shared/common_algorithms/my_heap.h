@@ -132,8 +132,9 @@ private:
 
 public:
     size_t changed_top, changed_bottom;
+/*
 public:
-    DWORD time;
+    DWORD time;*/
 
 
 };

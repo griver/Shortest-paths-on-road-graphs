@@ -51,6 +51,24 @@ using boost::shared_ptr;
     #error No hash map is selected: USE_TR1_HASHMAP or USE_BOOST_HASHMAP should be defined!
 #endif
 
+
+template <typename K, typename V>
+inline const V& unordered_safe_find_const(const unordered_map<K,V> &map, const K &key)
+{
+    unordered_map<K,V>::const_iterator it = map.find(key);
+    assert(it != map.end());
+    return it->second;
+}
+template <typename K, typename V>
+inline V& unordered_safe_find(unordered_map<K,V> &map, const K &key)
+{
+    unordered_map<K,V>::iterator it = map.find(key);
+    assert(it != map.end());
+    return it->second;
+}
+
+
+
 #undef min
 #undef max
 #include <limits>

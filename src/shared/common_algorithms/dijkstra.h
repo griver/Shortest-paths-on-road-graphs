@@ -46,7 +46,8 @@ namespace my_graph
 
 
 
-
+#pragma warning (push)
+#pragma warning (disable : 4355)
 
     template <typename V, typename E>
     dijkstra_class<V,E>::dijkstra_class( const graph& g, const weight_fn& wfn, path_map &out ) 
@@ -59,6 +60,8 @@ namespace my_graph
     {
         //q_.set_callback();
     }
+
+#pragma warning (pop)
 
 
     template <typename V, typename E>
@@ -128,7 +131,7 @@ namespace my_graph
             if (pout_->count (v2_id) > 0)
                 continue;
 
-            path_vertex pv2 (v2_id, pv.d + wfn_(e), e.get_id());
+            path_vertex pv2 (v2_id, pv.d + wfn_(e), e.get_id(), v.get_id());
             heap_vertex hv2 (v2_id, pv.d + wfn_(e));
 
             if (v_indices_.count (v2_id) != 0)
@@ -186,14 +189,29 @@ namespace my_graph
         if (pout1->count(end) == 0)
             return;
 
-        vertex_id vid = end;
-        path_vertex pv = pout1->find(vid)->second;
+        /*vertex_id vid = end;
+        path_vertex pv = pout1->find(end)->second;
         while (pv.inc.is_initialized())
         {
             (*ppath)[pv.id] = pv;
             vid = g.get_edge(*pv.inc).get_v1().get_id();
             pv = pout1->find(vid)->second;
+        }*/
+        path_vertex pv = pout1->find(end)->second;
+        while (pv.parent.is_initialized())
+        {
+            (*ppath)[pv.id] = pv;
+            pv = pout1->find(*pv.parent)->second;
         }
+    }
+
+    template <typename V, typename E>
+    void run_full_dijkstra (const typename dijkstra_class<V, E>::weight_fn& wfn, const graph_base<V, E> &g, vertex_id start, path_map *pout1)
+    {
+        dijkstra_class<V, E> d (g, wfn, *pout1);
+        d.init (start);
+        while (!d.done())
+            d.iterate();
     }
 
 }

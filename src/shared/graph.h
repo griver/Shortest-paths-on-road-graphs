@@ -52,6 +52,9 @@ namespace my_graph
         inline ve_const_iterator   out_begin () const   {return out_.begin();}
         inline ve_iterator         out_end   ()         {return out_.end();}
         inline ve_const_iterator   out_end   () const   {return out_.end();}
+
+        inline int get_in_degree () const {return in_.size();};
+        inline int get_out_degree () const {return out_.size();};
     private:
         vertex_base (vertex_id i, const vertex_data& data);
 
@@ -100,6 +103,8 @@ namespace my_graph
 
         typedef boost::function<void(vertex&)>          iter_vertices_fn;
         typedef boost::function<void(edge  &)>          iter_edges_fn;
+        typedef boost::function<void(const vertex&)>    iter_const_vertices_fn;
+        typedef boost::function<void(const edge  &)>    iter_const_edges_fn;
         typedef boost::function<void(vertex&, edge*)>   traversal_fn;
 
 
@@ -143,6 +148,8 @@ namespace my_graph
 
         void iterate_vertices   (const iter_vertices_fn& f);
         void iterate_edges      (const iter_edges_fn& f);
+        void iterate_const_vertices   (const iter_const_vertices_fn& f);
+        void iterate_const_edges      (const iter_const_edges_fn& f);
 
         v_iterator         v_begin    ()        {return vertices_.begin();};
         v_const_iterator   v_begin    () const  {return vertices_.begin();};
@@ -453,6 +460,24 @@ namespace my_graph
 
     }
 
+    template <class V, class E>
+    void graph_base<V, E>::iterate_const_vertices( const iter_const_vertices_fn& f )
+    {
+        for (typename vertex_map::const_iterator it=vertices_.begin(); it!=vertices_.end(); ++it)
+        {
+            f(it->second);
+        }
+
+    }
+    template <class V, class E>
+    void graph_base<V, E>::iterate_const_edges( const iter_const_edges_fn& f )
+    {
+        for (typename edge_map::const_iterator it=edges_.begin(); it!=edges_.end(); ++it)
+        {
+            f(it->second);
+        }
+
+    }
 
 
     template <class V, class E>

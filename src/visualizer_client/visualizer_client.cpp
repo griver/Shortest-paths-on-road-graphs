@@ -185,43 +185,44 @@ void visualizer_client::on_resize(int width, int height)
 
 void visualizer_client::on_paint()
 {
+    pd_->set_bg_color(0, 0, 64);
     pd_->draw_begin();
 
-    pd_->set_color(192, 192, 192);
+    pd_->set_color(64, 64, 64);
     pd_->draw_buffers(vb, g.v_count(), ib, g.e_count());
 
     if (!lit1_.empty())
     {
-        pd_->set_color (255, 0, 0);
+        pd_->set_color (128, 0, 0);
         pd_->draw_buffers(vb, g.v_count(), ib_lit1, lit1_.size());
     }
 
     if (!lit2_.empty())
     {
-        pd_->set_color (0, 0, 255);
+        pd_->set_color (0, 0, 128);
         pd_->draw_buffers(vb, g.v_count(), ib_lit2, lit2_.size());
     }
 
     if (!path_.empty())
     {
-        pd_->set_color (0, 0, 0);
+        pd_->set_color (255, 255, 255);
         pd_->draw_buffers(vb, g.v_count(), ib_path, path_.size());
     }
 
     if (selected_)
     {
-        pd_->set_color(0, 0, 0);
+        pd_->set_color(0, 255, 0);
         draw_vertex(*selected_, 3, "");
     }
 
     if (start_)
     {
-        pd_->set_color(255, 0, 0);
+        pd_->set_color(255, 255, 0);
         draw_vertex(*start_, 2, "start");
     }
     if (end_)
     {
-        pd_->set_color(0, 0, 255);
+        pd_->set_color(255, 255, 0);
         draw_vertex(*end_, 2, "end");
     }
 
@@ -230,7 +231,7 @@ void visualizer_client::on_paint()
         stringstream ss;
         ss << "Algorithm: " << (*algorithm_it_).name;
 
-        pd_->set_color(0, 0, 0);
+        pd_->set_color(255, 255, 255);
         pd_->draw_text(coord<int>(0, 0), ss.str());
     }
 
@@ -244,7 +245,7 @@ void visualizer_client::test_hover( coord<int> c )
         coord<int> d = pscope_->world2screen(it->second.get_data().c);
         if (std::max (abs (d.x - c.x), abs (d.y - c.y)) <= 3)
         {
-            hover_.reset (it->second.get_id());
+            hover_.reset (it->first);
             return;
         }
 

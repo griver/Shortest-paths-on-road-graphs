@@ -32,3 +32,5 @@ inline my_graph::edge_weight get_vis_weight(const my_graph::edge_base<vis_vertex
 }
 
 typedef my_graph::graph_base<vis_vertex_data, vis_edge_data> vis_graph;
+typedef my_graph::vertex_base<vis_vertex_data, vis_edge_data> vis_vertex;
+typedef my_graph::edge_base<vis_vertex_data, vis_edge_data> vis_edge;
