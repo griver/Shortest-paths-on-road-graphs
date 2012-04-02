@@ -12,9 +12,12 @@ void run_vis_dijkstra2 (const vis_graph &g, my_graph::vertex_id start, my_graph:
 
 int main(int argc, char* argv[])
 {
+    if (argc < 2)
+        return 0;
+
     draw_scope *pscope = NULL;
     scoped_ptr<visualizer> pvis (create_visualizer(&pscope));
-    visualizer_client cl ("USA-road-d.NY", pvis.get(), pscope);
+    visualizer_client cl (argv[1], pvis.get(), pscope);
     
     cl.register_algorithm("Yet Another Dijkstra", run_vis_dijkstra2);
 

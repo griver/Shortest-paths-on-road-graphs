@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "reach_preprocessor.h"
 
-namespace reaches 
+namespace my_reaches 
 {
 
     class reach_preprocessor
@@ -11,7 +11,7 @@ namespace reaches
         typedef vis_vertex vertex;
         typedef vis_edge edge;
     public:
-        reach_preprocessor (const graph &g);
+        reach_preprocessor (const graph &g, reach_map *pdst);
         void process_vertex(vertex_id id);
     private:
         void init_reach_map();
@@ -31,8 +31,9 @@ namespace reaches
     };
 
 
-    reach_preprocessor::reach_preprocessor(const graph &g)
+    reach_preprocessor::reach_preprocessor(const graph &g, reach_map *pdst)
         : pg_(&g)
+        , preaches_(pdst)
     {
         init_reach_map();
         init_children_map();
@@ -86,16 +87,17 @@ namespace reaches
     edge_weight reach_preprocessor::update_reach_map(vertex_id root)
     {
         const children_list &lst = unordered_safe_find_const(children_, root);
+        const path_vertex &pv = unordered_safe_find_const(tree_, root);
 
         edge_weight max_height = 0;
         for (children_list::const_iterator it = lst.begin(); it != lst.end(); ++it)
         {
-            edge_weight height = update_reach_map(*it);
+            const path_vertex &child = unordered_safe_find_const(tree_, *it);
+            edge_weight height = update_reach_map(*it) + (child.d - pv.d);
             if (height > max_height)
                 max_height = height;
         }
 
-        const path_vertex &pv = unordered_safe_find_const(tree_, root);
 
         edge_weight value = std::min(pv.d, max_height);
 
@@ -106,10 +108,14 @@ namespace reaches
         return max_height;
     }
 
-    void calculate_reaches(const vis_graph& g, reaches::reach_map *pdst)
+    void calculate_reaches(const vis_graph& g, my_reaches::reach_map *pdst)
     {
-        reach_preprocessor prep (g);
-        for (vis_graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it)
+        reach_preprocessor prep (g, pdst);
+        int counter = 0;
+        for (vis_graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it, ++counter)
+        {
+            cout << counter << ". Calculating reaches for " << it->first << endl;
             prep.process_vertex(it->first);
+        }
     }
 }

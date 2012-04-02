@@ -189,12 +189,12 @@ namespace my_graph
         double relation = static_cast<double> (len) / dist;
         if (relation > max_relation)
         {
-            std::cout << "Max rel: " << relation << "\n";
+            //std::cout << "Max rel: " << relation << "\n";
             max_relation = relation;
         }
         if (relation < min_relation)
         {
-            std::cout << "Min rel: " << relation << "\n";
+            //std::cout << "Min rel: " << relation << "\n";
             min_relation = relation;
         }
     }
