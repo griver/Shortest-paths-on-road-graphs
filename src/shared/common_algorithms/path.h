@@ -24,7 +24,7 @@ namespace my_graph
         inline path_vertex (vertex_id id, edge_weight d, edge_id inc) : id(id), d(d), inc(inc) {}
         inline path_vertex (vertex_id id, edge_weight d, edge_id inc, vertex_id parent) : id(id), d(d), inc(inc), parent(parent) {}
         
-        vertex_id id;
+        //vertex_id id;
         edge_weight d;
         boost::optional<edge_id> inc;       // Will probably be removed (KNK)
         boost::optional<vertex_id> parent;  // Redundant unless inc is removed (KNK)

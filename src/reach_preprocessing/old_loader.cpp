@@ -221,7 +221,7 @@ namespace my_graph
         ++reaches_read_;
 
         // FIXME: Ugly hack! id in file != id in graph
-        pg_->get_vertex (id).get_data().reach = reach * 1.2;
+        pg_->get_vertex (id).get_data().reach = reach;
     }
 
     void load_graph ( const std::string& str, vis_graph& g )

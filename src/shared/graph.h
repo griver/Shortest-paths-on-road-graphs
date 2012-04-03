@@ -410,23 +410,15 @@ namespace my_graph
     template <class V, class E>
     void graph_base<V, E>::delete_vertex(vertex_id i)
     {
-        struct edge_deleter
-        {
-            edge_deleter (graph_base *pg) : pg_(pg) {};
-            void operator () (edge& e) 
-            {
-                pg_->delete_edge(e.get_id());
-            }
-
-            graph_base *pg_;
-        };
-        edge_deleter deleter(this);
-
         vertex& v = get_vertex(i);
-        v.iterate_incoming(deleter);
-        v.iterate_outgoing(deleter);
+        
+        for (vertex::ve_iterator it = v.in_begin(); it != v.in_end(); ++it)
+            (*it)->v1_->out_.remove(*it);
+        v.in_.clear();
 
-        //std::cout << "Removing vertex: " << v.data_ << "\n";
+        for (vertex::ve_iterator it = v.out_begin(); it != v.out_end(); ++it)
+            (*it)->v2_->in_.remove(*it);
+        v.out_.clear();
 
         vertices_.erase(i);
     }

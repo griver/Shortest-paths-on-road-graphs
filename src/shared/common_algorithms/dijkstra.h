@@ -33,7 +33,7 @@ namespace my_graph
         void update_indices ();
 
         const graph* pg_;
-        weight_fn wfn_;
+        const weight_fn wfn_;
         relax_callback_fn relax_callback_;
 
         my_heap<heap_vertex> q_;
