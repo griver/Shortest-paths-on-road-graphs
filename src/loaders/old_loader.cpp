@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "vis_graph.h"
+#include "../shared/vis_graph.h"
 #include "old_loader.h"
 
 

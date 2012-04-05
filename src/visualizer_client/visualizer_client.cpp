@@ -2,32 +2,76 @@
 #include "../shared/client.h"
 #include "../shared/visualizer.h"
 #include "visualizer_client.h"
-#include "old_loader.h"
-
 #include "../shared/common_algorithms/dijkstra.h"
+
+namespace my_graph
+{
+    template <>
+    inline edge_weight dijkstra_class<vis_vertex_data, vis_edge_data>::get_weight(const edge &e)
+    {
+        static bool noticed = false;
+        if (!noticed)
+        {
+            cout << "Using template weight!" << endl;
+            noticed = true;
+        }
+        return e.get_data().len_;
+    }
+}
 
 void run_vis_dijkstra (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
 {
+    /*my_graph::dijkstra_class<vis_vertex_data, vis_edge_data> d (g, NULL, *pout1);
+    d.init (start);
+    while (pout1->count(end) == 0 && !d.done())
+        d.iterate();
+
+    if (pout1->count(end) == 0)
+        return;
+
+    my_graph::path_vertex pv = pout1->find(end)->second;
+    while (pv.parent.is_initialized())
+    {
+        (*ppath)[pv.id] = pv;
+        pv = pout1->find(*pv.parent)->second;
+    }*/
+
     run_dijkstra(get_vis_weight, g, start, end, pout1, pout2, ppath);
 }
 
-visualizer_client::visualizer_client(const std::string &filename, visualizer *pvis, draw_scope *pscope)
+void load_osm(const string &path, vis_graph *dst, coord<double> &ref_mins, coord<double> &ref_maxs);
+    
+coord<double> g_mins, g_maxs;
+
+visualizer_client::visualizer_client(const graph_loader& loader, visualizer *pvis, draw_scope *pscope)
 :   dragging_(false)
 ,   last_coord_(0,0)
 ,   pd_(pvis)
 ,   pscope_(pscope)
 
 {
-    coord<long> mins, maxs;
+    /*coord<long> mins, maxs;
 
     my_graph::load_graph (filename + ".co", g);
     mins = my_graph::g_loader_mins;
     maxs = my_graph::g_loader_maxs;
     my_graph::load_graph (filename + ".gr", g);
-    //my_graph::load_graph (filename + ".re", g);
+    my_graph::load_graph (filename + ".re", g);
 
     std::cout << "Mins: " << mins << "\n";
-    std::cout << "Maxs: " << maxs << "\n";
+    std::cout << "Maxs: " << maxs << "\n";*/
+
+
+    loader(g, mins, maxs);
+    //load_osm (filename, &g, mins, maxs);
+    cout << "Mins: " << mins << endl;
+    cout << "Maxs: " << maxs << endl;
+
+    ::g_mins = mins;
+    ::g_maxs = maxs;
+
+    float scale = std::max(maxs.x - mins.x, maxs.y - mins.y);
+    pscope_->reset_scope(mins, 1000.0f / scale);
 
     vb = pd_->create_vb(g.v_count());
     ib = pd_->create_ib(g.e_count());
@@ -101,7 +145,7 @@ void visualizer_client::on_mouse_move(int x, int y)
     coord<int> screen (x, y);
     if (dragging_)
     {
-        pscope_->drag (screen, last_coord_);
+        pscope_->drag (screen - last_coord_);
         on_paint();
     }
     last_coord_ = screen;
@@ -119,11 +163,11 @@ void visualizer_client::on_mouse_down (int x, int y, int button)
             const vis_vertex_data &data = g.get_vertex(*selected_).get_data();
             std::cout << "Origin: " << data.orig << ", reach: " << data.reach << "\n";
         }*/
+        dragging_ = true;
+        last_coord_ = screen;
     }
     else if (button == 1)
     {
-        dragging_ = true;
-        last_coord_ = screen;
     }
     on_paint();
 }
@@ -168,6 +212,20 @@ void visualizer_client::on_key_down(int key)
         if (!algorithms_.empty() && start_.is_initialized() && end_.is_initialized())
             run_algorithm(*algorithm_it_);
         break;
+    case 'I':
+        if (selected_.is_initialized())
+        {
+            cout << "Vertex id " << (*selected_);
+            std::streamsize prec = cout.precision();
+            cout.precision(10);
+            cout << " at " << g.get_vertex(*selected_).get_data().c << endl;
+            cout.precision(prec);
+        }
+        break;
+    case 'M':
+        if (selected_.is_initialized())
+            mark_vertex (*selected_);
+        break;
     }
     on_paint();
 }
@@ -211,8 +269,15 @@ void visualizer_client::on_paint()
 
     if (selected_)
     {
+        stringstream ss;
+        my_graph::path_map::const_iterator it = lit1_.find(*selected_);
+        if (it != lit1_.end())
+        {
+            ss << "Dist: " << it->second.d;
+        }
+
         pd_->set_color(0, 255, 0);
-        draw_vertex(*selected_, 3, "");
+        draw_vertex(*selected_, 3, ss.str());
     }
 
     if (start_)
@@ -322,4 +387,19 @@ void visualizer_client::clear_lit()
     lit1_.clear();
     lit2_.clear();
     path_.clear();
+}
+
+void visualizer_client::mark_vertex(my_graph::vertex_id id)
+{
+    clear_lit();
+    const vis_vertex &v = g.get_vertex(id);
+    for (vis_vertex::ve_const_iterator it = v.out_begin(); it != v.out_end(); ++it)
+    {
+        const vis_edge &e = *(*it);
+        my_graph::vertex_id id1 = e.get_v2().get_id();
+        my_graph::path_vertex pv(id1, get_vis_weight(e), e.get_id(), id);
+        lit1_.insert(my_graph::path_map::value_type(id1, pv));
+    }
+    cout << lit1_.size() << " verts marked" << endl;
+    update_lit();
 }

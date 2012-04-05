@@ -144,6 +144,9 @@ namespace my_graph
 
         void clear ();
 
+        inline bool vertex_exists (vertex_id id) const;
+        inline bool edge_exists (edge_id id) const;
+
     public:
 
         void iterate_vertices   (const iter_vertices_fn& f);
@@ -493,6 +496,17 @@ namespace my_graph
     }
 
 
+    template <class V, class E>
+    bool graph_base<V, E>::vertex_exists (vertex_id id) const
+    {
+        return vertices_.find(id) != vertices_.end();
+    }
+    template <class V, class E>
+    bool graph_base<V, E>::edge_exists (edge_id id) const
+    {
+        return edges_.find(id) != edges_.end();
+
+    }
 
 /*
 

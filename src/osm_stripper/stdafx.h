@@ -5,9 +5,12 @@
 
 #pragma once
 
-#include <Windows.h>
-#include "../shared/common.h"
-#include <boost/algorithm/string.hpp>
-#include "../rapidxml/rapidxml.hpp"
+#include <cstdlib>
+#include <cstring>
 
-#include "../shared/graph.h"
+#include <iostream>
+#include <fstream>
+
+#include <boost/scoped_array.hpp>
+
+#include "../rapidxml/rapidxml.hpp"

@@ -4,15 +4,18 @@
 #include "../shared/coord.h"
 #include "../shared/common_algorithms/path.h"
 
+typedef coord<float> vis_coord;
+
 struct vis_vertex_data
 {
+
     vis_vertex_data () : reach(std::numeric_limits<my_graph::edge_weight>::max()) {};
-    explicit vis_vertex_data (const coord<float>& nc) : c(nc), reach(std::numeric_limits<my_graph::edge_weight>::max()) {};
-    vis_vertex_data (float x, float y) : c(x,y), reach(std::numeric_limits<my_graph::edge_weight>::max()) {};
+    explicit vis_vertex_data (const vis_coord& nc) : c(nc), reach(std::numeric_limits<my_graph::edge_weight>::max()) {};
+    vis_vertex_data (vis_coord::value_type x, vis_coord::value_type y) : c(x,y), reach(std::numeric_limits<my_graph::edge_weight>::max()) {};
     int buffer_index_;
 
-    coord<float> c;
-    coord<long> orig;
+    vis_coord c;
+    //coord<long> orig;
     my_graph::edge_weight reach;
     //float x_, y_;
 };

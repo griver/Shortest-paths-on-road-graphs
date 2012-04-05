@@ -3,6 +3,8 @@
 template <typename T>
 struct coord : boost::addable<coord<T> >, boost::subtractable<coord<T> >, boost::multipliable2<coord<T>, T>
 {
+    typedef T value_type;
+
     coord () : x(0), y(0) {}
     coord (const T& X, const T& Y) : x(X), y(Y) {}
 

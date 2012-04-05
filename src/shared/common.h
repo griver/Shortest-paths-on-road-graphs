@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+
 #include <list>
 using std::list;
 
@@ -26,6 +28,8 @@ using std::string;
 
 #include <boost/scoped_ptr.hpp>
 using boost::scoped_ptr;
+#include <boost/scoped_array.hpp>
+using boost::scoped_array;
 
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;

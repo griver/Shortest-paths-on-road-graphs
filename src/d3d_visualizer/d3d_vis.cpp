@@ -13,8 +13,9 @@ d3d_vis::d3d_vis (int width, int height)
     : pd3d_ (d3d_singleton::get_inst())
     , color_ (D3DCOLOR_XRGB(0,0,0))
     , bg_color_ (D3DCOLOR_XRGB(255,255,255))
-    , ofs_ (0.0f, 0.0f)
+    , ofs_ (0, 0, 0)
     , scale_ (1.0f)
+    , rot_ (-3.14159f * 0.5f)
 
     , pdevice_      (NULL)
     , pfont_        (NULL)
@@ -31,6 +32,7 @@ d3d_vis::d3d_vis (int width, int height)
     check_succeded (D3DXCreateFont( pdevice_, 16, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &pfont_ ));
     assert (pfont_ != NULL);
 
+    update_projection();
     update_matrices();
 
     set_mini_resources();
@@ -211,12 +213,12 @@ void d3d_vis::draw_line( coord<int> ui, coord<int> vi )
 
 void d3d_vis::in_world()
 {
-    D3DXMATRIX world, sc, ofs;
+    /*D3DXMATRIX world, sc, ofs;
 
     D3DXMatrixScaling       (&sc, scale_, scale_, scale_);
     D3DXMatrixTranslation   (&ofs, ofs_.x, ofs_.y, 0);
-    world = sc*ofs;
-    check_succeded (pdevice_->SetTransform (D3DTS_WORLD, &world));
+    world = sc*ofs;*/
+    check_succeded (pdevice_->SetTransform (D3DTS_WORLD, &mw2s));
 }
 
 
@@ -239,24 +241,51 @@ void d3d_vis::draw_buffers( vb_id verts, size_t n_verts, ib_id inds, size_t n_in
     in_screen();
 }
 
+void d3d_vis::update_matrices()
+{
+    D3DXMATRIX sc, ofs, rot;
+
+    D3DXMatrixScaling       (&sc, scale_, scale_, scale_);
+    D3DXMatrixTranslation   (&ofs, ofs_.x, ofs_.y, ofs_.z);
+    D3DXMatrixRotationZ     (&rot, rot_);
+    mw2s = sc*ofs*rot;
+    
+    D3DXMatrixRotationZ     (&rot, -rot_);
+    D3DXMatrixTranslation   (&ofs, -ofs_.x, -ofs_.y, -ofs_.z);
+    D3DXMatrixScaling       (&sc, 1.0f/scale_, 1.0f/scale_, 1.0f/scale_);
+    ms2w = rot*ofs*sc;
+}
+
+void d3d_vis::reset_scope(coord<float> org, float scale)
+{
+    scale_ = scale;
+    ofs_ = D3DXVECTOR3(org.x, org.y, 0) * (-scale);
+    update_matrices();
+}
 
 coord<int> d3d_vis::world2screen( coord<float> world ) const
 {
-    world *= scale_;
-    world += ofs_;
-    coord<int> screen (static_cast<int>(world.x), static_cast<int>(world.y));
+    D3DXVECTOR3 vec_world (world.x, world.y, 0), vec_screen;
+    D3DXVec3TransformCoord(&vec_screen, &vec_world, &mw2s);
+    //vec_world = mw2s * vec_world;
+    /*world *= scale_;
+    world += ofs_;*/
+    coord<int> screen (static_cast<int>(vec_screen.x), static_cast<int>(vec_screen.y));
     return screen;
 }
 
 coord<float> d3d_vis::screen2world( coord<int> screen ) const
 {
-    coord<float> world (static_cast<float>(screen.x), static_cast<float>(screen.y));
+    D3DXVECTOR3 vec_world, vec_screen (screen.x, screen.y, 0);
+    D3DXVec3TransformCoord(&vec_world, &vec_screen, &ms2w);
+    /*coord<float> world (static_cast<float>(screen.x), static_cast<float>(screen.y));
     world -= ofs_;
-    world *= 1.0f/scale_;
+    world *= 1.0f/scale_;*/
+    coord<int> world (static_cast<int>(vec_world.x), static_cast<int>(vec_world.y));
     return world;
 }
 
-void d3d_vis::drag( coord<int> screen1, coord<int> screen2 )
+void d3d_vis::drag(coord<int> d)
 {
 /*
     coord<float> world_ofs (static_cast<float>(screen1.x-screen2.x), static_cast<float>(screen1.y-screen2.y));
@@ -264,15 +293,33 @@ void d3d_vis::drag( coord<int> screen1, coord<int> screen2 )
     ofs_.x += world_ofs.x;
     ofs_.y += world_ofs.y;
 */
-    ofs_ += (screen1-screen2);
+    D3DXVECTOR3 src(d.x, d.y, 0), dst;
+    D3DXMATRIX m;
+    D3DXMatrixRotationZ(&m, -rot_);
+    D3DXVec3TransformCoord(&dst, &src, &m);
+
+    ofs_ += dst;
+    update_matrices();
 }
 
-void d3d_vis::zoom( float z, coord<int> s)
+void d3d_vis::zoom(float z, coord<int> s)
 {
-    coord<float> sf = s;
-    ofs_ = (1.0f-z)*sf + z*ofs_;
+    D3DXVECTOR3 src (s.x, s.y, 0), dst;
+    D3DXMATRIX m;
+    D3DXMatrixRotationZ(&m, -rot_);
+    D3DXVec3TransformCoord(&dst, &src, &m);
+    ofs_ = (1.0f-z) * dst + z * ofs_;
     scale_*=z;
+    
+    update_matrices();
 }
+
+/*
+
+void d3d_vis::set_scale( float scale )
+{
+    scale_ = scale;
+}*/
 
 b_vertex* d3d_vis::lock_vb( vb_id pvb, size_t start, size_t size, unsigned int flags )
 {
@@ -329,10 +376,10 @@ void d3d_vis::resize(int width, int height)
     check_succeded (pdevice_->SetStreamSource(1, psinglecolor_, 0, 0));
     
     unset_color();
-    update_matrices();
+    update_projection();
 }
 
-void d3d_vis::update_matrices()
+void d3d_vis::update_projection()
 {
     RECT myrect;
     GetClientRect (hwnd_, &myrect);

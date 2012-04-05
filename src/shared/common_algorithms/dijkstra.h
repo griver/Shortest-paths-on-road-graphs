@@ -5,12 +5,11 @@
 
 namespace my_graph
 {
-
-
     template <typename V, typename E>
     class dijkstra_class
     {
         typedef graph_base<V,E> graph;
+        typedef edge_base<V,E> edge;
 
     public:
         typedef boost::function<edge_weight(const edge_base<V,E>&)> weight_fn;
@@ -22,6 +21,8 @@ namespace my_graph
         bool done () const;
         void init (vertex_id first, bool reverse=false, const relax_callback_fn& relax_callback=NULL);
         vertex_id iterate ();
+        
+        inline edge_weight get_weight(const edge &e);
 
     private:
     
@@ -42,7 +43,10 @@ namespace my_graph
         bool rev_;
         path_map *pout_;
 
+    public:
+        size_t relaxations;
     };
+
 
 
 
@@ -131,8 +135,8 @@ namespace my_graph
             if (pout_->count (v2_id) > 0)
                 continue;
 
-            path_vertex pv2 (v2_id, pv.d + wfn_(e), e.get_id(), v.get_id());
-            heap_vertex hv2 (v2_id, pv.d + wfn_(e));
+            path_vertex pv2 (v2_id, pv.d + get_weight(e), e.get_id(), v.get_id());
+            heap_vertex hv2 (v2_id, pv.d + get_weight(e));
 
             if (v_indices_.count (v2_id) != 0)
             {
@@ -142,6 +146,7 @@ namespace my_graph
                 size_t index = v_indices_[v2_id];
                 if (hv2 < q_.get(index))
                 {
+                    ++relaxations;
                     q_.decrease_key(index, hv2);
                     tree_[v2_id] = pv2;
                 }
@@ -168,8 +173,14 @@ namespace my_graph
     void dijkstra_class<V,E>::update_index( const heap_vertex& e, size_t i )
     {
         v_indices_[e.id] = i;
-
     }
+
+    template <typename V, typename E>
+    inline edge_weight dijkstra_class<V,E>::get_weight(const edge &e)
+    {
+        return wfn_(e);
+    }
+
 
     template <typename V, typename E> 
     edge_weight stub_get_weight (const edge_base<V, E> &e)
@@ -177,15 +188,17 @@ namespace my_graph
         return e.len;
     }
 
-
     template <typename V, typename E>
     void run_dijkstra (const typename dijkstra_class<V, E>::weight_fn& wfn, const graph_base<V, E> &g, vertex_id start, vertex_id end, path_map *pout1, path_map *pout2, path_map *ppath)
     {
         dijkstra_class<V, E> d (g, wfn, *pout1);
         d.init (start);
+        d.relaxations = 0;
         while (pout1->count(end) == 0 && !d.done())
             d.iterate();
 
+        cout << "Relaxations: " << d.relaxations << endl;
+        
         if (pout1->count(end) == 0)
             return;
 

@@ -75,7 +75,7 @@ HWND create_window_from_console (int width, int height, WNDPROC WndProc)
     // Here's how you generally get the HINSTANCE
     // of the console, based off of the HWND of
     // the console.
-    HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hwndConsole, GWL_HINSTANCE);
+    HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(hwndConsole, GWLP_HINSTANCE);
 
     ////////////////////
     // Now I'm going to create an ACTUAL WINDOW.

@@ -42,10 +42,13 @@ public:
 
     void resize (int width, int height);
 
+    void reset_scope(coord<float> org, float scale);
     coord<int>          world2screen (coord<float>  )   const;
     coord<float>        screen2world (coord<int>    )   const;
-    void drag (coord<int>, coord<int>);
+    void drag (coord<int>);
     void zoom (float, coord<int>);
+    void set_scale (float scale);
+    void update_matrices ();
 
     void set_client (client* pcl);
 
@@ -57,7 +60,7 @@ private:
     void in_world ();
     void in_screen ();
 
-    void update_matrices ();
+    void update_projection ();
 
     void static safe_release (IUnknown* p);
     void static check_succeded (HRESULT hr);
@@ -79,9 +82,11 @@ private:
     D3DCOLOR color_;
     D3DCOLOR bg_color_;
     
-    coord<float> ofs_;
+    D3DXVECTOR3 ofs_;
     float scale_;
+    float rot_;
 
     std::vector<IDirect3DVertexBuffer9*> vbs_;
     std::vector<IDirect3DIndexBuffer9*> ibs_;
+    D3DXMATRIX mw2s, ms2w;
 };

@@ -3,14 +3,15 @@
 #include "../shared/visualizer.h"
 #include "../shared/draw_scope.h"
 #include "../shared/client.h"
-#include "vis_graph.h"
+#include "../shared/vis_graph.h"
 #include "../shared/common_algorithms/path.h"
+#include "../shared/loader.h"
 
 
 class visualizer_client : public client
 {
 public:
-    visualizer_client (const std::string &filename, visualizer *pvis, draw_scope *pscope);
+    visualizer_client (const graph_loader& loader, visualizer *pvis, draw_scope *pscope);
     ~visualizer_client();
 
     void on_mouse_move  (int x, int y);
@@ -44,6 +45,8 @@ private:
     };
 
     void run_algorithm (const path_algorithm &algorithm);
+
+    void mark_vertex (my_graph::vertex_id id);
 
 
     /*void update_border_set (my_graph::edge_id, bool rev);
@@ -84,6 +87,8 @@ private:
 
     my_graph::path_map lit1_, lit2_;
     my_graph::path_map path_;
+
+    vis_coord mins, maxs;
     //my_graph::vertex_id path_last_;
 
     /*typedef unordered_set<my_graph::edge_id> edge_set;

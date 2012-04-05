@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../visualizer_client/vis_graph.h"
+#include "../shared/vis_graph.h"
 
 namespace my_reaches
 {
