@@ -1,29 +1,41 @@
 
 #include "stdafx.h"
-#include "../shared/common_algorithms/dijkstra.h"
-#include "../visualizer_client/visualizer_client.h"
+#include "../shared/new_vis_graph.h"
 #include "../shared/loader.h"
+#include "../visualizer_client/visualizer_client.h"
 
 visualizer *create_visualizer(draw_scope **ppscope);
 
 void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs);
 
+using my_graph::vertex_id;
+using my_graph::edge_id;
+using my_graph::path_map;
+
+void run_vis_dijkstra(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_path);
+void run_vis_astar(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_path);
+
 void run_vis_dijkstra2 (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
 {
-    run_dijkstra(get_vis_weight, g, start, end, pout1, pout2, ppath);
+    run_vis_dijkstra(g, start, end, *pout1, *ppath);
+}
+void run_vis_astar2 (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
+{
+    run_vis_astar(g, start, end, *pout1, *ppath);
 }
 
 void dummy_loader (vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs)
 {
-    ref_graph.add_vertex(0, vis_vertex_data(0, 0));
-    ref_graph.add_vertex(1, vis_vertex_data(100, 0));
-    ref_graph.add_vertex(2, vis_vertex_data(100, 100));
-    ref_graph.add_vertex(3, vis_vertex_data(0, 100));
+    
+    vertex_id v0 = ref_graph.add_vertex(vis_vertex_data(vis_coord(0, 0)));
+    vertex_id v1 = ref_graph.add_vertex(vis_vertex_data(vis_coord(100, 0)));
+    vertex_id v2 = ref_graph.add_vertex(vis_vertex_data(vis_coord(100, 100)));
+    vertex_id v3 = ref_graph.add_vertex(vis_vertex_data(vis_coord(0, 100)));
 
-    ref_graph.add_edge(0, 1, vis_edge_data(100));
-    ref_graph.add_edge(1, 2, vis_edge_data(100));
-    ref_graph.add_edge(2, 3, vis_edge_data(100));
-    ref_graph.add_edge(3, 0, vis_edge_data(100));
+    ref_graph.add_edge(v0, v1, vis_edge_data(100));
+    ref_graph.add_edge(v1, v2, vis_edge_data(100));
+    ref_graph.add_edge(v2, v3, vis_edge_data(100));
+    ref_graph.add_edge(v3, v0, vis_edge_data(100));
 
     ref_mins = vis_coord(-100, -100);
     ref_maxs = vis_coord(200, 200);
@@ -31,6 +43,8 @@ void dummy_loader (vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_max
 
 int main(int argc, char* argv[])
 {
+    cout << sizeof(vis_vertex) << ", " << sizeof(vis_edge) << endl;
+    
     graph_loader loader;
     if (argc < 2)
         loader = dummy_loader;
@@ -46,7 +60,8 @@ int main(int argc, char* argv[])
     
     visualizer_client cl (loader, pvis.get(), pscope);
     
-    cl.register_algorithm("Yet Another Dijkstra", run_vis_dijkstra2);
+    cl.register_algorithm("Dijkstra", run_vis_dijkstra2);
+    cl.register_algorithm("A*", run_vis_astar2);
 
     MSG msg;
     ZeroMemory( &msg, sizeof( msg ) );

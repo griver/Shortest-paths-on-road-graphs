@@ -1,5 +1,7 @@
 #pragma once
 
+#if !defined (USE_NEW_VISGRAPH)
+
 namespace my_graph
 {
     typedef size_t vertex_id;
@@ -170,7 +172,7 @@ namespace my_graph
         edge_map edges_;
         //vertex_id free_vertex_;
         edge_id free_edge_;
-
+    
     };
 
 
@@ -574,3 +576,4 @@ namespace my_graph
     }*/
 
 }
+#endif

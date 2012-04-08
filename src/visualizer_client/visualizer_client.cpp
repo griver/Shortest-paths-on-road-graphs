@@ -2,42 +2,9 @@
 #include "../shared/client.h"
 #include "../shared/visualizer.h"
 #include "visualizer_client.h"
-#include "../shared/common_algorithms/dijkstra.h"
+//#include "../shared/common_algorithms/dijkstra.h"
 
-namespace my_graph
-{
-    template <>
-    inline edge_weight dijkstra_class<vis_vertex_data, vis_edge_data>::get_weight(const edge &e)
-    {
-        static bool noticed = false;
-        if (!noticed)
-        {
-            cout << "Using template weight!" << endl;
-            noticed = true;
-        }
-        return e.get_data().len_;
-    }
-}
 
-void run_vis_dijkstra (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
-{
-    /*my_graph::dijkstra_class<vis_vertex_data, vis_edge_data> d (g, NULL, *pout1);
-    d.init (start);
-    while (pout1->count(end) == 0 && !d.done())
-        d.iterate();
-
-    if (pout1->count(end) == 0)
-        return;
-
-    my_graph::path_vertex pv = pout1->find(end)->second;
-    while (pv.parent.is_initialized())
-    {
-        (*ppath)[pv.id] = pv;
-        pv = pout1->find(*pv.parent)->second;
-    }*/
-
-    run_dijkstra(get_vis_weight, g, start, end, pout1, pout2, ppath);
-}
 
 void load_osm(const string &path, vis_graph *dst, coord<double> &ref_mins, coord<double> &ref_maxs);
     
@@ -71,7 +38,8 @@ visualizer_client::visualizer_client(const graph_loader& loader, visualizer *pvi
     ::g_maxs = maxs;
 
     float scale = std::max(maxs.x - mins.x, maxs.y - mins.y);
-    pscope_->reset_scope(mins, 1000.0f / scale);
+    vis_coord corner (maxs.x, mins.y);
+    pscope_->reset_scope(corner, 1000.0f / scale);
 
     vb = pd_->create_vb(g.v_count());
     ib = pd_->create_ib(g.e_count());
@@ -84,7 +52,7 @@ visualizer_client::visualizer_client(const graph_loader& loader, visualizer *pvi
 
     pd_->set_client(this);
 
-    register_algorithm("Dijkstra", run_vis_dijkstra);
+    //register_algorithm("Dijkstra", run_vis_dijkstra);
 
     algorithm_it_ = algorithms_.begin();
 }
@@ -101,43 +69,31 @@ visualizer_client::~visualizer_client()
 
 void visualizer_client::build_graph()
 {
-    size_t index;
+    size_t vertex_index;
 
     b_vertex *pv = pd_->lock_vb(vb, 0, g.v_count());
+    b_edge *pe = pd_->lock_ib(ib, 0, g.e_count());
 
-    index = 0;
-    for (vis_graph::v_iterator it = g.v_begin(); it != g.v_end(); ++it, ++index)
+    vertex_index = 0;
+    for (vis_graph::v_iterator it = g.v_begin(); it != g.v_end(); ++it, ++vertex_index)
     {
-        vis_vertex_data& data = it->second.get_data();
+        vis_vertex &v = *it;
+        vis_vertex_data& data = v.data;
 
-        pv[index].x = data.c.x;
-        pv[index].y = data.c.y;
-        pv[index].z = 0;
+        pv[vertex_index].x = data.c.x;
+        pv[vertex_index].y = data.c.y;
+        pv[vertex_index].z = 0;
 
-        int color = 0xFFFF0000;//std::min(static_cast<int>((static_cast<double>(data.reach) / reach_limiter) * 1000.0), 255);
-
-        //pv[index].color = D3DCOLOR_XRGB(color, 128-color/2, 128-color/2);
-
-        data.buffer_index_ = index;
-    }
-
-    pd_->unlock_vb (vb);
-
-    b_edge* pe = pd_->lock_ib(ib, 0, g.e_count());
-
-
-    index = 0;
-    for (vis_graph::e_iterator it = g.e_begin(); it != g.e_end(); ++it, ++index)
-    {
-        vis_edge_data& data = it->second.get_data();
-
-        pe[index].v1 = it->second.get_v1().get_data().buffer_index_;
-        pe[index].v2 = it->second.get_v2().get_data().buffer_index_;
-
-        data.buffer_index_ = index;
+        for (vis_vertex::adj_iterator e_it = v.out_begin(); e_it != v.out_end(); ++e_it)
+        {
+            size_t edge_index = (*e_it).e;
+            pe[edge_index].v1 = vertex_index;
+            pe[edge_index].v2 = (*e_it).v;
+        }
     }
 
     pd_->unlock_ib (ib);
+    pd_->unlock_vb (vb);
 }
 
 void visualizer_client::on_mouse_move(int x, int y)
@@ -305,17 +261,19 @@ void visualizer_client::on_paint()
 
 void visualizer_client::test_hover( coord<int> c )
 {
-    for (vis_graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it )
+    // FIXME: ugly hack, works only for vector!
+    my_graph::vertex_id id = 0;
+    for (vis_graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it, ++id)
     {
-        coord<int> d = pscope_->world2screen(it->second.get_data().c);
+        coord<int> d = pscope_->world2screen((*it).get_data().c);
         if (std::max (abs (d.x - c.x), abs (d.y - c.y)) <= 3)
         {
-            hover_.reset (it->first);
+            cout << "Orig. id: " << (*it).get_data().orig_id << endl;
+            hover_.reset (id);
             return;
         }
-
     }
-    hover_.reset();
+    //hover_.reset();
 }
 
 
@@ -333,6 +291,9 @@ void visualizer_client::register_algorithm(const string &name, const algo_fn &fn
 {
     path_algorithm algo = {name, fn};
     algorithms_.push_back (algo);
+    if (algorithms_.size() == 1)
+        algorithm_it_ = algorithms_.begin();
+
 }
 
 void visualizer_client::run_algorithm (const path_algorithm &algorithm)
@@ -358,12 +319,13 @@ void visualizer_client::update_path_map(const my_graph::path_map &m, ib_id ib_ds
     b_edge* pe_dst = pd_->lock_ib(ib_dst, 0, g.e_count());
 
     size_t index = 0;
-    for (my_graph::path_map::const_iterator it = m.begin(); it != m.end (); ++it, ++index)
+    for (my_graph::path_map::const_iterator it = m.begin(); it != m.end (); ++it)
     {
-        if (!it->second.inc)
-            pe_dst[index] = pe_src[0];
-        else
-            pe_dst[index] = pe_src[g.get_edge(*(it->second.inc)).get_data().buffer_index_];
+        if (!it->second.inc.is_initialized())
+            continue;
+                
+        pe_dst[index] = pe_src[*(it->second.inc)];
+        ++index;
     }
 
     pd_->unlock_ib(ib_dst);
@@ -392,12 +354,13 @@ void visualizer_client::clear_lit()
 void visualizer_client::mark_vertex(my_graph::vertex_id id)
 {
     clear_lit();
+    
     const vis_vertex &v = g.get_vertex(id);
-    for (vis_vertex::ve_const_iterator it = v.out_begin(); it != v.out_end(); ++it)
+    for (vis_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
     {
-        const vis_edge &e = *(*it);
-        my_graph::vertex_id id1 = e.get_v2().get_id();
-        my_graph::path_vertex pv(id1, get_vis_weight(e), e.get_id(), id);
+        my_graph::vertex_id id1 = (*it).v;
+        const vis_edge &e = g.get_edge((*it).e);
+        my_graph::path_vertex pv(id1, e.data.len, (*it).e, id);
         lit1_.insert(my_graph::path_map::value_type(id1, pv));
     }
     cout << lit1_.size() << " verts marked" << endl;

@@ -445,7 +445,7 @@ void d3d_vis::set_mini_resources ()
 
 visualizer *create_visualizer(draw_scope **ppscope) 
 {
-    d3d_vis *p = new d3d_vis (800, 600);
+    d3d_vis *p = new d3d_vis (1024, 768);
     *ppscope = p;
     return p;
 }

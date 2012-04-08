@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../shared/vis_graph.h"
+#include "../shared/new_vis_graph.h"
 
 using my_graph::vertex_id;
 
@@ -11,6 +11,7 @@ class osm_loader
 private:
     typedef rapidxml::xml_document<> xml_document;
     typedef rapidxml::xml_node<> xml_node;
+    typedef size_t xml_id;
 public:
     osm_loader(const string& path, vis_graph *pgraph);
     void load_verts();
@@ -21,14 +22,15 @@ public:
     const vis_coord &get_maxs() const {return maxs;}
 
 private:
-    void prepare_verts(unordered_set<vertex_id> &verts_pending);
+    void prepare_verts(unordered_set<xml_id> &verts_pending);
 
     void load_bounds();
-    void load_way(xml_node *root, unordered_set<vertex_id> &verts_pending);
-    void load_edge(xml_node *node1, xml_node *node2, unordered_set<vertex_id> &verts_pending);
+    void load_way(xml_node *root, unordered_set<xml_id> &verts_pending);
+    void load_edge(xml_node *node1, xml_node *node2, bool oneway, unordered_set<xml_id> &verts_pending);
     bool check_if_highway(xml_node *root);
+    bool check_if_oneway(xml_node *root);
 
-    vis_vertex& lazy_get_vertex(vertex_id id);
+    vis_vertex& lazy_get_vertex(xml_id id);
     void update_edge_weights();
 private:
     boost::scoped_array<char> text_;
@@ -36,8 +38,12 @@ private:
     vis_graph *pgraph_;
     
     vis_coord mins, maxs;
-    size_t vert_counter_, edge_counter_;
-    vector<int> way_stats_;
+    size_t vert_counter_;
+    vector<int> way_stats_, degrees_stats_;
+    unordered_set<string> highway_types_;
+    unordered_map<xml_id, vertex_id> loaded_verts_;
+    size_t oneways_;
+    size_t revoved_edges_;
 };
 
 osm_loader::osm_loader(const string& path, vis_graph *pgraph)
@@ -45,7 +51,8 @@ osm_loader::osm_loader(const string& path, vis_graph *pgraph)
 , mins(std::numeric_limits<vis_coord::value_type>::min(), std::numeric_limits<vis_coord::value_type>::min())
 , maxs(std::numeric_limits<vis_coord::value_type>::max(), std::numeric_limits<vis_coord::value_type>::max())
 , vert_counter_(0)
-, edge_counter_(0)
+, oneways_(0)
+, revoved_edges_(0)
 {
     ifstream src;
     src.exceptions(ifstream::failbit | ifstream::badbit);
@@ -96,21 +103,24 @@ void osm_loader::load_verts()
     {
         if (counter >= MAX_VERTS)
             break;
-        vertex_id id = atol(node->first_attribute("id")->value());
+        xml_id id = atol(node->first_attribute("id")->value());
 
         if (pgraph_->vertex_exists(id))
         {
             vis_coord coord (atof(node->first_attribute("lat")->value()),
                              atof(node->first_attribute("lon")->value()));
 
-            /*x = (x - mins.x) / (maxs.x - mins.x);
-            y = (y - mins.y) / (maxs.y - mins.y);*/
+            
+            vis_vertex &v = pgraph_->get_vertex(id);
+            vis_vertex_data &ref_data = v.get_data();
 
-            vis_vertex_data &data = pgraph_->get_vertex(id).get_data();
-
-            /*data.c.x = static_cast<float>(x * SCALE);
-            data.c.y = static_cast<float>(y * SCALE);*/
-            data.c = coord;
+            ref_data.c = coord;
+            
+            int degree = v.get_out_degree();
+            if (degree >= degrees_stats_.size())
+                degrees_stats_.resize(degree + 1, 0);
+            ++degrees_stats_[degree];
+            
 
             if (counter % 100000 == 0)
                 cout << counter << " verts loaded" << endl;
@@ -123,7 +133,7 @@ void osm_loader::load_verts()
 
 }
 
-void osm_loader::prepare_verts(unordered_set<vertex_id> &verts_pending) 
+void osm_loader::prepare_verts(unordered_set<xml_id> &verts_pending) 
 {
     cout << "Preparing verts" << endl;
     
@@ -135,7 +145,7 @@ void osm_loader::prepare_verts(unordered_set<vertex_id> &verts_pending)
     xml_node *node = root->first_node("node");
     while (node != NULL)
     {
-        vertex_id id = atol(node->first_attribute("id")->value());
+        xml_id id = atol(node->first_attribute("id")->value());
         verts_pending.insert(id);
         node = node->next_sibling("node");
     }
@@ -143,11 +153,8 @@ void osm_loader::prepare_verts(unordered_set<vertex_id> &verts_pending)
 
 void osm_loader::load_edges()
 {
-    unordered_set<vertex_id> verts_pending;
+    unordered_set<xml_id> verts_pending;
     prepare_verts(verts_pending);
-
-    pgraph_->reserve(800000, 1700000);
-    verts_pending.rehash(800000);
 
     cout << "Loading edges" << endl;
 
@@ -155,29 +162,30 @@ void osm_loader::load_edges()
     if (root == NULL)
         return;
 
-    edge_counter_ = 0;
     xml_node *node = root->first_node("way");
     while (node != NULL)
     {
         if (pgraph_->v_count() >= MAX_VERTS)
             break;
 
-        if (check_if_highway(node))
-            load_way (node, verts_pending);
+        load_way (node, verts_pending);
         node = node->next_sibling("way");
     }
 
-    cout << vert_counter_ << " verts created" << endl;
-    cout << pgraph_->v_count() << " verts created" << endl;
 }
-void osm_loader::load_way(xml_node *root, unordered_set<vertex_id> &verts_pending)
+void osm_loader::load_way(xml_node *root, unordered_set<xml_id> &verts_pending)
 {
+    if (!check_if_highway(root))
+        return;
+
+    bool oneway = check_if_oneway(root);
+    
     xml_node *current = root->first_node("nd");
     xml_node *next = current->next_sibling("nd");
-    size_t counter = 1;
+    size_t counter = 0;
     while (next != NULL)
     {
-        load_edge(current, next, verts_pending);
+        load_edge(current, next, oneway, verts_pending);
         current = next;
         next = next->next_sibling("nd");
         ++counter;
@@ -190,15 +198,20 @@ void osm_loader::load_way(xml_node *root, unordered_set<vertex_id> &verts_pendin
 }
 
 
-void osm_loader::load_edge(xml_node *node1, xml_node *node2, unordered_set<vertex_id> &verts_pending)
+void osm_loader::load_edge(xml_node *node1, xml_node *node2, bool oneway, unordered_set<xml_id> &verts_pending)
 {
+    if (oneway)
+        ++oneways_;
     static my_graph::edge_weight max_len = 0;
 
-    vertex_id vid1 = atol(node1->first_attribute("ref")->value());
-    vertex_id vid2 = atol(node2->first_attribute("ref")->value());
+    xml_id vid1 = atol(node1->first_attribute("ref")->value());
+    xml_id vid2 = atol(node2->first_attribute("ref")->value());
 
     if (verts_pending.count(vid1) == 0 || verts_pending.count(vid2) == 0)
+    {
+        ++revoved_edges_;
         return;
+    }
 
     const vis_vertex &v1 = lazy_get_vertex(vid1);
     const vis_vertex &v2 = lazy_get_vertex(vid2);
@@ -215,16 +228,17 @@ void osm_loader::load_edge(xml_node *node1, xml_node *node2, unordered_set<verte
     vis_edge_data data (0);
 
     pgraph_->add_edge(vid1, vid2, data);
-    pgraph_->add_edge(vid2, vid1, data);
+    if (!oneway)
+        pgraph_->add_edge(vid2, vid1, data);
 
-    if (edge_counter_ % 100000 == 0)
-        cout << edge_counter_ << " edges loaded" << endl;
-
-    edge_counter_+=2;
+    if (pgraph_->e_count() % 100000 == 0)
+        cout << pgraph_->e_count() << " edges loaded" << endl;
 }
 
-vis_vertex& osm_loader::lazy_get_vertex(vertex_id id)
+vis_vertex& osm_loader::lazy_get_vertex(xml_id id)
 {
+    if (loaded_verts_.count())
+    
     if (pgraph_->vertex_exists(id))
         return pgraph_->get_vertex(id);
 
@@ -240,7 +254,26 @@ bool osm_loader::check_if_highway(xml_node *root)
     while (tag != NULL)
     {
         if (strcmp(tag->first_attribute("k")->value(), "highway") == 0)
+        {
+            highway_types_.insert (tag->first_attribute("v")->value());
             return true;
+        }
+        tag = tag->next_sibling("tag");
+    }
+    return false;
+}
+
+bool osm_loader::check_if_oneway(xml_node *root)
+{
+    xml_node *tag = root->first_node("tag");
+    while (tag != NULL)
+    {
+        if (strcmp(tag->first_attribute("k")->value(), "oneway") == 0)
+        {
+            if (strcmp(tag->first_attribute("v")->value(), "yes") == 0)
+                return true;
+            return false;
+        }
         tag = tag->next_sibling("tag");
     }
     return false;
@@ -259,7 +292,10 @@ void osm_loader::update_edge_weights()
 
 void osm_loader::print_stats()
 {
-    int total = 0;
+    cout << "Verts: " << pgraph_->v_count() << endl;
+    cout << "Edges: " << pgraph_->e_count() << endl;
+    
+    /*int total = 0;
     cout << "Way stats:" << endl;
     for (size_t i = 0; i < way_stats_.size(); ++i)
     {
@@ -267,45 +303,29 @@ void osm_loader::print_stats()
             cout << " " << i << ": " << way_stats_[i] << endl;
         total += way_stats_[i];
     }
-    cout << "Total: " << total << endl;
-}
-
-
-
-/*size_t osm_loader::count_edges() const
-{
-    xml_node *root = doc_.first_node("osm");
-    if (root == NULL)
-        return 0;
-
-    size_t counter = 0;
-    xml_node *node = root->first_node("way");
-    while (node != NULL)
+    cout << "Total: " << total << endl;*/
+    /*cout << "Highway types: ";
+    for (unordered_set<string>::const_iterator it = highway_types_.begin();
+                                               it != highway_types_.end(); ++it)
     {
-        counter += count_edges_in_way(node);
-        node = node->next_sibling("way");
-    }
+        cout << " " << *it << endl;
+    }*/
 
-    return counter;
+    cout << "Vert degrees: " << endl;
+    for (size_t i = 0; i < degrees_stats_.size(); ++i)
+        cout << " " << i << ": " << degrees_stats_[i] << endl;
+
+    cout << "Oneways: " << oneways_ << endl;
+    cout << "Removed edges: " << revoved_edges_ << endl;
 }
 
-size_t osm_loader::count_edges_in_way(xml_node *root) const
-{
-    size_t counter;
-    xml_node *node = root->first_node("nd");
-    for (counter = 0; node != NULL; ++counter)
-        node = node->next_sibling("nd");
-
-    return counter;
-}
-*/
 
 void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs)
 {
     osm_loader loader (path, &ref_graph);
     loader.load_edges();
     loader.load_verts();
-    //loader.print_stats();
+    loader.print_stats();
     ref_mins = loader.get_mins();
     ref_maxs = loader.get_maxs();
 }

@@ -331,11 +331,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\astar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\loaders\osm_loader.cpp"
+				RelativePath="..\loaders\new_osm_loader.cpp"
 				>
 			</File>
 			<File
@@ -373,6 +377,10 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\vis_dijkstra.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
@@ -412,6 +420,10 @@
 			</File>
 			<File
 				RelativePath="..\shared\graph.h"
+				>
+			</File>
+			<File
+				RelativePath="..\shared\new_vis_graph.h"
 				>
 			</File>
 			<File

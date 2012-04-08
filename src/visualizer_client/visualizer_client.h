@@ -3,7 +3,7 @@
 #include "../shared/visualizer.h"
 #include "../shared/draw_scope.h"
 #include "../shared/client.h"
-#include "../shared/vis_graph.h"
+#include "../shared/new_vis_graph.h"
 #include "../shared/common_algorithms/path.h"
 #include "../shared/loader.h"
 

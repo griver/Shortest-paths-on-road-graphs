@@ -21,6 +21,10 @@ using std::vector;
 #include <string>
 using std::string;
 
+#include <queue>
+using std::priority_queue;
+using std::queue;
+
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/operators.hpp>

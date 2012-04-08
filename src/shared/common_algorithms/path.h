@@ -10,7 +10,7 @@ namespace my_graph
         inline heap_vertex (vertex_id id, edge_weight d) : id(id), d(d) {}
         inline bool operator< (const heap_vertex& b) const
         {
-            return (d < b.d);
+            return (d > b.d);
         }
 
         vertex_id id;
@@ -19,18 +19,18 @@ namespace my_graph
     
     struct path_vertex
     {
-        inline path_vertex () {}
-        inline path_vertex (vertex_id id, edge_weight d) : id(id), d(d) {}
-        inline path_vertex (vertex_id id, edge_weight d, edge_id inc) : id(id), d(d), inc(inc) {}
-        inline path_vertex (vertex_id id, edge_weight d, edge_id inc, vertex_id parent) : id(id), d(d), inc(inc), parent(parent) {}
+        inline path_vertex () : d(0) {}
+        inline path_vertex (vertex_id id, edge_weight d) : /*id(id),*/ d(d) {}
+        //inline path_vertex (vertex_id id, edge_weight d, edge_id inc) : /*id(id),*/ d(d), inc(inc) {}
+        inline path_vertex (vertex_id id, edge_weight d, edge_id inc, vertex_id parent) : /*id(id),*/ d(d), inc(inc), parent(parent) {}
         
-        vertex_id id;
+        //vertex_id id;
         edge_weight d;
         boost::optional<edge_id> inc;       // Will probably be removed (KNK)
         boost::optional<vertex_id> parent;  // Redundant unless inc is removed (KNK)
     };
 
-    typedef vertex_indexed<path_vertex>::map path_map;
+    typedef unordered_map<vertex_id, path_vertex> path_map;
     
     //template<typename V, typename E>
 
