@@ -31,6 +31,8 @@ namespace my_graph
     };
 
     typedef unordered_map<vertex_id, path_vertex> path_map;
+    typedef unordered_map<vertex_id, edge_weight> reach_map;
+
     
     //template<typename V, typename E>
 

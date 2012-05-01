@@ -44,7 +44,7 @@ osm_loader::osm_loader(const string& path, vis_graph &ref_graph)
 {
     ifstream src;
     src.exceptions(ifstream::failbit | ifstream::badbit);
-    src.open(path.c_str());
+    src.open(path.c_str(), std::ios_base::in | std::ios_base::binary);
 
     src.seekg(0, std::ios::end);
     size_t size = src.tellg();
@@ -60,7 +60,7 @@ osm_loader::osm_loader(const string& path, vis_graph &ref_graph)
     root_ = doc_.first_node("osm");
 
     pgraph_->clear();
-    pgraph_->reserve(1000000, 2000000);
+    //pgraph_->reserve(1000000, 2000000);
 }
 
 void osm_loader::load()

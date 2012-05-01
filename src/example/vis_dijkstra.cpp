@@ -9,14 +9,14 @@ typedef my_graph::path_vertex path_vertex;
 typedef my_graph::path_map path_map;
 typedef my_graph::edge_weight edge_weight;
 
-class vis_dijkstra
+class reach_dijkstra
 {
 public:
     typedef vis_graph graph;
     typedef vis_vertex vertex;
     typedef vis_edge edge;
 
-    vis_dijkstra(const graph &ref_graph, vertex_id start, path_map &ref_out);
+    reach_dijkstra(const graph &ref_graph, vertex_id start, path_map &ref_out);
     
     bool done() const;
     vertex_id iterate();
@@ -32,7 +32,7 @@ public:
     size_t max_heap_size_;
 };
 
-vis_dijkstra::vis_dijkstra(const graph &ref_graph, vertex_id start, path_map &ref_out)
+reach_dijkstra::reach_dijkstra(const graph &ref_graph, vertex_id start, path_map &ref_out)
 : pgraph_(&ref_graph)
 , pout_(&ref_out)
 , max_heap_size_(0)
@@ -41,12 +41,12 @@ vis_dijkstra::vis_dijkstra(const graph &ref_graph, vertex_id start, path_map &re
     border_[start] = path_vertex(start, 0);
 }
 
-bool vis_dijkstra::done() const
+bool reach_dijkstra::done() const
 {
     return q_.empty();
 }
 
-vertex_id vis_dijkstra::iterate()
+vertex_id reach_dijkstra::iterate()
 {
     if (q_.size() > max_heap_size_)
         max_heap_size_ = q_.size();
@@ -88,7 +88,7 @@ vertex_id vis_dijkstra::iterate()
 
 void run_vis_dijkstra(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_path)
 {
-    vis_dijkstra d(ref_graph, start, ref_out);
+    reach_dijkstra d(ref_graph, start, ref_out);
     while (!d.done())
     {
         if (d.iterate() == end)
@@ -120,3 +120,37 @@ void run_vis_dijkstra(const vis_graph &ref_graph, vertex_id start, vertex_id end
 
 }
 
+
+void run_vis_bidijkstra(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out1, path_map &ref_out2, path_map &ref_path)
+{
+    reach_dijkstra d[] = 
+    {
+        reach_dijkstra (ref_graph, start, ref_out1),
+        reach_dijkstra (ref_graph, end, ref_out2)
+    };
+    vertex_id id[2];
+
+#pragma omp parallel num_threads(2)
+    {
+        bool flag = false;
+        int counter = 1;
+
+        int n = omp_get_thread_num();
+        while (!d[n].done() && !flag)
+        {
+            id[n] = d[n].iterate();
+
+            if (counter % 50 == 0)
+            {
+#pragma omp critical
+                    if (ref_out1.count(id[1]) != 0 || ref_out2.count(id[0]) != 0)
+                        flag = true;
+            }
+
+            ++counter;
+        }
+    }
+    
+  
+
+}

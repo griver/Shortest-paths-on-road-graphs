@@ -11,9 +11,11 @@
 class visualizer_client : public client
 {
 public:
-    visualizer_client (const graph_loader& loader, visualizer *pvis, draw_scope *pscope);
+    visualizer_client (const vis_graph &g, visualizer *pvis, draw_scope *pscope, const vis_coord &mins, const vis_coord &maxs);
     ~visualizer_client();
 
+    void load_graph (const vis_graph &g);
+    
     void on_mouse_move  (int x, int y);
     void on_mouse_down  (int x, int y, int button);
     void on_mouse_up    (int x, int y, int button);
@@ -72,7 +74,7 @@ private:
     draw_scope *pscope_;
     vb_id vb;
     ib_id ib, ib_lit1, ib_lit2, ib_path;
-    vis_graph g;
+    const vis_graph *pgraph_;
 
     bool dragging_;
     coord<int> last_coord_;
@@ -88,7 +90,7 @@ private:
     my_graph::path_map lit1_, lit2_;
     my_graph::path_map path_;
 
-    vis_coord mins, maxs;
+    vis_coord mins_, maxs_;
     //my_graph::vertex_id path_last_;
 
     /*typedef unordered_set<my_graph::edge_id> edge_set;

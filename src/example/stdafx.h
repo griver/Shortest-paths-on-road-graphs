@@ -11,3 +11,4 @@
 #include "../rapidxml/rapidxml.hpp"
 
 //#include "../shared/graph.h"
+#include <omp.h>

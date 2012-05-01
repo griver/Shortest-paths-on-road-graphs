@@ -5,13 +5,8 @@
 
 #pragma once
 
+#include <Windows.h>
 #include "../shared/common.h"
-#include "../shared/graph.h"
-#include "../shared/common_algorithms/path.h"
-#include "../shared/common_algorithms/dijkstra.h"
+#include "../rapidxml/rapidxml.hpp"
 
-using my_graph::vertex_id;
-using my_graph::edge_id;
-using my_graph::path_vertex;
-using my_graph::path_map;
-using my_graph::edge_weight;
+#include <omp.h>

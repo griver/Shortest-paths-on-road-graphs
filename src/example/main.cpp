@@ -13,15 +13,25 @@ using my_graph::edge_id;
 using my_graph::path_map;
 
 void run_vis_dijkstra(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_path);
+void run_vis_bidijkstra(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out1, path_map &ref_out2, path_map &ref_path);
 void run_vis_astar(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_path);
+void run_vis_biastar(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out1, path_map &ref_out2, path_map &ref_path);
 
 void run_vis_dijkstra2 (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
 {
     run_vis_dijkstra(g, start, end, *pout1, *ppath);
 }
+void run_vis_bidijkstra2 (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
+{
+    run_vis_bidijkstra(g, start, end, *pout1, *pout2, *ppath);
+}
 void run_vis_astar2 (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
 {
     run_vis_astar(g, start, end, *pout1, *ppath);
+}
+void run_vis_biastar2 (const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath)
+{
+    run_vis_biastar(g, start, end, *pout1, *pout2, *ppath);
 }
 
 void dummy_loader (vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs)
@@ -43,8 +53,6 @@ void dummy_loader (vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_max
 
 int main(int argc, char* argv[])
 {
-    cout << sizeof(vis_vertex) << ", " << sizeof(vis_edge) << endl;
-    
     graph_loader loader;
     if (argc < 2)
         loader = dummy_loader;
@@ -57,11 +65,17 @@ int main(int argc, char* argv[])
 
     draw_scope *pscope = NULL;
     scoped_ptr<visualizer> pvis (create_visualizer(&pscope));
-    
-    visualizer_client cl (loader, pvis.get(), pscope);
+    scoped_ptr<vis_graph> pgraph(new vis_graph());
+    vis_coord mins, maxs;
+
+    loader(*pgraph, mins, maxs);
+
+    visualizer_client cl (*pgraph, pvis.get(), pscope, mins, maxs);
     
     cl.register_algorithm("Dijkstra", run_vis_dijkstra2);
+    cl.register_algorithm("Bidirectional Dijkstra", run_vis_bidijkstra2);
     cl.register_algorithm("A*", run_vis_astar2);
+    cl.register_algorithm("Bidirectional A*", run_vis_biastar2);
 
     MSG msg;
     ZeroMemory( &msg, sizeof( msg ) );
