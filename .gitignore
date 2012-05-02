@@ -1,0 +1,8 @@
+*.ncb
+*.suo
+*.sdf
+*.user
+src/ipch/*
+Debug_*/*
+Release_*/*
+data/*
