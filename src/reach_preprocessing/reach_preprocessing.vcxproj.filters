@@ -14,27 +14,30 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="shared">
-      <UniqueIdentifier>{268b568d-8ef5-4a16-981d-929e074c515a}</UniqueIdentifier>
+      <UniqueIdentifier>{c1f79039-0e01-45aa-b860-cb7c7696d97b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="astar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\loaders\new_osm_loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="reach_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vis_dijkstra.cpp">
+    <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="reach_dijkstra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="reach_updater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -50,7 +53,7 @@
     <ClInclude Include="..\shared\draw_scope.h">
       <Filter>shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\graph.h">
+    <ClInclude Include="..\shared\loader.h">
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\new_vis_graph.h">
@@ -58,9 +61,6 @@
     </ClInclude>
     <ClInclude Include="..\shared\visualizer.h">
       <Filter>shared</Filter>
-    </ClInclude>
-    <ClInclude Include="reach_dijkstra.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
