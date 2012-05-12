@@ -21,10 +21,14 @@ struct vis_vertex_data
 
 struct vis_edge_data
 {
-    explicit vis_edge_data (my_graph::edge_weight len) : len (len) {};
+    explicit vis_edge_data (my_graph::edge_weight len) : len (len) {};  
 
     my_graph::edge_weight len;
 };
 
 
 #include "new_vis_graph/graph.h"
+
+typedef my_graph::vertex_base<vis_vertex_data, vis_edge_data> vis_vertex;
+typedef my_graph::edge_base  <vis_vertex_data, vis_edge_data> vis_edge;
+typedef my_graph::graph_base <vis_vertex_data, vis_edge_data> vis_graph;
