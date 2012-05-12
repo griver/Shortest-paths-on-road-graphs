@@ -137,6 +137,20 @@ void d3d_vis::draw_begin()
 {
     check_succeded(pdevice_->Clear( 0, NULL, D3DCLEAR_TARGET, 
         bg_color_, 1.0f, 0 ));
+    
+
+    static bool shader_printed = false;
+    if (!shader_printed)
+    {
+        IDirect3DVertexShader9 *pshd = NULL;
+        pdevice_->GetVertexShader(&pshd);
+
+        stringstream ss;
+        ss << "Vertex shader: 0x" << pshd << endl;
+        cout << ss.str();
+
+        shader_printed = true;
+    }
     check_succeded (pdevice_->BeginScene());
 }
 

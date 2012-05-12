@@ -72,8 +72,13 @@ private:
 private:
     visualizer *pd_;
     draw_scope *pscope_;
+    
+    bool buffers_initialized;
     vb_id vb;
     ib_id ib, ib_lit1, ib_lit2, ib_path;
+
+    size_t vb_size, ib_size;
+
     const vis_graph *pgraph_;
 
     bool dragging_;

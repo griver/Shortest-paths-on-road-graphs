@@ -39,8 +39,8 @@ osm_loader::osm_loader(const string& path, vis_graph &ref_graph)
 : pgraph_(&ref_graph)
 , mins(std::numeric_limits<vis_coord::value_type>::max(), 
        std::numeric_limits<vis_coord::value_type>::max())
-, maxs(std::numeric_limits<vis_coord::value_type>::min(), 
-       std::numeric_limits<vis_coord::value_type>::min())
+, maxs(-std::numeric_limits<vis_coord::value_type>::max(), 
+       -std::numeric_limits<vis_coord::value_type>::max())
 {
     ifstream src;
     src.exceptions(ifstream::failbit | ifstream::badbit);

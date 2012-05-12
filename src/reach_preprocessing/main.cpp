@@ -15,7 +15,9 @@ void test_reach_updater(const vis_graph &ref_graph, vertex_id start, vertex_id e
 void test_reach_updater_new(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2);
 void test_reach_tester(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2);
 void test_candidates(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2);
-void run_reaches_update(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2);
+vis_graph *run_reaches_update(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2);
+
+visualizer_client *pclientl = NULL;
 
 void test_reach_updater2 (const vis_graph &g, 
                         vertex_id start, 
@@ -60,8 +62,18 @@ int main(int argc, char* argv[])
     loader(*pgraph, mins, maxs);
 
     visualizer_client cl (*pgraph, pvis.get(), pscope, mins, maxs);
-    cl.register_algorithm("Test", test_reach_updater2);
-    //cl.register_algorithm("Test 2", test_reach_tester2);
+    cl.register_algorithm("Test", [&pgraph, &cl](const vis_graph &g, 
+                                     vertex_id start, 
+                                     vertex_id end, 
+                                     path_map *pout1, 
+                                     path_map *pout2, 
+                                     path_map *ppath)
+    {
+        vis_graph *pnew_graph = run_reaches_update(g, start, end, *pout1, *pout2);
+        cl.load_graph(*pnew_graph);
+        pgraph.reset(pnew_graph);
+    });
+    //cl.register_algorithm("Tes t 2", test_reach_tester2);
 
     MSG msg;
     ZeroMemory( &msg, sizeof( msg ) );

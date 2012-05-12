@@ -18,6 +18,9 @@ visualizer_client::visualizer_client (const vis_graph &g, visualizer *pvis, draw
 ,   pgraph_(NULL)
 ,   mins_(mins)
 ,   maxs_(maxs)
+,   buffers_initialized(false)
+,   vb_size(0)
+,   ib_size(0)
 
 {
     
@@ -42,20 +45,13 @@ visualizer_client::visualizer_client (const vis_graph &g, visualizer *pvis, draw
     //::g_mins = mins;
     //::g_maxs = maxs;
 
-    pgraph_ = &g;
+
 
     float scale = std::max(maxs.x - mins.x, maxs.y - mins.y);
     vis_coord corner (maxs.x, mins.y);
     pscope_->reset_scope(corner, 1000.0f / scale);
 
-    vb = pd_->create_vb(pgraph_->v_count());
-    ib = pd_->create_ib(pgraph_->e_count());
-
-    ib_lit1 = pd_->create_ib(pgraph_->e_count());
-    ib_lit2 = pd_->create_ib(pgraph_->e_count());
-    ib_path = pd_->create_ib(pgraph_->e_count());
-
-    build_graph();
+    load_graph(g);
 
     pd_->set_client(this);
 
@@ -77,6 +73,38 @@ visualizer_client::~visualizer_client()
 void visualizer_client::load_graph(const vis_graph &g)
 {
     pgraph_ = &g;
+
+    if (g.v_count() > vb_size)
+    {
+        if (buffers_initialized)
+            pd_->free_vb(vb);
+
+        vb_size = pgraph_->v_count();
+        vb = pd_->create_vb(vb_size);
+    }
+
+    if (g.e_count() > ib_size)
+    {
+        if (buffers_initialized)
+        {
+            pd_->free_ib (ib);
+            pd_->free_ib (ib_lit1);
+            pd_->free_ib (ib_lit2);
+            pd_->free_ib (ib_path);
+        }
+        ib_size = pgraph_->e_count();
+        ib = pd_->create_ib(ib_size);
+        ib_lit1 = pd_->create_ib(ib_size);
+        ib_lit2 = pd_->create_ib(ib_size);
+        ib_path = pd_->create_ib(ib_size);
+    }
+
+    buffers_initialized = true;
+    lit1_.clear();
+    lit2_.clear();
+    path_.clear();
+    start_ = boost::optional<my_graph::vertex_id>();
+    end_ = boost::optional<my_graph::vertex_id>();
     build_graph();
 }
 
@@ -334,10 +362,9 @@ void visualizer_client::update_path_map(const my_graph::path_map &m, ib_id ib_ds
     size_t index = 0;
     for (my_graph::path_map::const_iterator it = m.begin(); it != m.end (); ++it)
     {
-        if (!it->second.inc.is_initialized())
-            continue;
+        my_graph::edge_id inc_id = it->second.inc.is_initialized() ? *(it->second.inc) : 0;
                 
-        pe_dst[index] = pe_src[*(it->second.inc)];
+        pe_dst[index] = pe_src[inc_id];
         ++index;
     }
 

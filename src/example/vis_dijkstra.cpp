@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include "../shared/new_vis_graph.h"
-#include "../shared/common_algorithms/path.h"
+
+
+#include "reach_dijkstra.h"
 
 typedef my_graph::vertex_id vertex_id;
 typedef my_graph::edge_id edge_id;
@@ -8,6 +9,12 @@ typedef my_graph::heap_vertex heap_vertex;
 typedef my_graph::path_vertex path_vertex;
 typedef my_graph::path_map path_map;
 typedef my_graph::edge_weight edge_weight;
+
+#if 0
+
+#include "../shared/new_vis_graph.h"
+#include "../shared/common_algorithms/path.h"
+
 
 class reach_dijkstra
 {
@@ -30,12 +37,15 @@ private:
     priority_queue<heap_vertex> q_;
 public:
     size_t max_heap_size_;
+    size_t iterations_counter;
 };
 
 reach_dijkstra::reach_dijkstra(const graph &ref_graph, vertex_id start, path_map &ref_out)
 : pgraph_(&ref_graph)
 , pout_(&ref_out)
 , max_heap_size_(0)
+, iterations_counter(0)
+
 {
     q_.push(heap_vertex(start, 0));
     border_[start] = path_vertex(start, 0);
@@ -51,8 +61,15 @@ vertex_id reach_dijkstra::iterate()
     if (q_.size() > max_heap_size_)
         max_heap_size_ = q_.size();
 
+
     while (pout_->count(q_.top().id) != 0)
+    {
+        if (iterations_counter % 100000 == 0)
+            cout << "Heap size: " << q_.size() << endl;
+        ++iterations_counter;
+
         q_.pop();
+    }
 
     heap_vertex hv = q_.top();
     q_.pop();
@@ -64,6 +81,7 @@ vertex_id reach_dijkstra::iterate()
 
     for (vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
     {
+
         const vertex_id &adj_vid = (*it).v;
         const vertex &adj_v = pgraph_->get_vertex(adj_vid);
         const edge_id &eid = (*it).e;
@@ -85,6 +103,7 @@ vertex_id reach_dijkstra::iterate()
     border_.erase(hv.id);
     return hv.id;
 }
+#endif
 
 void run_vis_dijkstra(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_path)
 {

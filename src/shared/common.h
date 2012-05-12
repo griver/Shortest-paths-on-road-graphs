@@ -63,18 +63,31 @@ using boost::shared_ptr;
 template <typename K, typename V>
 inline const V& unordered_safe_find_const(const unordered_map<K,V> &map, const K &key)
 {
-    unordered_map<K,V>::const_iterator it = map.find(key);
+    /*unordered_map<K,V>::const_iterator it = map.find(key);
     assert(it != map.end());
-    return it->second;
+    return it->second;*/
+    return map.at(key);
 }
 template <typename K, typename V>
 inline V& unordered_safe_find(unordered_map<K,V> &map, const K &key)
 {
-    unordered_map<K,V>::iterator it = map.find(key);
+    /*unordered_map<K,V>::iterator it = map.find(key);
     assert(it != map.end());
-    return it->second;
+    return it->second;*/
+    return map.at(key);
 }
 
+template <typename K, typename V>
+inline bool& unordered_exists (unordered_map<K,V> &map, const K &key)
+{
+    return (map.count(key) != 0);
+}
+
+template <typename K, typename V>
+inline bool& unordered_exists (unordered_set<K,V> &set, const K &key)
+{
+    return (set.count(key) != 0);
+}
 
 
 #undef min
