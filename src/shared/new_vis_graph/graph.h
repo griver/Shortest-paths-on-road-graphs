@@ -46,6 +46,8 @@ namespace my_graph
 
         data_type &get_data()       {return data;}
         const data_type &get_data() const {return data;}
+
+        inline size_t get_degree () const {return adj.size();};
     public:
         data_type data;
     private:
@@ -90,9 +92,9 @@ namespace my_graph
         typedef edge_base<V, E> edge;
     public:
         graph_base() {};
-    private:
+    /*private:
         graph_base(const graph_base&);
-        void operator=(const graph_base&);
+        void operator=(const graph_base&);*/
     public:
         inline       vertex &get_vertex(vertex_id id);
         inline const vertex &get_vertex(vertex_id id) const;

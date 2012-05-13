@@ -30,6 +30,9 @@
     <ClCompile Include="visualizer_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="base_visualizer_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -78,6 +81,9 @@
       <Filter>shared\new_vis_graph</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\algorithm.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\base_visualizer_client.h">
       <Filter>shared</Filter>
     </ClInclude>
   </ItemGroup>
