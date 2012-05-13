@@ -129,6 +129,11 @@ namespace my_graph
         e_const_iterator   e_begin    () const  {return edges_.begin();};
         e_iterator         e_end      ()        {return edges_.end();};
         e_const_iterator   e_end      () const  {return edges_.end();};
+
+
+        inline vertex_id get_vertex_id(const v_const_iterator &it) const {return it - v_begin();}
+        inline vertex_id get_vertex_id(const v_iterator &it) {return it - v_begin();}
+
     private:
         vertex_map vertices_;
         edge_map edges_;

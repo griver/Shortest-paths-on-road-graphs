@@ -554,10 +554,8 @@ vis_graph *run_reaches_update(const vis_graph &ref_graph, vertex_id start, verte
     size_t counter = 0;
     for (vis_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
     {
-#if defined (GRAPH_ITER_WRAPPER_CHECK)
-#error Fixme: V_ITER_WRAPPER normal iterator wrapper needed
-#endif 
-        vertex_id id = it - ref_graph.v_begin();
+        vertex_id id = ref_graph.get_vertex_id(it);
+
         reach_updater little_updater;
         little_updater.calculate_reaches(ref_graph, id, dist, little_reaches);
 
