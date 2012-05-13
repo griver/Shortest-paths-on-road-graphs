@@ -1,7 +1,7 @@
 #ifndef GRID_CELL_H
 #define GRID_CELL_H
 
-namespace TNR {
+namespace tnr {
 	struct grid_cell {
 		int x;
 		int y;
@@ -14,8 +14,8 @@ namespace TNR {
 			return true;
 		if(a.x > b.x)
 			return false;
-		if(a.x == b.x)
-			return (a.y < b.y);
+		//if(a.x == b.x)
+		return (a.y < b.y);
 	}
 
 	bool operator == (grid_cell const &a, grid_cell const &b) {

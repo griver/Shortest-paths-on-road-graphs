@@ -2,33 +2,36 @@
 #define COORDINATE_FILTER_H
 #include "queue_filter.h"
 
+
 namespace my_algorithm {
 
 	class coordinate_filter : public queue_filter {
-	public:
-		typedef boost::function<bool (coord_t const &)> check_function;
-
 	private:
-		check_function check;
+		coordinate_check check;
 		int counter;
 	public: 
-		coordinate_filter(string const &name, check_function check) : queue_filter(name), check(check), counter(0) {};
+		coordinate_filter(string const &name, coordinate_check check) : queue_filter(name), check(check), counter(0) {};
 
 		virtual bool on_pop(vertex_t const &vertex) {
 			if(check(vertex.data.c)) --counter;
 			return queue_filter::on_pop(vertex);
 		}
 
-		virtual bool on_push(vertex_t const &vertex) {
+		virtual bool on_push(vertex_t const &parent, vertex_t const &vertex) {
 			if(check(vertex.data.c)) ++counter;
-			return queue_filter::on_push(vertex);
+			return queue_filter::on_push(parent, vertex);
 		}
 	
-		void set_check_function(check_function &check) {
+		virtual bool on_decrease(vertex_t const &parent, vertex_t const &vertex) {
+			return queue_filter::on_decrease(parent, vertex);
+		}
+
+		void set_coordinate_checker(coordinate_check &check) {
 			this->check = check;
 		}
 
-		void clear() {
+		virtual void clear() {
+			queue_filter::clear();
 			counter = 0;
 		}
 

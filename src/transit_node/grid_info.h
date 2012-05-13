@@ -3,33 +3,27 @@
 
 #include "stdafx.h"
 
-#include <cmath>
-#include <map>
-#include <set>
+
 
 #include "../shared/new_vis_graph.h"
 #include "../shared/common.h"
 #include "../shared/common_algorithms/path.h"
 
-#include "grid_cell.h"
+#include "tnr_utils.h"
 
-namespace TNR { 
-	using namespace my_algorithm;
+namespace tnr { 
 	//usi
-	
 
-	struct grid_info {
-		typedef std::set<vertex_id> vertex_set;	
-		typedef coord<double> grid_coord;
+	struct grid_info {	
 	public: //fields
 		grid_coord lows;
 		grid_coord highs;
-		int x_partition;
-		int y_partition;
+		size_t x_partition;
+		size_t y_partition;
 		double x_step;
 		double y_step;
 
-		std::map<grid_cell, vertex_set > border_vertices;
+		border_map border_vertices;
 		graph_t const &graph;
 		//временно.
 
@@ -212,6 +206,16 @@ namespace TNR {
 
 		double get_y_step() const {
 			return this->y_step;
+		}
+		vertex_set const & get_cell_borders(grid_cell cell) {
+			 return border_vertices[cell];
+		}
+		border_map & get_border_map() {
+			return border_vertices;
+		}
+
+		virtual ~grid_info() {
+			border_vertices.clear();
 		}
 	};
 }

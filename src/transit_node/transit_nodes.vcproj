@@ -596,6 +596,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\request_data.h"
+				>
+			</File>
+			<File
 				RelativePath=".\run_algorithms.h"
 				>
 			</File>
@@ -615,9 +619,21 @@
 		<Filter
 			Name="transit_node"
 			>
+			<File
+				RelativePath=".\create_transit_node_graph.h"
+				>
+			</File>
+			<File
+				RelativePath=".\distance_table.h"
+				>
+			</File>
 			<Filter
 				Name="utils"
 				>
+				<File
+					RelativePath=".\greed_based_preprocessor.h"
+					>
+				</File>
 				<File
 					RelativePath=".\grid_cell.h"
 					>
@@ -627,11 +643,35 @@
 					>
 				</File>
 				<File
+					RelativePath=".\node_selector.h"
+					>
+				</File>
+				<File
 					RelativePath=".\tnr_algorithms.h"
 					>
 				</File>
 				<File
+					RelativePath=".\tnr_checkers.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tnr_loader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\tnr_utils.h"
+					>
+				</File>
+				<File
+					RelativePath=".\transit_node_filter.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="exceptions"
+				>
+				<File
+					RelativePath=".\mapping_exception.h"
 					>
 				</File>
 			</Filter>

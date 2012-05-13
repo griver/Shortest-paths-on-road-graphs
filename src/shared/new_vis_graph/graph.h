@@ -37,7 +37,7 @@ namespace my_graph
         typedef V data_type;
         typedef vector<vert_edge>::const_iterator adj_iterator;
 
-        vertex_base (const data_type &data) : data(data) {}
+        vertex_base (const data_type &data, my_graph::vertex_id id) : data(data), id(id) {}
 
         adj_iterator in_begin()  const {return adj.begin();}
         adj_iterator out_begin() const {return adj.begin();}
@@ -48,6 +48,7 @@ namespace my_graph
         const data_type &get_data() const {return data;}
     public:
         data_type data;
+		my_graph::vertex_id id;
     private:
         vector<vert_edge> adj;
     };
@@ -170,9 +171,10 @@ namespace my_graph
 
     template<typename V, typename E>
     my_graph::vertex_id graph_base<V, E>::add_vertex(const typename vertex::data_type &data)
-    {
-        vertices_.push_back(vertex(data));
-        return vertices_.size() - 1;
+    {	
+		size_t size = vertices_.size();
+		vertices_.push_back(vertex(data, size));
+		return vertices_.size() - 1;
     }
 
     template<typename V, typename E>

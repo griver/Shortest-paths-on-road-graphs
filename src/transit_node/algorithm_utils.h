@@ -15,6 +15,7 @@ namespace my_algorithm {
 	typedef vis_graph graph_t;
 	typedef vis_edge edge_t;
 	typedef vis_coord coord_t;
+	typedef boost::function<bool (coord_t const &)> coordinate_check;
 
 	inline edge_weight vis_graph_distance(vertex_t const & source, vertex_t const & target) {
 		float sX = source.get_data().c.x;
