@@ -144,7 +144,6 @@
     <ClCompile Include="visualizer_client.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\shared\algorithm.h" />
     <ClInclude Include="..\shared\base_visualizer_client.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="visualizer_client.h" />

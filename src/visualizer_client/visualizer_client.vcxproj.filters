@@ -80,9 +80,6 @@
     <ClInclude Include="..\shared\new_vis_graph\vertex.h">
       <Filter>shared\new_vis_graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\algorithm.h">
-      <Filter>shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\base_visualizer_client.h">
       <Filter>shared</Filter>
     </ClInclude>

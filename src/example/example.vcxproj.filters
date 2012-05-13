@@ -50,9 +50,6 @@
     <ClInclude Include="..\shared\draw_scope.h">
       <Filter>shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\graph.h">
-      <Filter>shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\new_vis_graph.h">
       <Filter>shared</Filter>
     </ClInclude>

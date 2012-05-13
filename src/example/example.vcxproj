@@ -198,7 +198,6 @@
     <ClInclude Include="..\shared\common.h" />
     <ClInclude Include="..\shared\coord.h" />
     <ClInclude Include="..\shared\draw_scope.h" />
-    <ClInclude Include="..\shared\graph.h" />
     <ClInclude Include="..\shared\new_vis_graph.h" />
     <ClInclude Include="..\shared\visualizer.h" />
   </ItemGroup>
