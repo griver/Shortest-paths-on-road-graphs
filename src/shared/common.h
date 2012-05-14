@@ -1,5 +1,7 @@
 #pragma once
 
+#define _HAS_ITERATOR_DEBUGGING 0
+
 #include <cstdlib>
 
 #include <list>

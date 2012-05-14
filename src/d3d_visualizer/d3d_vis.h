@@ -20,6 +20,7 @@ public:
     void    free_ib     (ib_id);
     
     void draw_buffers     (vb_id verts, size_t n_verts, ib_id inds, size_t n_inds);
+    void draw_buffers (vb_id verts, size_t verts_offset, size_t n_verts, ib_id inds, size_t inds_offset, size_t n_inds);
     void draw_text      (coord<int>, const std::string&);
 
     void draw_begin ();

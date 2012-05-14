@@ -254,6 +254,16 @@ void d3d_vis::draw_buffers( vb_id verts, size_t n_verts, ib_id inds, size_t n_in
 
     in_screen();
 }
+void d3d_vis::draw_buffers(vb_id verts, size_t verts_offset, size_t n_verts, ib_id inds, size_t inds_offset, size_t n_inds)
+{
+    in_world();
+
+    check_succeded (pdevice_->SetStreamSource(0, vbs_[verts], verts_offset * sizeof(b_vertex), sizeof (b_vertex)));
+    check_succeded (pdevice_->SetIndices(ibs_[inds]));
+    check_succeded (pdevice_->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, n_verts, inds_offset * 2, n_inds));
+
+    in_screen();
+}
 
 void d3d_vis::update_matrices()
 {

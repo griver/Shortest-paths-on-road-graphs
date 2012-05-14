@@ -14,12 +14,20 @@ struct reach_client : base_visualizer_client
     virtual void on_wheel      (int delta);
     virtual void on_resize     (int width, int height);*/
 
-    virtual void on_mouse_down (int x, int y, int button);
-    virtual void draw (visualizer &d, draw_scope &scope);
+    void on_mouse_down (int x, int y, int button);
+    void on_key_down   (int key);
+    void draw (visualizer &d, draw_scope &scope);
 
 private:
+    void print_stats() const;
+private:
+    bool draw_graph;
+    bool draw_shortcuts;
+
     boost::scoped_ptr<vis_graph> pgraph_;
     graph_desc g_desc;
 
     boost::optional<my_graph::vertex_id> selected_;
+    bool shortcuts_added;
+    size_t n_original_edges;
 };

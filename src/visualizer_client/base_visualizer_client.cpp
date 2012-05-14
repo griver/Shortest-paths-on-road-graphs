@@ -89,42 +89,7 @@ void base_visualizer_client::on_resize(int width, int height)
     on_paint();
 }
 
-graph_desc base_visualizer_client::upload_graph(const vis_graph &g)
-{
-    graph_desc desc;
-    desc.vb_size = g.v_count();
-    desc.vb = pd_->create_vb(desc.vb_size);
-    desc.ib_size = g.e_count();
-    desc.ib = pd_->create_ib(desc.ib_size);
 
-    size_t vertex_index;
-
-    b_vertex *pv = pd_->lock_vb(desc.vb, 0, desc.vb_size);
-    b_edge *pe = pd_->lock_ib(desc.ib, 0, desc.ib_size);
-
-    vertex_index = 0;
-    for (vis_graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it, ++vertex_index)
-    {
-        const vis_vertex &v = *it;
-        const vis_vertex_data& data = v.data;
-
-        pv[vertex_index].x = data.c.x;
-        pv[vertex_index].y = data.c.y;
-        pv[vertex_index].z = 0;
-
-        for (vis_vertex::adj_iterator e_it = v.out_begin(); e_it != v.out_end(); ++e_it)
-        {
-            size_t edge_index = (*e_it).e;
-            pe[edge_index].v1 = vertex_index;
-            pe[edge_index].v2 = (*e_it).v;
-        }
-    }
-
-    pd_->unlock_ib (desc.ib);
-    pd_->unlock_vb (desc.vb);
-    
-    return desc;
-}
 
 void base_visualizer_client::free_vb(vb_id vb)
 {
@@ -136,21 +101,5 @@ void base_visualizer_client::free_ib(ib_id ib)
     pd_->free_ib(ib);
 }
 
-boost::optional<my_graph::vertex_id> base_visualizer_client::get_vertex(const vis_graph &g, const coord<int> &c)
-{
-    const int TOLERANCE = 3;
 
-    boost::optional<my_graph::vertex_id> res;
-    for (auto it = g.v_begin(); it != g.v_end(); ++it)
-    {
-        my_graph::vertex_id id = it - g.v_begin();
-        coord<int> d = pscope_->world2screen((*it).get_data().c);
-        if (std::max (abs (d.x - c.x), abs (d.y - c.y)) <= TOLERANCE)
-        {
-            res.reset(id);
-            return res;
-        }
-    }
-    return res;
-}
 

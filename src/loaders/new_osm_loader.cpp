@@ -138,6 +138,9 @@ void osm_loader::load_edge(xml_node *node1, xml_node *node2)
 
     pgraph_->add_edge(vid1, vid2, data);
 
+    if (vid1 == vid2)
+        cout << "Loop detected: "  << vid1 << endl;
+
     if (pgraph_->e_count() % PRINT_EVERY == 0)
         cout << pgraph_->e_count() << " edges loaded" << endl;
 }

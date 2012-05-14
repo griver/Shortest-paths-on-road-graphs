@@ -48,6 +48,7 @@ namespace my_graph
         const data_type &get_data() const {return data;}
 
         inline size_t get_degree () const {return adj.size();};
+        const vector<vert_edge> &get_adj() const {return adj;};
     public:
         data_type data;
     private:
@@ -142,25 +143,25 @@ namespace my_graph
     template<typename V, typename E>
     typename graph_base<V, E>::vertex &graph_base<V, E>::get_vertex(vertex_id id)
     {
-        return vertices_[id];
+        return vertices_.at(id);
     }
 
     template<typename V, typename E>
     typename const graph_base<V, E>::vertex &graph_base<V, E>::get_vertex(vertex_id id) const
     {
-        return vertices_[id];
+        return vertices_.at(id);
     }
 
     template<typename V, typename E>
     typename graph_base<V, E>::edge &graph_base<V, E>::get_edge(edge_id id)
     {
-        return edges_[id];
+        return edges_.at(id);
     }
 
     template<typename V, typename E>
     typename const graph_base<V, E>::edge &graph_base<V, E>::get_edge(edge_id id) const
     {
-        return edges_[id];
+        return edges_.at(id);
     }
 
     template<typename V, typename E>
