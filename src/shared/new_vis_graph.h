@@ -8,7 +8,7 @@ namespace my_graph
 {
     typedef size_t vertex_id;
     typedef size_t edge_id;
-    typedef float edge_weight;
+    typedef double edge_weight;
 }
 
 struct vis_vertex_data

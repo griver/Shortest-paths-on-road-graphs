@@ -3,6 +3,10 @@
 namespace my_graph
 {
 
+    typedef size_t vertex_id;
+    typedef size_t edge_id;
+
+
     template<typename V, typename E>
     class graph_base;
 

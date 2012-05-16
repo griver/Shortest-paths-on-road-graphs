@@ -1,9 +1,15 @@
 #include "stdafx.h"
 #include "reach_client.h"
+#include "reach_dijkstra.h"
 
 void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs);
 
 void add_shortcuts (vis_graph &g, size_t degree);
+void test_reach_updater(const vis_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
+void draw_circle(const vis_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
+void test_circles (const vis_graph &g);
+//vis_graph *run_reaches_update(const vis_graph &ref_graph, my_graph::vertex_id start, my_graph::vertex_id end)
+vis_graph *run_reaches_update(const vis_graph &ref_graph, my_graph::edge_weight dist);
 
 
 reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope *pscope)
@@ -58,26 +64,59 @@ void reach_client::draw(visualizer &d, draw_scope &scope)
         d.draw_buffers(g_desc.vb, 0, pgraph_->v_count(), g_desc.ib, 0, n_original_edges);
     }
 
+
     /*d.set_color(255, 0, 0);
     draw_vertex (483413);
     d.set_color(255, 255, 0);
     draw_vertex (483416);
     draw_vertex (156256);
-    draw_vertex (263719);*/
+    draw_vertex (263719);
+
+    d.set_color(255, 0, 0);
+    draw_vertex(1103066);
+    draw_vertex(266927);*/
+
+
+
+    if (center_.is_initialized())
+    {
+        const coord<float> c = pgraph_->get_vertex(*center_).get_data().c;
+        const coord<float> r (radius_, radius_);
+        d.set_color(0, 255, 0);
+        d.draw_rect_world(c - r, c + r);
+    }
+
+    if (lit1_.is_initialized())
+    {
+        d.set_color(128, 0, 0);
+        d.draw_buffers(g_desc.vb, 0, g_desc.vb_size, lit1_->ib, 0, lit1_->ib_size);    
+    }
+    if (lit2_.is_initialized())
+    {
+        d.set_color(0, 0, 128);
+        d.draw_buffers(g_desc.vb, 0, g_desc.vb_size, lit2_->ib, 0, lit2_->ib_size);    
+    }
 
     if (selected_.is_initialized())
     {
         d.set_color(0, 255, 0);
         draw_vertex(*selected_);
     }
+
 }
 
 void reach_client::on_mouse_down(int x, int y, int button)
 {
-    selected_ = get_vertex(*pgraph_, coord<int>(x, y));
+    boost::optional<my_graph::vertex_id> hover = get_vertex(*pgraph_, coord<int>(x, y));
+    if (button == 0)
+        selected_ = hover;
+
+    if (button == 1)
+        center_ = hover;
 
     base_visualizer_client::on_mouse_down(x, y, button);
 }
+
 
 void reach_client::on_key_down(int key)
 {
@@ -102,6 +141,65 @@ void reach_client::on_key_down(int key)
             }
         }
         break;
+
+    /*case 'L':
+    case 'l':
+        if (lit_.is_initialized())
+        {
+            get_visualizer().free_ib(lit_->ib);
+            lit_.reset();
+        }
+        
+        if (selected_.is_initialized())
+        {
+            my_graph::path_map m;
+            reach_dijkstra d (*pgraph_, *selected_, m);
+            while (!d.done())
+                d.iterate();
+
+            tree_desc desc;
+            desc.ib = g_desc.ib;
+            desc.ib_size = g_desc.ib_size;
+
+            lit_.reset(upload_tree(m, desc));
+        }
+        break;*/
+
+    case 'M':
+    case 'm':
+        if (lit1_.is_initialized())
+        {
+            get_visualizer().free_ib(lit1_->ib);
+            lit1_.reset();
+        }
+        if (lit2_.is_initialized())
+        {
+            get_visualizer().free_ib(lit2_->ib);
+            lit2_.reset();
+        }
+        if (selected_.is_initialized())
+        {
+            my_graph::path_map m1, m2;
+
+            draw_circle (*pgraph_, *selected_, 0.25, m1, m2);
+            
+            tree_desc desc;
+            desc.ib = g_desc.ib;
+            desc.ib_size = g_desc.ib_size;
+
+            lit1_.reset(upload_tree(m1, desc));
+            lit2_.reset(upload_tree(m2, desc));
+            cout << "Tree size: " << m1.size() << endl;
+        }
+        break;
+    case 'N':
+    case 'n':
+        test_circles (*pgraph_);
+        break;
+    case 'O':
+    case 'o':
+        run_reaches_update(*pgraph_, 0.02);
+        break;
     }
     base_visualizer_client::on_key_down(key);
 }
@@ -123,3 +221,14 @@ void reach_client::print_stats() const
             cout << i << ": " << stats[i] << endl;
 }
 
+
+void reach_client::on_mouse_move(int x, int y)
+{
+    mouse_coords_world_ = get_scope().screen2world(coord<int>(x, y));
+    if (center_.is_initialized())
+    {
+        const coord<float> c = mouse_coords_world_ - pgraph_->get_vertex(*center_).get_data().c;
+        radius_ = sqrt (c.x * c.x + c.y * c.y);
+    }
+    base_visualizer_client::on_mouse_move(x, y);
+}

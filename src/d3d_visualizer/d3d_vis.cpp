@@ -204,6 +204,28 @@ void d3d_vis::draw_rect( coord<int> ui, coord<int> vi )
     check_succeded (pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 4));
 }
 
+void d3d_vis::draw_rect_world(coord<float> u, coord<float> v)
+{
+    b_vertex vertices[] =
+    {
+        { u.x,    u.y,     0.0f,    0xFFFFFFFF},
+        { v.x,    u.y,     0.0f,    0xFFFFFFFF},
+        { v.x,    v.y,     0.0f,    0xFFFFFFFF},
+        { u.x,    v.y,     0.0f,    0xFFFFFFFF},
+        { u.x,    u.y,     0.0f,    0xFFFFFFFF},
+    };
+
+    b_vertex *ptr;
+    check_succeded (prect_->Lock(0, sizeof (b_vertex) * 5, reinterpret_cast<void**>(&ptr), 0));
+    memcpy (ptr, vertices, sizeof (b_vertex) * 5);
+    check_succeded (prect_->Unlock());
+
+    in_world();
+    check_succeded (pdevice_->SetStreamSource(0, prect_, 0, sizeof (b_vertex)));
+    check_succeded (pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 4));
+    in_screen();
+}
+
 void d3d_vis::draw_line( coord<int> ui, coord<int> vi )
 {
     coord<float> u = ui;

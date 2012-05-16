@@ -41,6 +41,8 @@ private:
     reach_map *preaches_;
     edge_weight epsilon_;
     vertex_id root_;
+
+    unordered_set<vertex_id> visited;
 };
 
 
@@ -121,7 +123,7 @@ void reach_updater::build_tree()
             {
                 if (pv.d >= epsilon_)
                     candidates_[id] = id;
-            }
+            }   
             else
             {
                 const vertex_id &parent_cand = unordered_safe_find_const(candidates_, *pv.parent);
@@ -161,6 +163,7 @@ void reach_updater::build_tree()
 
 void reach_updater::update_reaches_with_tree()
 {
+    visited.clear();
     update_reaches_recursive(root_);
 }
 
@@ -168,6 +171,13 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
 {
     const vis_vertex &v = pgraph_->get_vertex(id);
     const path_vertex &pv = unordered_safe_find_const(tree_, id);
+
+    if (visited.count(id) != 0)
+    {
+        cout << "LOOP DETECTED: " << id << ", parent " << *pv.parent << endl;
+        throw 0;
+    }
+    visited.insert(id);
     
     edge_weight height = 0;
     for (vis_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
@@ -179,9 +189,15 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
         if (!pv_child.parent.is_initialized())
             continue;
         
-        if (*(pv_child.parent) != id)
+        if (*(pv_child.parent) != id || *(pv_child.inc) != it->e)
             continue;
 
+        /*if (it->v == 266927)
+        {
+            cout << "coming from " << id << endl;
+            const vis_edge &e = pgraph_->get_edge(it->e);
+            cout << "e " << it->e << ": len " << e.data.len << endl;
+        }*/
         edge_weight new_height = update_reaches_recursive (it->v) + pv_child.d - pv.d;
         if (new_height > height)
             height = new_height;
@@ -289,16 +305,10 @@ path_map g_blue;
 reach_map g_heights;
 reach_map g_reaches;
 
-void test_reach_updater(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
+void test_reach_updater(const vis_graph &ref_graph, vertex_id start, edge_weight dist, path_map &ref_out, path_map &ref_out2)
 {
-    const size_t N_THREADS = 2;
-    const size_t verts_for_thread = (ref_graph.v_count() + N_THREADS - 1) / N_THREADS;
-
     const vis_vertex &v1 = ref_graph.get_vertex(start);
-    const vis_vertex &v2 = ref_graph.get_vertex(end);
 
-    vis_coord d = v2.data.c - v1.data.c;
-    edge_weight dist = sqrt(d.x * d.x + d.y * d.y);
     cout << "Epsilon: " << dist << endl;
 
     reach_updater updater;
@@ -334,7 +344,7 @@ void test_reach_updater(const vis_graph &ref_graph, vertex_id start, vertex_id e
 
     }
    
-    for (candidate_map::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
+    /*for (candidate_map::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
     {
         if (it->first != it->second)
             continue;
@@ -347,7 +357,7 @@ void test_reach_updater(const vis_graph &ref_graph, vertex_id start, vertex_id e
         const edge_weight depth = unordered_safe_find_const(tree, it->first).d;
         cout << "! " << it->first << ": " << reach << " (" << depth << " : " << height << ")" << endl;
         
-    }
+    }*/
 
     g_blue = ref_out2;
     g_updater = updater;
@@ -534,16 +544,11 @@ vis_graph *cut_graph(const vis_graph &src, const reach_map &reaches, edge_weight
     return pdst;
 }
 
-vis_graph *run_reaches_update(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
+vis_graph *run_reaches_update(const vis_graph &ref_graph, edge_weight dist)
 {
     const size_t PRINT_EACH_VERTS = 10000;
     const DWORD PRINT_EACH_MS = 30000;
 
-    const vis_vertex &v1 = ref_graph.get_vertex(start);
-    const vis_vertex &v2 = ref_graph.get_vertex(end);
-
-    vis_coord d = v2.data.c - v1.data.c;
-    edge_weight dist = sqrt(d.x * d.x + d.y * d.y);
     cout << "Epsilon: " << dist << endl;
 
     g_dijkstra_check_time = g_tree_build_time = g_reach_update_time = 0;
@@ -580,6 +585,55 @@ vis_graph *run_reaches_update(const vis_graph &ref_graph, vertex_id start, verte
     }
 
     cout << "Left " << counter << " out of " << ref_graph.v_count() << " verts" << endl;
+    
+    return NULL;
+    //return cut_graph(ref_graph, little_reaches, dist);
+}
 
-    return cut_graph(ref_graph, little_reaches, dist);
+
+void draw_circle (const vis_graph &ref_graph, vertex_id start, edge_weight dist, path_map &ref_out, path_map &ref_out2)
+{
+    reach_updater updater;
+    reach_map reaches;
+    DWORD start_time = timeGetTime();
+    updater.calculate_reaches(ref_graph, start, dist, reaches);
+    DWORD elapsed_time = timeGetTime() - start_time;
+
+    cout << "Elapsed time: " << elapsed_time << " ms." << endl;
+
+    const path_map &tree = updater.get_tree();
+    const candidate_map &candidates = updater.get_candidates();
+
+    for (auto it = candidates.begin(); it != candidates.end(); ++it)
+    {
+        ref_out2[it->second] = unordered_safe_find_const(tree, it->second);
+    }
+
+    ref_out = tree;
+
+}
+
+void test_circles (const vis_graph &g)
+{
+    const int N = 100;
+
+    DWORD times = 0;
+    reach_map reaches;
+    
+    cout << "Testing: " << endl;
+    for (int i = 0; i < N; ++i)
+    {
+        const size_t rnd = rand() * RAND_MAX + rand();
+        vertex_id id = rnd % g.v_count();
+
+        cout << id << " ";
+
+        reach_updater updater;
+        const DWORD start_time = timeGetTime();
+        updater.calculate_reaches(g, id, 0.01, reaches);
+        times += timeGetTime() - start_time;
+    }
+
+    const DWORD avg_time = times / N;
+    cout << endl << "Avg time: " << avg_time << endl;
 }

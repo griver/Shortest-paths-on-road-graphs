@@ -43,10 +43,14 @@ struct base_visualizer_client : client
     template <typename V, typename E>
     graph_desc upload_graph (const my_graph::graph_base<V, E> &g);
     
-    tree_desc upload_tree (const my_graph::path_map &m, ib_id src_id);
+    tree_desc upload_tree (const my_graph::path_map &m, const tree_desc& src_desc);
 
     void free_vb (vb_id); 
     void free_ib (ib_id);
+
+    visualizer &get_visualizer() {return *pd_;}
+    draw_scope &get_scope() {return *pscope_;}
+
 private:
     visualizer *pd_;
     draw_scope *pscope_;

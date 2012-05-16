@@ -14,6 +14,7 @@ struct reach_client : base_visualizer_client
     virtual void on_wheel      (int delta);
     virtual void on_resize     (int width, int height);*/
 
+    void on_mouse_move (int x, int y);
     void on_mouse_down (int x, int y, int button);
     void on_key_down   (int key);
     void draw (visualizer &d, draw_scope &scope);
@@ -30,4 +31,10 @@ private:
     boost::optional<my_graph::vertex_id> selected_;
     bool shortcuts_added;
     size_t n_original_edges;
+
+    boost::optional<my_graph::vertex_id> center_;
+    coord<float> mouse_coords_world_;
+    float radius_;
+
+    boost::optional<tree_desc> lit1_, lit2_;
 };

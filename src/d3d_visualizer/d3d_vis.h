@@ -31,6 +31,7 @@ public:
     void set_bg_color  (unsigned char r, unsigned char g, unsigned char b);
 
     void draw_rect  (coord<int>, coord<int>);
+    void draw_rect_world  (coord<float>, coord<float>);
     void draw_line  (coord<int>, coord<int>);
 
     //void build_graph (vis_graph& g, vb_id, ib_id);

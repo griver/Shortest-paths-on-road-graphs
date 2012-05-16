@@ -22,6 +22,7 @@ boost::optional<edge_id> try_to_add_shortcut(vis_graph &g, vertex_id id1, vertex
 
 void add_shortcuts(vis_graph &g, size_t degree)
 {
+    const my_graph::edge_weight SHORTCUT_EPSILON = 0.00001;
     vector<bool> shortcutted(g.v_count(), false);
     vector<vert_edge> adj;
 
@@ -59,7 +60,7 @@ void add_shortcuts(vis_graph &g, size_t degree)
             {
                 const vis_edge &e1 = g.get_edge(adj[i].e);
                 const vis_edge &e2 = g.get_edge(adj[j].e);
-                const vis_edge_data data(e1.data.len + e2.data.len);
+                const vis_edge_data data(e1.data.len + e2.data.len - SHORTCUT_EPSILON);
                 try_to_add_shortcut(g, adj[i].v, adj[j].v, data);
             }
         }
