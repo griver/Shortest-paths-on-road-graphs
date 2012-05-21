@@ -3,10 +3,6 @@
 namespace my_graph
 {
 
-    typedef size_t vertex_id;
-    typedef size_t edge_id;
-
-
     template<typename V, typename E>
     class graph_base;
 
@@ -50,9 +46,6 @@ namespace my_graph
 
         data_type &get_data()       {return data;}
         const data_type &get_data() const {return data;}
-
-        inline size_t get_degree () const {return adj.size();};
-        const vector<vert_edge> &get_adj() const {return adj;};
     public:
         data_type data;
 		my_graph::vertex_id id;
@@ -98,9 +91,9 @@ namespace my_graph
         typedef edge_base<V, E> edge;
     public:
         graph_base() {};
-    /*private:
+    private:
         graph_base(const graph_base&);
-        void operator=(const graph_base&);*/
+        void operator=(const graph_base&);
     public:
         inline       vertex &get_vertex(vertex_id id);
         inline const vertex &get_vertex(vertex_id id) const;
@@ -135,11 +128,6 @@ namespace my_graph
         e_const_iterator   e_begin    () const  {return edges_.begin();};
         e_iterator         e_end      ()        {return edges_.end();};
         e_const_iterator   e_end      () const  {return edges_.end();};
-
-
-        inline vertex_id get_vertex_id(const v_const_iterator &it) const {return it - v_begin();}
-        inline vertex_id get_vertex_id(const v_iterator &it) {return it - v_begin();}
-
     private:
         vertex_map vertices_;
         edge_map edges_;
@@ -148,25 +136,25 @@ namespace my_graph
     template<typename V, typename E>
     typename graph_base<V, E>::vertex &graph_base<V, E>::get_vertex(vertex_id id)
     {
-        return vertices_.at(id);
+        return vertices_[id];
     }
 
     template<typename V, typename E>
     typename const graph_base<V, E>::vertex &graph_base<V, E>::get_vertex(vertex_id id) const
     {
-        return vertices_.at(id);
+        return vertices_[id];
     }
 
     template<typename V, typename E>
     typename graph_base<V, E>::edge &graph_base<V, E>::get_edge(edge_id id)
     {
-        return edges_.at(id);
+        return edges_[id];
     }
 
     template<typename V, typename E>
     typename const graph_base<V, E>::edge &graph_base<V, E>::get_edge(edge_id id) const
     {
-        return edges_.at(id);
+        return edges_[id];
     }
 
     template<typename V, typename E>
