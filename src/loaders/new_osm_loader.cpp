@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../shared/new_vis_graph.h"
-#include "../shared/new_osm_loader.h"
+#include "../shared/osm_loader.h"
 
 /*class osm_loader
 {
