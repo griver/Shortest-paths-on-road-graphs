@@ -1,8 +1,8 @@
 #include "stdafx.h"
+#include "../shared/graph_filter.h"
 #include "../shared/osm_loader.h"
 #include "reach_client.h"
 #include "reach_dijkstra.h"
-#include "graph_filter.h"
 
 
 void add_shortcuts (vis_graph &g, size_t degree);
@@ -237,11 +237,6 @@ void reach_client::print_stats() const
 void reach_client::on_mouse_move(int x, int y)
 {
     mouse_coords_world_ = get_scope().screen2world(coord<int>(x, y));
-    if (center_.is_initialized())
-    {
-        const coord<float> c = mouse_coords_world_ - pgraph_->get_vertex(*center_).get_data().c;
-        radius_ = sqrt (c.x * c.x + c.y * c.y);
-    }
     base_visualizer_client::on_mouse_move(x, y);
 }
 

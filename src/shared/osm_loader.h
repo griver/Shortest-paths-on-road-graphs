@@ -88,8 +88,12 @@ void osm_loader<V, E>::load_verts()
                    node = node->next_sibling(node_name))
     {
         const xml_id id = atol(node->first_attribute("id")->value());
-        const vis_coord coord (atof(node->first_attribute("lat")->value()),
-                               atof(node->first_attribute("lon")->value()));
+
+        const double x = atof(node->first_attribute("lat")->value());
+        const double y = atof(node->first_attribute("lon")->value());
+
+        const vis_coord coord (static_cast<vis_coord::value_type>(x), static_cast<vis_coord::value_type>(y));
+
         vertex_data data (coord);
         data.orig_id = id;
 

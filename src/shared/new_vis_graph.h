@@ -3,7 +3,7 @@
 #include "../shared/coord.h"
 #include "graph_base.h"
 
-typedef coord<float> vis_coord;
+typedef coord<double> vis_coord;
 
 struct vis_vertex_data
 {

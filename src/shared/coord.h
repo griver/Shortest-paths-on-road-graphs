@@ -28,7 +28,7 @@ struct coord : boost::addable<coord<T> >, boost::subtractable<coord<T> >, boost:
     }
 
     template<typename D>
-    operator coord<D> ()
+    operator coord<D> () const
     {
         coord<D> res (static_cast<D>(x), static_cast<D>(y));
         return res;

@@ -244,8 +244,8 @@
   <ItemGroup>
     <ClInclude Include="..\shared\base_visualizer_client.h" />
     <ClInclude Include="..\shared\graph_base.h" />
+    <ClInclude Include="..\shared\graph_filter.h" />
     <ClInclude Include="..\shared\osm_loader.h" />
-    <ClInclude Include="graph_filter.h" />
     <ClInclude Include="reach_client.h" />
     <ClInclude Include="reach_dijkstra.h" />
     <ClInclude Include="reach_updater.h" />

@@ -97,8 +97,8 @@ graph_desc base_visualizer_client::upload_graph(const my_graph::graph_base<V, E>
         const vis_vertex &v = *it;
         const vis_vertex_data& data = v.data;
 
-        pv[vertex_index].x = data.c.x;
-        pv[vertex_index].y = data.c.y;
+        pv[vertex_index].x = static_cast<float>(data.c.x);
+        pv[vertex_index].y = static_cast<float>(data.c.y);
         pv[vertex_index].z = 0;
 
         for (vis_vertex::adj_iterator e_it = v.out_begin(); e_it != v.out_end(); ++e_it)

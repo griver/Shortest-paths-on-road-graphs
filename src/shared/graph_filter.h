@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../shared/new_vis_graph.h"
+#include "graph_base.h"
 
 namespace my_graph
 {
