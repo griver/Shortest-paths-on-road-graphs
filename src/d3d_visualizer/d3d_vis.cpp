@@ -139,7 +139,7 @@ void d3d_vis::draw_begin()
         bg_color_, 1.0f, 0 ));
     
 
-    static bool shader_printed = false;
+    /*static bool shader_printed = false;
     if (!shader_printed)
     {
         IDirect3DVertexShader9 *pshd = NULL;
@@ -150,7 +150,7 @@ void d3d_vis::draw_begin()
         cout << ss.str();
 
         shader_printed = true;
-    }
+    }*/
     check_succeded (pdevice_->BeginScene());
 }
 
@@ -204,6 +204,28 @@ void d3d_vis::draw_rect( coord<int> ui, coord<int> vi )
     check_succeded (pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 4));
 }
 
+void d3d_vis::draw_rect_world(coord<float> u, coord<float> v)
+{
+    b_vertex vertices[] =
+    {
+        { u.x,    u.y,     0.0f,    0xFFFFFFFF},
+        { v.x,    u.y,     0.0f,    0xFFFFFFFF},
+        { v.x,    v.y,     0.0f,    0xFFFFFFFF},
+        { u.x,    v.y,     0.0f,    0xFFFFFFFF},
+        { u.x,    u.y,     0.0f,    0xFFFFFFFF},
+    };
+
+    b_vertex *ptr;
+    check_succeded (prect_->Lock(0, sizeof (b_vertex) * 5, reinterpret_cast<void**>(&ptr), 0));
+    memcpy (ptr, vertices, sizeof (b_vertex) * 5);
+    check_succeded (prect_->Unlock());
+
+    in_world();
+    check_succeded (pdevice_->SetStreamSource(0, prect_, 0, sizeof (b_vertex)));
+    check_succeded (pdevice_->DrawPrimitive (D3DPT_LINESTRIP, 0, 4));
+    in_screen();
+}
+
 void d3d_vis::draw_line( coord<int> ui, coord<int> vi )
 {
     coord<float> u = ui;
@@ -251,6 +273,16 @@ void d3d_vis::draw_buffers( vb_id verts, size_t n_verts, ib_id inds, size_t n_in
     check_succeded (pdevice_->SetStreamSource(0, vbs_[verts], 0, sizeof (b_vertex)));
     check_succeded (pdevice_->SetIndices(ibs_[inds]));
     check_succeded (pdevice_->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, n_verts, 0, n_inds));
+
+    in_screen();
+}
+void d3d_vis::draw_buffers(vb_id verts, size_t verts_offset, size_t n_verts, ib_id inds, size_t inds_offset, size_t n_inds)
+{
+    in_world();
+
+    check_succeded (pdevice_->SetStreamSource(0, vbs_[verts], verts_offset * sizeof(b_vertex), sizeof (b_vertex)));
+    check_succeded (pdevice_->SetIndices(ibs_[inds]));
+    check_succeded (pdevice_->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, n_verts, inds_offset * 2, n_inds));
 
     in_screen();
 }

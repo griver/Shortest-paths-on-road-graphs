@@ -2,7 +2,7 @@
 
 namespace my_graph
 {
-    typedef float edge_weight;
+    typedef double edge_weight;
     
     struct heap_vertex 
     {

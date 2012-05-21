@@ -7,6 +7,14 @@
 class reach_dijkstra
 {
 public:
+
+    typedef my_graph::vertex_id vertex_id;
+    typedef my_graph::edge_id edge_id;
+    typedef my_graph::edge_weight edge_weight;
+    typedef my_graph::path_map path_map;
+    typedef my_graph::path_vertex path_vertex;
+    typedef my_graph::heap_vertex heap_vertex;
+
     typedef vis_graph graph;
     typedef vis_vertex vertex;
     typedef vis_edge edge;
@@ -51,7 +59,7 @@ bool reach_dijkstra::done()
     return q_.empty();
 }
 
-vertex_id reach_dijkstra::iterate()
+my_graph::vertex_id reach_dijkstra::iterate()
 {
     if (q_.size() > max_heap_size_)
         max_heap_size_ = q_.size();
@@ -80,8 +88,8 @@ vertex_id reach_dijkstra::iterate()
             if (pout_->count (adj_vid) > 0)
                 continue;
             
-            path_vertex pv2 (adj_vid, pv.d + get_weight(e), eid, hv.id);
-            heap_vertex hv2 (adj_vid, pv2.d); 
+            const path_vertex pv2 (adj_vid, pv.d + get_weight(e), eid, hv.id);
+            const heap_vertex hv2 (adj_vid, pv2.d); 
 
             if (border_.count(adj_vid) == 0 || 
                 unordered_safe_find_const(border_, adj_vid).d > pv2.d)
@@ -101,7 +109,7 @@ bool reach_dijkstra::check_vertex(vertex_id id) const
     return vert_checker_(id);
 }
 
-vertex_id reach_dijkstra::get_next()
+my_graph::vertex_id reach_dijkstra::get_next()
 {
     discard_dublicates();
     return q_.top().id;  
@@ -113,7 +121,7 @@ void reach_dijkstra::discard_dublicates()
         q_.pop();
 }
 
-const path_map & reach_dijkstra::get_border() const
+const my_graph::path_map & reach_dijkstra::get_border() const
 {
     return border_;
 }

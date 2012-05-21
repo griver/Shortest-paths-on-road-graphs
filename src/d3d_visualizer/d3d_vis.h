@@ -20,6 +20,7 @@ public:
     void    free_ib     (ib_id);
     
     void draw_buffers     (vb_id verts, size_t n_verts, ib_id inds, size_t n_inds);
+    void draw_buffers (vb_id verts, size_t verts_offset, size_t n_verts, ib_id inds, size_t inds_offset, size_t n_inds);
     void draw_text      (coord<int>, const std::string&);
 
     void draw_begin ();
@@ -30,6 +31,7 @@ public:
     void set_bg_color  (unsigned char r, unsigned char g, unsigned char b);
 
     void draw_rect  (coord<int>, coord<int>);
+    void draw_rect_world  (coord<float>, coord<float>);
     void draw_line  (coord<int>, coord<int>);
 
     //void build_graph (vis_graph& g, vb_id, ib_id);

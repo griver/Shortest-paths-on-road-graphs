@@ -1,11 +1,9 @@
 #include "stdafx.h"
-#include "../shared/new_vis_graph.h"
-#include "../shared/loader.h"
-#include "../visualizer_client/visualizer_client.h"
+#include "reach_client.h"
 
 visualizer *create_visualizer(draw_scope **ppscope);
 
-void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs);
+/*void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs);
 
 using my_graph::vertex_id;
 using my_graph::edge_id;
@@ -17,8 +15,9 @@ void test_reach_tester(const vis_graph &ref_graph, vertex_id start, vertex_id en
 void test_candidates(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2);
 vis_graph *run_reaches_update(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2);
 
-visualizer_client *pclientl = NULL;
+visualizer_client *pclientl = NULL;*/
 
+/*
 void test_reach_updater2 (const vis_graph &g, 
                         vertex_id start, 
                         vertex_id end, 
@@ -38,6 +37,7 @@ void test_reach_tester2 (const vis_graph &g,
 {
     run_reaches_update(g, start, end, *pout1, *pout2);
 }
+*/
 
 
 int main(int argc, char* argv[])
@@ -50,19 +50,20 @@ int main(int argc, char* argv[])
         return 1;
     }
         
-    string path = argv[1];
-    graph_loader loader = boost::bind (load_osm, path, _1, _2, _3);
+    /*string path = argv[1];
+    graph_loader loader = boost::bind (load_osm, path, _1, _2, _3);*/
 
 
     draw_scope *pscope = NULL;
     scoped_ptr<visualizer> pvis (create_visualizer(&pscope));
-    scoped_ptr<vis_graph> pgraph(new vis_graph());
-    vis_coord mins, maxs;
 
-    loader(*pgraph, mins, maxs);
+    reach_client cl (argv[1], pvis.get(), pscope);
+    pvis->set_client(&cl);
 
-    visualizer_client cl (*pgraph, pvis.get(), pscope, mins, maxs);
-    cl.register_algorithm("Test", [&pgraph, &cl](const vis_graph &g, 
+    //loader(*pgraph, mins, maxs);
+
+    //visualizer_client cl (*pgraph, pvis.get(), pscope, mins, maxs);
+    /*cl.register_algorithm("Test", [&pgraph, &cl](const vis_graph &g, 
                                      vertex_id start, 
                                      vertex_id end, 
                                      path_map *pout1, 
@@ -72,8 +73,10 @@ int main(int argc, char* argv[])
         vis_graph *pnew_graph = run_reaches_update(g, start, end, *pout1, *pout2);
         cl.load_graph(*pnew_graph);
         pgraph.reset(pnew_graph);
-    });
+    });*/
     //cl.register_algorithm("Tes t 2", test_reach_tester2);
+
+
 
     MSG msg;
     ZeroMemory( &msg, sizeof( msg ) );

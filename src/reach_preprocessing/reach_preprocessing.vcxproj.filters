@@ -30,6 +30,12 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="shortcuts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="reach_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="reach_dijkstra.h">
@@ -60,6 +66,12 @@
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\visualizer.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="reach_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\base_visualizer_client.h">
       <Filter>shared</Filter>
     </ClInclude>
   </ItemGroup>

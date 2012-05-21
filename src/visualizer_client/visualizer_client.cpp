@@ -301,7 +301,7 @@ void visualizer_client::on_paint()
 }
 
 void visualizer_client::test_hover( coord<int> c )
-{
+ {
     // FIXME: ugly hack, works only for vector!
     my_graph::vertex_id id = 0;
     for (vis_graph::v_const_iterator it = pgraph_->v_begin(); it != pgraph_->v_end(); ++it, ++id)
