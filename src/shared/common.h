@@ -31,6 +31,7 @@ using std::queue;
 #include <boost/bind.hpp>
 #include <boost/operators.hpp>
 #include <boost/optional.hpp>
+using boost::optional;
 
 #include <boost/scoped_ptr.hpp>
 using boost::scoped_ptr;

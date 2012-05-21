@@ -21,6 +21,7 @@ struct reach_client : base_visualizer_client
 
 private:
     void print_stats() const;
+    void delete_verts();
 private:
     bool draw_graph;
     bool draw_shortcuts;
@@ -37,4 +38,5 @@ private:
     float radius_;
 
     boost::optional<tree_desc> lit1_, lit2_;
+    unordered_set<my_graph::vertex_id> marked_;
 };

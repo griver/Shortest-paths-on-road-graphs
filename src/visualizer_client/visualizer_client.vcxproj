@@ -206,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\base_visualizer_client.h" />
+    <ClInclude Include="filter_graph.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="visualizer_client.h" />
     <ClInclude Include="..\shared\client.h" />

@@ -74,5 +74,8 @@
     <ClInclude Include="..\shared\base_visualizer_client.h">
       <Filter>shared</Filter>
     </ClInclude>
+    <ClInclude Include="graph_filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

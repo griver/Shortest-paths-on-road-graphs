@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "reach_client.h"
 #include "reach_dijkstra.h"
+#include "graph_filter.h"
 
 void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs);
 
@@ -26,7 +27,7 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
 
     print_stats();
     n_original_edges = pgraph_->e_count();
-    add_shortcuts(*pgraph_, 3);
+    //add_shortcuts(*pgraph_, 3);
 
     g_desc = upload_graph(*pgraph_);
     zoom(mins, maxs);
@@ -52,16 +53,16 @@ void reach_client::draw(visualizer &d, draw_scope &scope)
     d.set_bg_color(0, 0, 0);
 
     
-    if (draw_shortcuts && pgraph_->e_count() > n_original_edges)
+    /*if (draw_shortcuts && pgraph_->e_count() > n_original_edges)
     {
         d.set_color(64, 0, 64);
         d.draw_buffers(g_desc.vb, 0, pgraph_->v_count(), g_desc.ib, n_original_edges, pgraph_->e_count() - n_original_edges);
-    }
+    }*/
 
     if (draw_graph)
     {
         d.set_color(64, 64, 64);
-        d.draw_buffers(g_desc.vb, 0, pgraph_->v_count(), g_desc.ib, 0, n_original_edges);
+        d.draw_buffers(g_desc.vb, 0, pgraph_->v_count(), g_desc.ib, 0, pgraph_->e_count());
     }
 
 
@@ -97,12 +98,15 @@ void reach_client::draw(visualizer &d, draw_scope &scope)
         d.draw_buffers(g_desc.vb, 0, g_desc.vb_size, lit2_->ib, 0, lit2_->ib_size);    
     }
 
+    d.set_color(255, 255, 0);
+    for (auto it = marked_.begin(); it != marked_.end(); ++it) {
+        draw_vertex (*it);
+    }
     if (selected_.is_initialized())
     {
         d.set_color(0, 255, 0);
         draw_vertex(*selected_);
     }
-
 }
 
 void reach_client::on_mouse_down(int x, int y, int button)
@@ -111,8 +115,13 @@ void reach_client::on_mouse_down(int x, int y, int button)
     if (button == 0)
         selected_ = hover;
 
-    if (button == 1)
-        center_ = hover;
+    if (button == 1 && hover.is_initialized()) {
+        if (marked_.count(*hover) == 0)
+            marked_.insert(*hover);
+        else
+            marked_.erase(*hover);
+    }
+
 
     base_visualizer_client::on_mouse_down(x, y, button);
 }
@@ -200,6 +209,9 @@ void reach_client::on_key_down(int key)
     case 'o':
         run_reaches_update(*pgraph_, 0.02);
         break;
+    case VK_DELETE:
+        delete_verts();
+        break;
     }
     base_visualizer_client::on_key_down(key);
 }
@@ -231,4 +243,30 @@ void reach_client::on_mouse_move(int x, int y)
         radius_ = sqrt (c.x * c.x + c.y * c.y);
     }
     base_visualizer_client::on_mouse_move(x, y);
+}
+
+void reach_client::delete_verts()
+{
+    if (marked_.empty())
+        return;
+
+    vis_graph *dst = new vis_graph();
+
+    my_graph::graph_filter<vis_vertex_data, vis_edge_data> filter;
+    filter.set_verts_filter([&](my_graph::vertex_id id) -> bool 
+    {
+        return marked_.count(id) == 0;
+    });
+
+    filter.filter_graph(*pgraph_, *dst);
+
+
+    pgraph_.reset(dst);
+    free_vb(g_desc.vb);
+    free_ib(g_desc.ib);
+
+    g_desc = upload_graph(*pgraph_);
+
+    marked_.clear();
+    selected_.reset();
 }
