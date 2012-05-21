@@ -8,7 +8,14 @@
 #include "tnr_algorithms.h"
 #include "tnr_loader.h"
 #include "tnr_checkers.h"
+#include "distance_table_preprocessor.h"
 #include "create_transit_node_graph.h"
+#include "tnr_path_finder.h"
+#include "perfcounter.h"
+
+#include "full_access_nodes_checkers.h"
+#include "full_distance_table_preprocessor.h"
+#include "full_tnr_path_finder.h"
 
 
 visualizer *create_visualizer(draw_scope **ppscope);
@@ -21,8 +28,10 @@ using my_graph::path_map;
 
 
 
-shared_ptr<tnr::vertex_set> tn = tnr::tnr_loader::load_transit_nodes("..\\..\\transit_nodes_data\\ireland_done.tn");
-shared_ptr<tnr::access_map> am = tnr::tnr_loader::load_access_nodes("..\\..\\transit_nodes_data\\tn_ireland_done.an");
+shared_ptr<tnr::vertex_set> tn;// = tnr::tnr_loader::load_transit_nodes("..\\..\\transit_nodes_data\\ireland_done.tn");
+shared_ptr<tnr::access_map> am;// = tnr::tnr_loader::load_access_nodes("..\\..\\transit_nodes_data\\tn_ireland_done.an");
+shared_ptr<tnr::dist_table> dt;// = tnr::read_dist_table_from("..\\..\\transit_nodes_data\\ireland_done.dt"); 
+shared_ptr<tnr::full_access_map> fam;
 
 void dummy_loader (vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs)
 {
@@ -43,18 +52,66 @@ void dummy_loader (vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_max
 
 //my_part==========================================
 void run_astar(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
-//	start = 554;
-//	end = 1;
+
+	double spend;
+	perf_counter counter;
 	my_algorithm::run_astar(g, start, end, pout1, pout2, ppath);
+	spend = counter.time_ms();
+	cout << spend << " ms is running time " << endl;
+	cout <<"dist to target: " << (*ppath)[end].d << endl; 
 }
 
 
 void run_dijkstra(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
-	//start = 1373059;
-	//end = 1373550;
+	double spend;
+	perf_counter counter;
 	my_algorithm::run_dijkstra(g, start, end, pout1, pout2, ppath);
+	spend = counter.time_ms();
+	cout << spend << " ms is running time " << endl;
+	cout <<"dist to target: " << (*ppath)[end].d << endl;
 }
 
+void run_tnr_find(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
+	start = 18603; 
+	end = 7276;
+	//perf_counter counter;
+	tnr::tnr_path_finder finder(g, am, dt, ppath);
+	finder.search(start, end);
+	cout <<"dist to target: " << (*ppath)[end].d << endl;
+	//cout << "run for: " << counter.time_ms();
+
+	int edges = 0;
+	int nulls = 0;
+	tnr::count_paths_edges(ppath, g, edges, nulls);
+	cout << edges << "  "<< nulls << endl;
+}
+
+void full_tnr_find(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {	
+
+	tnr::full_tnr_path_finder finder(g,fam, dt, ppath);
+	
+	double spend;
+	perf_counter counter;
+	finder.search(start, end);
+	spend = counter.time_ms();
+	cout << spend << " ms is running time " << endl;
+	cout <<"dist to target: " << (*ppath)[end].d << endl;
+}
+
+void full_an_checking_astar(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
+	double spend;
+	perf_counter counter;
+	bool success  = tnr::full_an_checking_dijkstra(my_algorithm::request_data_t(g, start, end, pout1, pout2, ppath), fam);
+	spend = counter.time_ms();
+	cout << spend << " ms is running time " << endl;
+	cout <<"dist to target: " << (*ppath)[end].d << endl;	
+
+	if(success)
+		std::cerr << "all correct!" << std::endl;
+	else
+		std::cerr << "ERROR!" << std::endl;
+	
+}
 
 void calculate_grid_info(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
 	tnr::grid_info info(g, ppath, 100, 100);
@@ -76,33 +133,35 @@ void run_preprocessor(const vis_graph &g, my_graph::vertex_id start, my_graph::v
 }
 
 
-void run_tn_checking_astar(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
-	my_algorithm::run_astar(g, start, end, pout1, pout2, ppath);
-	path_map::iterator iter = ppath->begin();
-	path_map::iterator end_iter = ppath->end();
-	for(iter; iter != end_iter; ++iter) {
-		if(tn->count((iter->first)) > 0 && (iter->first) != start && (iter->first) != end ) {
-			std::cout << "TRUE : way passes through transit nodes" << std::endl;
-			return;
-		}
-	}
-	std::cout << "FALSE : There is no any transit nodes on this path" << std::endl;
-}
+
 
 void run_access_node_preprocessing(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
-	tnr::calculate_access_nodes(g, pout1, tn);
+	//tnr::calculate_access_nodes(g, pout1, tn, "ireland.an");
+	tnr::calculate_full_access_nodes(g, pout1, tn, "ireland.ian");
 }
 
 void run_an_checking_astar(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
-	bool success  = tnr::an_checking_dijkstra(my_algorithm::request_data_t(g, 7610, 18657, pout1, pout2, ppath), am);
+	start = 18603; 
+	end = 7276;
+
+	bool success  = tnr::an_checking_dijkstra(my_algorithm::request_data_t(g, start, end, pout1, pout2, ppath), am);
 	if(success)
 		std::cerr << "all correct!" << std::endl;
 	else
 		std::cerr << "ERROR!" << std::endl;
+	cout <<"dist to target: " << (*ppath)[end].d << endl;	
 }
 
 void run_access_nodes_check(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
-	tnr::check_access_nodes(my_algorithm::request_data_t(g, start, end, pout1, pout2, ppath), am);
+	//tnr::check_access_nodes(my_algorithm::request_data_t(g, start, end, pout1, pout2, ppath), am);
+	tnr::full_check_access_nodes(my_algorithm::request_data_t(g, start, end, pout1, pout2, ppath), fam);
+}
+
+void run_tnr_check(const vis_graph &g, my_graph::vertex_id start, my_graph::vertex_id end, my_graph::path_map *pout1, my_graph::path_map *pout2, my_graph::path_map *ppath) {
+	tnr::full_tnr_path_finder finder(g,fam, dt, ppath);
+	//tnr::check_tnr_path_finder(my_algorithm::request_data_t(g, start, end, pout1, pout2, ppath), finder);
+	tnr::full_check_tnr_path_finder(my_algorithm::request_data_t(g, start, end, pout1, pout2, ppath), finder);
+
 }
 
 
@@ -183,18 +242,37 @@ int main(int argc, char* argv[])
     vis_coord mins, maxs;
 
     loader(*pgraph, mins, maxs);
-	
-	shared_ptr<vis_graph> tn_graph = tnr::create_tn_graph(*pgraph,am, tn);
-	tnr::an_graph_check(am,tn);
+	//tn = tnr::tnr_loader::load_transit_nodes("..\\..\\transit_nodes_data\\ireland_done.tn");
+	fam  = tnr::tnr_loader::load_full_access_nodes("ireland.ian");
+	dt = tnr::read_dist_table_from("ireland.idt"); 
 
-    visualizer_client cl (*tn_graph, pvis.get(), pscope, mins, maxs);
+	//tnr::full_distance_table_preprocessor preprocessor(*pgraph, fam, tn);
+	//preprocessor.calculate();
+	//preprocessor.write_to("ireland.idt");
+	//cout << "end writing to file" << endl;
+
+	/*tnr::distance_table_preprocessor preprocessor(*pgraph, am, tn);
+	preprocessor.calculate();
+	cout << "end calculation. start writing to file" << endl;
+	preprocessor.write_to("ireland.dt");
+	cout << "end writing to file" << endl;*/
+	
+	//am = tnr::tnr_loader::load_access_nodes("..\\..\\transit_nodes_data\\ireland_done.an");
+	//dt = tnr::read_dist_table_from("..\\..\\transit_nodes_data\\ireland_done.dt"); 
+	//cout << "access map size: " << am->size() << endl;
+
+	visualizer_client cl (*pgraph, pvis.get(), pscope, mins, maxs);
     
+	//cl.register_algorithm("grid info", calculate_grid_info);
 	cl.register_algorithm("Uni A*", run_astar);
 	cl.register_algorithm("Dijkstra A*", run_dijkstra);
+	cl.register_algorithm("run tnr check", run_tnr_check);
+	cl.register_algorithm("run tnr search", full_tnr_find);
+	
 	//cl.register_algorithm("Run access nodes preprocessing", run_access_node_preprocessing);
 	//cl.register_algorithm("tn checked dijstra", run_tn_checking_astar);
 	//cl.register_algorithm("run access nodes checking", run_access_nodes_check);
-	//cl.register_algorithm("access node checking dijkstra", run_an_checking_astar);
+	cl.register_algorithm("access node checking dijkstra", full_an_checking_astar);
 	//cl.register_algorithm("graph info", graph_info);
 	//cl.register_algorithm("access node info", access_nodes_info);
 

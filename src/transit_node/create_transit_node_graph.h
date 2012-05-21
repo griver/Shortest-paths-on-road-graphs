@@ -5,7 +5,7 @@ namespace tnr {
 	shared_ptr<vis_graph> create_tn_graph(const vis_graph &g, shared_ptr<access_map> access_nodes, shared_ptr<vertex_set> transit_nodes) {
 		shared_ptr<vis_graph> new_graph(new vis_graph());
 		unordered_map<vertex_id, vertex_id> mapping;
-		vertex_set::const_iterator tn_iter = transit_nodes->begin();
+		vertex_set::const_iterator tn_iter = (*transit_nodes).begin();
 		for(tn_iter; tn_iter != transit_nodes->end(); ++tn_iter) {
 			vertex_id t_id= (*tn_iter);
 			mapping[t_id] = new_graph->add_vertex(g.get_vertex(t_id).data);

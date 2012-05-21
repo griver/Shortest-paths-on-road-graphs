@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 #include <deque>
+#include <cfloat>
 
 #include "mapping_exception.h"
 #include "path_finder.h"
@@ -15,6 +16,14 @@
 
 
 namespace tnr {
+
+	struct full_access_info {
+		size_t next;
+		my_graph::edge_weight dist; 
+		full_access_info(): next(0), dist(0.0f) {}
+		full_access_info(size_t next , my_graph::edge_weight dist): next(next), dist(dist) {}
+	};
+
 	struct access_info {
 		my_graph::vertex_id next;
 		my_graph::edge_weight dist; 
@@ -33,6 +42,9 @@ namespace tnr {
 	typedef coord<double> grid_coord;
 	typedef std::map<grid_cell, vertex_set> border_map;
 	typedef unordered_map<vertex_id, unordered_map<vertex_id, access_info> > access_map;
+	typedef vector<unordered_map<vertex_id, full_access_info> > full_access_map;
+
+	//class dist_table;
 }
 
 
