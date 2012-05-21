@@ -1,9 +1,9 @@
 #include "stdafx.h"
+#include "../shared/osm_loader.h"
 #include "reach_client.h"
 #include "reach_dijkstra.h"
 #include "graph_filter.h"
 
-void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs);
 
 void add_shortcuts (vis_graph &g, size_t degree);
 void test_reach_updater(const vis_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);

@@ -19,9 +19,6 @@
     <Filter Include="shared\common algorithms">
       <UniqueIdentifier>{ed020787-7bd7-47d7-b699-61220b603c00}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shared\new_vis_graph">
-      <UniqueIdentifier>{b72dfa28-7557-4a9c-ac38-b72349d1edf0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -71,20 +68,11 @@
     <ClInclude Include="..\shared\common_algorithms\path.h">
       <Filter>shared\common algorithms</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\new_vis_graph\edge.h">
-      <Filter>shared\new_vis_graph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\new_vis_graph\graph.h">
-      <Filter>shared\new_vis_graph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\shared\new_vis_graph\vertex.h">
-      <Filter>shared\new_vis_graph</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\base_visualizer_client.h">
       <Filter>shared</Filter>
     </ClInclude>
-    <ClInclude Include="filter_graph.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\shared\graph_base.h">
+      <Filter>shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

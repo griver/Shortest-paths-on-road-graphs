@@ -1,9 +1,15 @@
-#include "stdafx.h"
+#include "../shared/graph_base.h"
 #include "../shared/new_vis_graph.h"
-#include "../shared/new_osm_loader.h"
 
-/*class osm_loader
+template<typename V, typename E>
+class osm_loader
 {
+public:
+    typedef V vertex_data;
+    typedef E edge_data;
+    typedef typename my_graph::graph_base<V, E> graph;
+    typedef typename my_graph::vertex_base<V, E> vertex;
+    typedef typename my_graph::edge_base<V, E> edge;
 private:
     typedef rapidxml::xml_document<> xml_document;
     typedef rapidxml::xml_node<> xml_node;
@@ -12,7 +18,7 @@ private:
 
     static const size_t PRINT_EVERY = 100000;
 public:
-    osm_loader(const string& path, vis_graph &ref_graph);
+    osm_loader(const string& path, graph &ref_graph);
     void load();
 
     void print_stats();
@@ -30,13 +36,14 @@ private:
     boost::scoped_array<char> text_;
     xml_document doc_;
     xml_node *root_;
-    vis_graph *pgraph_;
+    graph *pgraph_;
     unordered_map<xml_id, vertex_id> verts_map_;
 
     vis_coord mins, maxs;
 };
 
-osm_loader::osm_loader(const string& path, vis_graph &ref_graph)
+template<typename V, typename E>
+osm_loader<V, E>::osm_loader(const string& path, graph &ref_graph)
 : pgraph_(&ref_graph)
 , mins(std::numeric_limits<vis_coord::value_type>::max(), 
        std::numeric_limits<vis_coord::value_type>::max())
@@ -48,7 +55,7 @@ osm_loader::osm_loader(const string& path, vis_graph &ref_graph)
     src.open(path.c_str(), std::ios_base::in | std::ios_base::binary);
 
     src.seekg(0, std::ios::end);
-    size_t size = src.tellg();
+    size_t size = static_cast<size_t>(src.tellg());
     src.seekg(0);
 
     cout << "Loading " << path << endl;
@@ -64,13 +71,15 @@ osm_loader::osm_loader(const string& path, vis_graph &ref_graph)
     //pgraph_->reserve(1000000, 2000000);
 }
 
-void osm_loader::load()
+template<typename V, typename E>
+void osm_loader<V, E>::load()
 {
     load_verts();
     load_edges();
 }
 
-void osm_loader::load_verts()
+template<typename V, typename E>
+void osm_loader<V, E>::load_verts()
 {
     cout << "Loading verts" << endl;
 
@@ -81,7 +90,7 @@ void osm_loader::load_verts()
         const xml_id id = atol(node->first_attribute("id")->value());
         const vis_coord coord (atof(node->first_attribute("lat")->value()),
                                atof(node->first_attribute("lon")->value()));
-        vis_vertex_data data (coord);
+        vertex_data data (coord);
         data.orig_id = id;
 
         verts_map_[id] = pgraph_->add_vertex(data);
@@ -92,7 +101,8 @@ void osm_loader::load_verts()
     }
 }
 
-void osm_loader::load_edges()
+template<typename V, typename E>
+void osm_loader<V, E>::load_edges()
 {
     cout << "Loading edges" << endl;
 
@@ -105,7 +115,8 @@ void osm_loader::load_edges()
 
 }
 
-void osm_loader::load_way(xml_node *root)
+template<typename V, typename E>
+void osm_loader<V, E>::load_way(xml_node *root)
 {
     const char node_name[] = "nd";
     xml_node *current = root->first_node(node_name);
@@ -118,7 +129,8 @@ void osm_loader::load_way(xml_node *root)
     }
 }
 
-void osm_loader::load_edge(xml_node *node1, xml_node *node2)
+template<typename V, typename E>
+void osm_loader<V, E>::load_edge(xml_node *node1, xml_node *node2)
 {
     const xml_id xml_vid1 = atol(node1->first_attribute("ref")->value());
     const xml_id xml_vid2 = atol(node2->first_attribute("ref")->value());
@@ -129,13 +141,13 @@ void osm_loader::load_edge(xml_node *node1, xml_node *node2)
     const vertex_id vid1 = unordered_safe_find_const(verts_map_, xml_vid1);
     const vertex_id vid2 = unordered_safe_find_const(verts_map_, xml_vid2);
 
-    const vis_vertex &v1 = pgraph_->get_vertex(vid1);
-    const vis_vertex &v2 = pgraph_->get_vertex(vid2);
+    const vertex &v1 = pgraph_->get_vertex(vid1);
+    const vertex &v2 = pgraph_->get_vertex(vid2);
 
     const vis_coord c = v1.get_data().c - v2.get_data().c;
     const my_graph::edge_weight len = static_cast<my_graph::edge_weight>(::sqrt (c.x*c.x + c.y*c.y));
 
-    const vis_edge_data data (len);
+    const edge_data data (len);
 
     pgraph_->add_edge(vid1, vid2, data);
 
@@ -146,7 +158,8 @@ void osm_loader::load_edge(xml_node *node1, xml_node *node2)
         cout << pgraph_->e_count() << " edges loaded" << endl;
 }
 
-void osm_loader::update_borders(const vis_coord &coord)
+template<typename V, typename E>
+void osm_loader<V, E>::update_borders(const vis_coord &coord)
 {
     if (coord.x < mins.x) mins.x = coord.x;
     if (coord.y < mins.y) mins.y = coord.y;
@@ -154,10 +167,11 @@ void osm_loader::update_borders(const vis_coord &coord)
     if (coord.y > maxs.y) maxs.y = coord.y;
 }
 
-void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs)
+template<typename V, typename E>
+void load_osm(const string &path, my_graph::graph_base<V, E> &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs)
 {
-    osm_loader loader (path, ref_graph);
+    osm_loader<V, E> loader (path, ref_graph);
     loader.load();
     ref_mins = loader.get_mins();
     ref_maxs = loader.get_maxs();
-}*/
+}

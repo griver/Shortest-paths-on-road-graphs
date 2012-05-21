@@ -206,7 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\base_visualizer_client.h" />
-    <ClInclude Include="filter_graph.h" />
+    <ClInclude Include="..\shared\graph_base.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="visualizer_client.h" />
     <ClInclude Include="..\shared\client.h" />
@@ -219,9 +219,6 @@
     <ClInclude Include="..\shared\common_algorithms\dijkstra.h" />
     <ClInclude Include="..\shared\common_algorithms\my_heap.h" />
     <ClInclude Include="..\shared\common_algorithms\path.h" />
-    <ClInclude Include="..\shared\new_vis_graph\edge.h" />
-    <ClInclude Include="..\shared\new_vis_graph\graph.h" />
-    <ClInclude Include="..\shared\new_vis_graph\vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

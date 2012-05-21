@@ -229,7 +229,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\loaders\new_osm_loader.cpp" />
     <ClCompile Include="reach_client.cpp" />
     <ClCompile Include="reach_updater.cpp" />
     <ClCompile Include="shortcuts.cpp" />
@@ -244,6 +243,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\base_visualizer_client.h" />
+    <ClInclude Include="..\shared\graph_base.h" />
+    <ClInclude Include="..\shared\osm_loader.h" />
     <ClInclude Include="graph_filter.h" />
     <ClInclude Include="reach_client.h" />
     <ClInclude Include="reach_dijkstra.h" />
