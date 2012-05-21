@@ -17,17 +17,27 @@ namespace my_algorithm {
 			return true;
 		}
 
-		virtual bool on_push(vertex_t const &vertex) {
+		virtual bool on_push(vertex_t const &parent, vertex_t const &vertex) {
 			if(has_next())
-				return next->on_push(vertex);
+				return next->on_push(parent, vertex);
 			return true;
+		}
+		virtual bool on_decrease(vertex_t const &parent, vertex_t const &vertex) {
+			if(has_next())
+				return next->on_decrease(parent, vertex);
+			return true;
+		}
+
+		virtual void clear() {
+			if(has_next())
+				return next->clear();
 		}
 
 		bool has_next() const {
 			//cout << "in has_next() of" << name <<" next = " << next.get() << endl;  
 			return (next.get() != 0);
 		}
-
+		
 		void add_filter(shared_ptr<queue_filter> filter) {
 			if(has_next()) {
 				next->add_filter(filter);
@@ -60,7 +70,7 @@ namespace my_algorithm {
 		}	
 
 		virtual ~queue_filter() {
-			cout<<" destructor for "<<name << endl;
+			//cout<<" destructor for "<<name << endl;
 			if(has_next())
 				next.reset();
 		}

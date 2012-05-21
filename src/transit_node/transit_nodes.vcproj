@@ -576,6 +576,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\perfcounter.h"
+				>
+			</File>
+			<File
 				RelativePath="..\shared\visualizer.h"
 				>
 			</File>
@@ -593,6 +597,10 @@
 			</File>
 			<File
 				RelativePath=".\priority_queue.h"
+				>
+			</File>
+			<File
+				RelativePath=".\request_data.h"
 				>
 			</File>
 			<File
@@ -615,6 +623,14 @@
 		<Filter
 			Name="transit_node"
 			>
+			<File
+				RelativePath=".\distance_table.h"
+				>
+			</File>
+			<File
+				RelativePath=".\tnr_path_finder.h"
+				>
+			</File>
 			<Filter
 				Name="utils"
 				>
@@ -627,11 +643,71 @@
 					>
 				</File>
 				<File
-					RelativePath=".\tnr_algorithms.h"
+					RelativePath=".\node_selector.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tnr_checkers.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tnr_loader.h"
 					>
 				</File>
 				<File
 					RelativePath=".\tnr_utils.h"
+					>
+				</File>
+				<File
+					RelativePath=".\transit_node_filter.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="exceptions"
+				>
+				<File
+					RelativePath=".\mapping_exception.h"
+					>
+				</File>
+				<File
+					RelativePath=".\path_building_exception.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="preprocessing"
+				>
+				<File
+					RelativePath=".\access_node_preprocessing.h"
+					>
+				</File>
+				<File
+					RelativePath=".\create_transit_node_graph.h"
+					>
+				</File>
+				<File
+					RelativePath=".\distance_table_preprocessor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\tnr_algorithms.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="full"
+				>
+				<File
+					RelativePath=".\full_access_nodes_checkers.h"
+					>
+				</File>
+				<File
+					RelativePath=".\full_distance_table_preprocessor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\full_tnr_path_finder.h"
 					>
 				</File>
 			</Filter>

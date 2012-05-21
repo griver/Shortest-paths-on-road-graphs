@@ -29,7 +29,7 @@ namespace my_algorithm{
 	public:
 		my_priority_queue (): size(0), allocated(0) {};
 		void insert(my_graph::edge_weight dist, my_graph::vertex_id id) {
-			heap_indexes[id] = size;
+			heap_indexes[id] = (int)size;
 			heap[size].id = id;
 			++size;
 			decrease_key(dist, id);
@@ -40,13 +40,21 @@ namespace my_algorithm{
 			heap[index].dist = dist;
 			while(index > 0 && heap[index] < heap[get_parent_id(index)]) {
 				elem_swap(index, get_parent_id(index));
-				index = get_parent_id(index);
+				index = (int)get_parent_id(index);
 			}
 		}
 		void reserve(size_t number) {
+			size = 0;
 			allocated = number;
 			heap.resize(allocated);
+			heap.assign(allocated, queue_vertex());  // может и не надо.
 			heap_indexes.assign(allocated, -1);
+		}
+
+		void clear() {
+			size = 0;
+			heap.clear();
+			heap_indexes.clear();
 		}
 
 		inline queue_vertex top() const {
@@ -103,10 +111,10 @@ namespace my_algorithm{
 			std::swap(heap[a], heap[b]);
 		}
 
-		int get_size() const {
+		size_t get_size() const {
 			return this->size;
 		}
-		inline bool is_in_Queue(int id) {
+		inline bool is_in_Queue(size_t id) {
 			if(id < heap_indexes.size() && id >= 0) 
 				if(heap_indexes[id] != -1)
 					return true;
