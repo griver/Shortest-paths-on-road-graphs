@@ -41,6 +41,8 @@ using boost::scoped_array;
 #include <boost/shared_ptr.hpp>
 using boost::shared_ptr;
 
+#include <cmath>
+
 #if defined (NDEBUG) || !defined (_WIN32)
     #define USE_BOOST_HASHMAP
 #else

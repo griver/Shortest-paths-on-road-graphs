@@ -23,6 +23,7 @@ struct tree_desc
 
 struct base_visualizer_client : client
 {
+    
     base_visualizer_client (visualizer *pvis, draw_scope *pscope);
 
     void zoom (const coord<float> &mins, const coord<float> &maxs);
@@ -61,6 +62,10 @@ private:
 template <typename V, typename E>
 boost::optional<my_graph::vertex_id> base_visualizer_client::get_vertex(const my_graph::graph_base<V, E> &g, const coord<int> &c)
 {
+    typedef my_graph::graph_base<V, E> graph;
+    typedef my_graph::vertex_base<V, E> vertex;
+    typedef my_graph::edge_base<V, E> edge;
+
     const int TOLERANCE = 3;
 
     boost::optional<my_graph::vertex_id> res;
@@ -80,6 +85,10 @@ boost::optional<my_graph::vertex_id> base_visualizer_client::get_vertex(const my
 template <typename V, typename E>
 graph_desc base_visualizer_client::upload_graph(const my_graph::graph_base<V, E> &g)
 {
+    typedef my_graph::graph_base<V, E> graph;
+    typedef my_graph::vertex_base<V, E> vertex;
+    typedef my_graph::edge_base<V, E> edge;
+
     graph_desc desc;
     desc.vb_size = g.v_count();
     desc.vb = pd_->create_vb(desc.vb_size);
@@ -92,16 +101,16 @@ graph_desc base_visualizer_client::upload_graph(const my_graph::graph_base<V, E>
     b_edge *pe = pd_->lock_ib(desc.ib, 0, desc.ib_size);
 
     vertex_index = 0;
-    for (vis_graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it, ++vertex_index)
+    for (graph::v_const_iterator it = g.v_begin(); it != g.v_end(); ++it, ++vertex_index)
     {
-        const vis_vertex &v = *it;
-        const vis_vertex_data& data = v.data;
+        const vertex &v = *it;
+        const V& data = v.data;
 
         pv[vertex_index].x = static_cast<float>(data.c.x);
         pv[vertex_index].y = static_cast<float>(data.c.y);
         pv[vertex_index].z = 0;
 
-        for (vis_vertex::adj_iterator e_it = v.out_begin(); e_it != v.out_end(); ++e_it)
+        for (vertex::adj_iterator e_it = v.out_begin(); e_it != v.out_end(); ++e_it)
         {
             size_t edge_index = (*e_it).e;
             pe[edge_index].v1 = vertex_index;

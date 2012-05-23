@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../shared/new_vis_graph.h"
 #include "../shared/common_algorithms/path.h"
 
 typedef my_graph::vertex_id vertex_id;
@@ -21,7 +20,7 @@ DWORD g_dijkstra_check_time;
 class reach_updater
 {
 public:
-    void calculate_reaches(const vis_graph &graph, vertex_id root, edge_weight epsilon, reach_map &ref_reaches);
+    void calculate_reaches(const reach_graph &graph, vertex_id root, edge_weight epsilon, reach_map &ref_reaches);
     const path_map &get_tree() {return tree_;};
     const candidate_map &get_candidates() {return candidates_;};
 
@@ -33,7 +32,7 @@ private:
 
 private:
 
-    const vis_graph *pgraph_;
+    const reach_graph *pgraph_;
     unordered_set<vertex_id> saved_;
     path_map tree_;
     candidate_map candidates_;
@@ -46,7 +45,7 @@ private:
 };
 
 
-void reach_updater::calculate_reaches(const vis_graph &graph, vertex_id root, edge_weight epsilon, reach_map &ref_reaches)
+void reach_updater::calculate_reaches(const reach_graph &graph, vertex_id root, edge_weight epsilon, reach_map &ref_reaches)
 {
     pgraph_ = &graph;
     root_ = root;
@@ -169,7 +168,7 @@ void reach_updater::update_reaches_with_tree()
 
 edge_weight reach_updater::update_reaches_recursive(vertex_id id)
 {
-    const vis_vertex &v = pgraph_->get_vertex(id);
+    const reach_vertex &v = pgraph_->get_vertex(id);
     const path_vertex &pv = unordered_safe_find_const(tree_, id);
 
     if (visited.count(id) != 0)
@@ -180,7 +179,7 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
     visited.insert(id);
     
     edge_weight height = 0;
-    for (vis_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
+    for (reach_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
     {
         if (tree_.count (it->v) == 0)
             continue;
@@ -195,7 +194,7 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
         /*if (it->v == 266927)
         {
             cout << "coming from " << id << endl;
-            const vis_edge &e = pgraph_->get_edge(it->e);
+            const reach_edge &e = pgraph_->get_edge(it->e);
             cout << "e " << it->e << ": len " << e.data.len << endl;
         }*/
         edge_weight new_height = update_reaches_recursive (it->v) + pv_child.d - pv.d;
@@ -243,22 +242,22 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
 
         if (candidate_id.is_initialized())
         {
-            const vis_vertex &v = pgraph_->get_vertex(id);
-            for (vis_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
+            const reach_vertex &v = pgraph_->get_vertex(id);
+            for (reach_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
                 candidates_[it->v] = *candidate_id;
         }
     }
 }*/
 
-/*void test_reach_updater(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
+/*void test_reach_updater(const reach_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
 {
     const size_t N_THREADS = 2;
     const size_t verts_for_thread = (ref_graph.v_count() + N_THREADS - 1) / N_THREADS;
 
-    const vis_vertex &v1 = ref_graph.get_vertex(start);
-    const vis_vertex &v2 = ref_graph.get_vertex(end);
+    const reach_vertex &v1 = ref_graph.get_vertex(start);
+    const reach_vertex &v2 = ref_graph.get_vertex(end);
 
-    vis_coord d = v2.data.c - v1.data.c;
+    reach_coord d = v2.data.c - v1.data.c;
     edge_weight dist = sqrt(d.x * d.x + d.y * d.y);
 
     reach_map reaches[N_THREADS];
@@ -289,8 +288,8 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
             ++removed_counter;
         else
         {
-            const vis_vertex &v = ref_graph.get_vertex(id);
-            for (vis_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
+            const reach_vertex &v = ref_graph.get_vertex(id);
+            for (reach_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
             {
                 const path_vertex pv (it->v, 0, it->e, id);
                 ref_out[it->v] = pv;
@@ -305,9 +304,9 @@ path_map g_blue;
 reach_map g_heights;
 reach_map g_reaches;
 
-void test_reach_updater(const vis_graph &ref_graph, vertex_id start, edge_weight dist, path_map &ref_out, path_map &ref_out2)
+void test_reach_updater(const reach_graph &ref_graph, vertex_id start, edge_weight dist, path_map &ref_out, path_map &ref_out2)
 {
-    const vis_vertex &v1 = ref_graph.get_vertex(start);
+    const reach_vertex &v1 = ref_graph.get_vertex(start);
 
     cout << "Epsilon: " << dist << endl;
 
@@ -365,7 +364,7 @@ void test_reach_updater(const vis_graph &ref_graph, vertex_id start, edge_weight
 
 }
 
-void test_reach_tester (const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
+void test_reach_tester (const reach_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
 {
     const candidate_map &candidates = g_updater.get_candidates();
     const path_map &tree = g_updater.get_tree();
@@ -386,29 +385,29 @@ void test_reach_tester (const vis_graph &ref_graph, vertex_id start, vertex_id e
         cout << "AAAA SELF-CANDIDATE!!!" << endl;
 }
 
-void add_star (const vis_graph &ref_graph, vertex_id id, path_map &ref_out)
+void add_star (const reach_graph &ref_graph, vertex_id id, path_map &ref_out)
 {
-    const vis_vertex &v = ref_graph.get_vertex(id);
-    for (vis_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
+    const reach_vertex &v = ref_graph.get_vertex(id);
+    for (reach_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
     {
         const path_vertex pv (it->v, 0, it->e, id);
         ref_out[it->v] = pv;
     }
 }
 
-void test_reach_updater_new(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
+void test_reach_updater_new(const reach_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
 {
-    const vis_vertex &v1 = ref_graph.get_vertex(start);
-    const vis_vertex &v2 = ref_graph.get_vertex(end);
+    const reach_vertex &v1 = ref_graph.get_vertex(start);
+    const reach_vertex &v2 = ref_graph.get_vertex(end);
 
-    vis_coord d = v2.data.c - v1.data.c;
+    reach_coord d = v2.data.c - v1.data.c;
     edge_weight dist = sqrt(d.x * d.x + d.y * d.y);
     cout << "Epsilon: " << dist << endl;
 
     
     size_t counter = 0;
     reach_map big_reaches;
-    for (vis_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
+    for (reach_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
     {
         vertex_id id = it - ref_graph.v_begin();
 
@@ -424,7 +423,7 @@ void test_reach_updater_new(const vis_graph &ref_graph, vertex_id start, vertex_
     cout << "Big reaches calculated" << endl;
 
     reach_map little_reaches;
-    for (vis_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
+    for (reach_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
     {
         vertex_id id = it - ref_graph.v_begin();
 
@@ -449,12 +448,12 @@ void test_reach_updater_new(const vis_graph &ref_graph, vertex_id start, vertex_
 
 }
 
-void test_candidates(const vis_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
+void test_candidates(const reach_graph &ref_graph, vertex_id start, vertex_id end, path_map &ref_out, path_map &ref_out2)
 {
-    const vis_vertex &v1 = ref_graph.get_vertex(start);
-    const vis_vertex &v2 = ref_graph.get_vertex(end);
+    const reach_vertex &v1 = ref_graph.get_vertex(start);
+    const reach_vertex &v2 = ref_graph.get_vertex(end);
 
-    vis_coord d = v2.data.c - v1.data.c;
+    reach_coord d = v2.data.c - v1.data.c;
     edge_weight dist = sqrt(d.x * d.x + d.y * d.y);
     cout << "Epsilon: " << dist << endl;
 
@@ -490,15 +489,15 @@ void test_candidates(const vis_graph &ref_graph, vertex_id start, vertex_id end,
 
 }
 
-vis_graph *cut_graph(const vis_graph &src, const reach_map &reaches, edge_weight epsilon)
+reach_graph *cut_graph(const reach_graph &src, const reach_map &reaches, edge_weight epsilon)
 {
-    vis_graph *pdst = new vis_graph();
-    vis_graph &dst = *pdst;
+    reach_graph *pdst = new reach_graph();
+    reach_graph &dst = *pdst;
     
     unordered_map<vertex_id, vertex_id> verts_map;
     verts_map.rehash(src.v_count());
 
-    for (vis_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
+    for (reach_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
     {
 #if defined (GRAPH_ITER_WRAPPER_CHECK)
 #error Fixme: V_ITER_WRAPPER normal iterator wrapper needed
@@ -513,7 +512,7 @@ vis_graph *cut_graph(const vis_graph &src, const reach_map &reaches, edge_weight
         }
     }
 
-    for (vis_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
+    for (reach_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
     {
 #if defined (GRAPH_ITER_WRAPPER_CHECK)
 #error Fixme: V_ITER_WRAPPER normal iterator wrapper needed
@@ -524,15 +523,15 @@ vis_graph *cut_graph(const vis_graph &src, const reach_map &reaches, edge_weight
         if (m1 == verts_map.end())
             continue;
 
-        const vis_vertex &src_v = *it;
-        for (vis_vertex::adj_iterator adj = src_v.out_begin(); adj != src_v.out_end(); ++adj)
+        const reach_vertex &src_v = *it;
+        for (reach_vertex::adj_iterator adj = src_v.out_begin(); adj != src_v.out_end(); ++adj)
         {
             auto m2 = verts_map.find(adj->v);
             if (m2 == verts_map.end())
                 continue;
 
             
-            const vis_edge &e = src.get_edge(adj->e);
+            const reach_edge &e = src.get_edge(adj->e);
             dst.add_edge(m1->second, m2->second, e.get_data());
         }
 
@@ -544,7 +543,7 @@ vis_graph *cut_graph(const vis_graph &src, const reach_map &reaches, edge_weight
     return pdst;
 }
 
-vis_graph *run_reaches_update(const vis_graph &ref_graph, edge_weight dist)
+reach_graph *run_reaches_update(const reach_graph &ref_graph, edge_weight dist)
 {
     const size_t PRINT_EACH_VERTS = 10000;
     const DWORD PRINT_EACH_MS = 30000;
@@ -557,7 +556,7 @@ vis_graph *run_reaches_update(const vis_graph &ref_graph, edge_weight dist)
     DWORD last_time = timeGetTime();
     reach_map little_reaches;
     size_t counter = 0;
-    for (vis_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
+    for (reach_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
     {
         vertex_id id = ref_graph.get_vertex_id(it);
 
@@ -591,7 +590,7 @@ vis_graph *run_reaches_update(const vis_graph &ref_graph, edge_weight dist)
 }
 
 
-void draw_circle (const vis_graph &ref_graph, vertex_id start, edge_weight dist, path_map &ref_out, path_map &ref_out2)
+void draw_circle (const reach_graph &ref_graph, vertex_id start, edge_weight dist, path_map &ref_out, path_map &ref_out2)
 {
     reach_updater updater;
     reach_map reaches;
@@ -613,7 +612,7 @@ void draw_circle (const vis_graph &ref_graph, vertex_id start, edge_weight dist,
 
 }
 
-void test_circles (const vis_graph &g)
+void test_circles (const reach_graph &g)
 {
     const int N = 100;
 

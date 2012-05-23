@@ -229,6 +229,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="penalties_preprocessor.cpp" />
     <ClCompile Include="reach_client.cpp" />
     <ClCompile Include="reach_updater.cpp" />
     <ClCompile Include="shortcuts.cpp" />
@@ -247,8 +248,11 @@
     <ClInclude Include="..\shared\graph_filter.h" />
     <ClInclude Include="..\shared\osm_loader.h" />
     <ClInclude Include="reach_client.h" />
+    <ClInclude Include="reach_common.h" />
     <ClInclude Include="reach_dijkstra.h" />
+    <ClInclude Include="reach_graph.h" />
     <ClInclude Include="reach_updater.h" />
+    <ClInclude Include="shortcuts.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\shared\client.h" />
     <ClInclude Include="..\shared\common.h" />

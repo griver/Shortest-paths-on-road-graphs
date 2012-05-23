@@ -33,6 +33,9 @@
     <ClCompile Include="reach_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="penalties_preprocessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="reach_dijkstra.h">
@@ -79,6 +82,15 @@
     </ClInclude>
     <ClInclude Include="..\shared\graph_filter.h">
       <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="reach_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="reach_graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shortcuts.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

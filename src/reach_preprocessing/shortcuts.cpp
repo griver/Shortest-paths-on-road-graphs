@@ -1,28 +1,49 @@
 #include "stdafx.h"
-#include "../shared/new_vis_graph.h"
+
 
 using my_graph::vertex_id;
 using my_graph::edge_id;
 using my_graph::vert_edge;
 
-boost::optional<edge_id> try_to_add_shortcut(vis_graph &g, vertex_id id1, vertex_id id2, const vis_edge_data &data)
+#include "shortcuts.h"
+
+namespace 
 {
-    const vis_vertex &v = g.get_vertex(id1);
+    int g_mult_counter = 0;
+    edge_weight g_max_diff = 0;
+}
+vertex_id g_marked_v1 = 0, g_marked_v2 = 0;
+
+boost::optional<edge_id> try_to_add_shortcut(reach_graph &g, vertex_id id1, vertex_id id2, const reach_edge_data &data)
+{
+    const reach_vertex &v = g.get_vertex(id1);
+
     for (auto it = v.out_begin(); it != v.out_end(); ++it)
     {
         if (it->v == id2)
         {
-            const vis_edge &e = g.get_edge(it->e);
+            const reach_edge &e = g.get_edge(it->e);
             if (e.get_data().len < data.len)
+            {
                 return boost::optional<edge_id> ();
+            }
+            
+            edge_weight d = e.get_data().len - data.len;
+            if (d > g_max_diff) 
+            {
+                g_marked_v1 = id1;
+                g_marked_v2 = id2;
+                g_max_diff = d;
+            }
+            ++g_mult_counter;
         }
     }
     return g.add_edge(id1, id2, data);
 }
 
-void add_shortcuts(vis_graph &g, size_t degree)
+void add_shortcuts(reach_graph &g, size_t degree, vector<shortcut> &dst, edge_id next_edge)
 {
-    const my_graph::edge_weight SHORTCUT_EPSILON = 0.00001;
+    const my_graph::edge_weight SHORTCUT_EPSILON = 0;
     vector<bool> shortcutted(g.v_count(), false);
     vector<vert_edge> adj;
 
@@ -47,9 +68,9 @@ void add_shortcuts(vis_graph &g, size_t degree)
             auto j = i;
             for (++j; j != adj.end(); ++j)
             {
-                const vis_edge &e1 = g.get_edge(i->e);
-                const vis_edge &e2 = g.get_edge(j->e);
-                const vis_edge_data data(e1.data.len + e2.data.len);
+                const reach_edge &e1 = g.get_edge(i->e);
+                const reach_edge &e2 = g.get_edge(j->e);
+                const reach_edge_data data(e1.data.len + e2.data.len);
                 try_to_add_shortcut(g, i->v, j->v, data);
             }
         }*/
@@ -58,21 +79,39 @@ void add_shortcuts(vis_graph &g, size_t degree)
         {
             for (size_t j = i + 1; j < adj.size(); ++j)
             {
-                const vis_edge &e1 = g.get_edge(adj[i].e);
-                const vis_edge &e2 = g.get_edge(adj[j].e);
-                const vis_edge_data data(e1.data.len + e2.data.len - SHORTCUT_EPSILON);
-                try_to_add_shortcut(g, adj[i].v, adj[j].v, data);
+                const reach_edge &e1 = g.get_edge(adj[i].e);
+                const reach_edge &e2 = g.get_edge(adj[j].e);
+                const reach_edge_data data(e1.data.len + e2.data.len - SHORTCUT_EPSILON);
+                optional<edge_id> res = try_to_add_shortcut(g, adj[i].v, adj[j].v, data);
+
+                if (res.is_initialized())
+                {
+                    dst.push_back(shortcut(next_edge, 2));
+                    shortcut &s = dst.back();
+                    
+                    s.verts[0] = adj[i].v;
+                    s.verts[1] = id;
+                    s.verts[2] = adj[j].v;
+
+                    s.edges[0] = adj[i].e;
+                    s.edges[1] = adj[j].e;
+
+                    shortcutted[id] = true;
+                    ++n_shortcuts;
+                    ++next_edge;
+                }
             }
         }
 
-        shortcutted[id] = true;
-        ++n_shortcuts;
     }
 
     cout << "Shortcuts: " << n_shortcuts << endl;
+    cout << "Shortcuts mult counter: " << g_mult_counter << endl;
+    cout << "Shortcuts max diff: " << g_max_diff << endl;
+
 }
 
-void add_shortcuts_temp (vis_graph &g)
+void add_shortcuts_temp (reach_graph &g)
 {
     vector<bool> shortcutted(g.v_count(), false);
 
@@ -81,7 +120,7 @@ void add_shortcuts_temp (vis_graph &g)
     {
         while (g.get_vertex(current).get_degree() == 2 && !shortcutted[current])
         {
-            const vis_vertex &v = g.get_vertex(current);
+            const reach_vertex &v = g.get_vertex(current);
             const vert_edge &ve = (v.get_adj()[0].v == prev) ? v.get_adj()[1] : v.get_adj()[0];
 
             shortcutted[current] = true;
@@ -117,7 +156,7 @@ void add_shortcuts_temp (vis_graph &g)
         if (shortcut_length > max_length)
             max_length = shortcut_length;
         
-        g.add_edge(start, end, vis_edge_data(shortcut_length));
+        g.add_edge(start, end, reach_edge_data(shortcut_length));
         ++n_shortcuts;
     }
     cout << n_shortcuts << endl;

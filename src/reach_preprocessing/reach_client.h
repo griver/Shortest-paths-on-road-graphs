@@ -2,8 +2,14 @@
 
 #include "../shared/base_visualizer_client.h"
 
-struct reach_client : base_visualizer_client
+class reach_client : public base_visualizer_client
 {
+public:
+    typedef reach_vertex vertex;
+    typedef reach_edge edge;
+    typedef reach_graph graph;
+
+public:
     reach_client (const string &filename, visualizer *pvis, draw_scope *pscope);
     ~reach_client();
 
@@ -22,11 +28,12 @@ struct reach_client : base_visualizer_client
 private:
     void print_stats() const;
     void delete_verts();
+    void check_multiple_edges();
 private:
     bool draw_graph;
     bool draw_shortcuts;
 
-    boost::scoped_ptr<vis_graph> pgraph_;
+    boost::scoped_ptr<reach_graph> pgraph_;
     graph_desc g_desc;
 
     boost::optional<my_graph::vertex_id> selected_;

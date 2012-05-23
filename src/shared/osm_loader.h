@@ -13,7 +13,7 @@ public:
 private:
     typedef rapidxml::xml_document<> xml_document;
     typedef rapidxml::xml_node<> xml_node;
-    typedef size_t xml_id;
+    typedef unsigned __int64 xml_id;
     typedef my_graph::vertex_id vertex_id;
 
     static const size_t PRINT_EVERY = 100000;
@@ -81,6 +81,9 @@ void osm_loader<V, E>::load()
 template<typename V, typename E>
 void osm_loader<V, E>::load_verts()
 {
+    const double M_PI = 3.14159265358979323846;
+
+    
     cout << "Loading verts" << endl;
 
     const char node_name[] = "node";
@@ -89,13 +92,13 @@ void osm_loader<V, E>::load_verts()
     {
         const xml_id id = atol(node->first_attribute("id")->value());
 
-        const double x = atof(node->first_attribute("lat")->value());
-        const double y = atof(node->first_attribute("lon")->value());
+        const double lat = atof(node->first_attribute("lat")->value());
+        const double y = 180/M_PI * log(tan(M_PI/4+lat*(M_PI/180)/2));
+        const double x = atof(node->first_attribute("lon")->value());
 
         const vis_coord coord (static_cast<vis_coord::value_type>(x), static_cast<vis_coord::value_type>(y));
 
-        vertex_data data (coord);
-        data.orig_id = id;
+        vertex_data data (coord, id);
 
         verts_map_[id] = pgraph_->add_vertex(data);
         update_borders(coord);
@@ -148,7 +151,7 @@ void osm_loader<V, E>::load_edge(xml_node *node1, xml_node *node2)
     const vertex &v1 = pgraph_->get_vertex(vid1);
     const vertex &v2 = pgraph_->get_vertex(vid2);
 
-    const vis_coord c = v1.get_data().c - v2.get_data().c;
+    const vis_coord c = v1.get_data().c - v2.get_data().c; 
     const my_graph::edge_weight len = static_cast<my_graph::edge_weight>(::sqrt (c.x*c.x + c.y*c.y));
 
     const edge_data data (len);

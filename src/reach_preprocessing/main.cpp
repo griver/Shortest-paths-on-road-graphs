@@ -42,7 +42,6 @@ void test_reach_tester2 (const vis_graph &g,
 
 int main(int argc, char* argv[])
 {
-    cout << sizeof(vis_vertex) << ", " << sizeof(vis_edge) << endl;
 
     if (argc < 2) 
     {

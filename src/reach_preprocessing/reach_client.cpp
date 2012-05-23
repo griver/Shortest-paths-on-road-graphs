@@ -3,34 +3,48 @@
 #include "../shared/osm_loader.h"
 #include "reach_client.h"
 #include "reach_dijkstra.h"
+#include "shortcuts.h"
 
 
-void add_shortcuts (vis_graph &g, size_t degree);
-void test_reach_updater(const vis_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
-void draw_circle(const vis_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
-void test_circles (const vis_graph &g);
-//vis_graph *run_reaches_update(const vis_graph &ref_graph, my_graph::vertex_id start, my_graph::vertex_id end)
-vis_graph *run_reaches_update(const vis_graph &ref_graph, my_graph::edge_weight dist);
+void test_reach_updater(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
+void draw_circle(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
+void test_circles (const reach_graph &g);
+//reach_graph *run_reaches_update(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::vertex_id end)
+reach_graph *run_reaches_update(const reach_graph &ref_graph, my_graph::edge_weight dist);
 
+
+/*void inject_edge_ids(reach_graph &g)
+{
+    for (auto it = g.v_begin(); it != g.v_end(); ++g)
+    {
+        const vertex_id id = g.get_vertex_id(it);
+        it->get_data().
+    }
+}*/
 
 reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope *pscope)
     : base_visualizer_client(pvis, pscope)
-    , pgraph_(new vis_graph())
+    , pgraph_(new reach_graph())
     , shortcuts_added (false)
     
     , draw_graph (true)
     , draw_shortcuts (false)
 {
-    vis_coord mins, maxs;
+    reach_coord mins, maxs;
 
     load_osm(filename, *pgraph_, mins, maxs);
 
     print_stats();
     n_original_edges = pgraph_->e_count();
-    //add_shortcuts(*pgraph_, 3);
+    
+    vector<shortcut> shortcuts;
+    add_shortcuts(*pgraph_, 3, shortcuts, pgraph_->e_count());
+    cout << shortcuts.size() << " shortcuts in array" << endl;
 
     g_desc = upload_graph(*pgraph_);
     zoom(mins, maxs);
+
+    check_multiple_edges();
 }
 
 reach_client::~reach_client()
@@ -39,6 +53,7 @@ reach_client::~reach_client()
     free_ib(g_desc.ib);
 }
 
+extern vertex_id g_marked_v1, g_marked_v2;
 
 void reach_client::draw(visualizer &d, draw_scope &scope)
 {
@@ -107,6 +122,11 @@ void reach_client::draw(visualizer &d, draw_scope &scope)
         d.set_color(0, 255, 0);
         draw_vertex(*selected_);
     }
+    d.set_color(255, 0, 255);
+    draw_vertex (g_marked_v1);
+    draw_vertex (g_marked_v2);
+
+
 }
 
 void reach_client::on_mouse_down(int x, int y, int button)
@@ -141,11 +161,11 @@ void reach_client::on_key_down(int key)
     case 'i':
         if (selected_.is_initialized())
         {
-            const vis_vertex &v = pgraph_->get_vertex(*selected_);
-            cout << "Vertex " << *selected_ << ", osm id " << v.get_data().orig_id << endl;
+            const reach_vertex &v = pgraph_->get_vertex(*selected_);
+            cout << "Vertex " << *selected_ << /*", osm id " << v.get_data().osm_id <<*/ endl;
             for (auto it = v.out_begin(); it != v.out_end(); ++it)
             {
-                const vis_edge &e = pgraph_->get_edge(it->e);
+                const reach_edge &e = pgraph_->get_edge(it->e);
                 cout << "  " << "vertex " << it->v << " edge " << it->e << " len " << e.get_data().len << endl;
             }
         }
@@ -245,9 +265,9 @@ void reach_client::delete_verts()
     if (marked_.empty())
         return;
 
-    vis_graph *dst = new vis_graph();
+    reach_graph *dst = new reach_graph();
 
-    my_graph::graph_filter<vis_vertex_data, vis_edge_data> filter;
+    my_graph::graph_filter<reach_vertex_data, reach_edge_data> filter;
     filter.set_verts_filter([&](my_graph::vertex_id id) -> bool 
     {
         return marked_.count(id) == 0;
@@ -264,4 +284,27 @@ void reach_client::delete_verts()
 
     marked_.clear();
     selected_.reset();
+}
+
+void reach_client::check_multiple_edges()
+{
+    size_t counter = 0;
+    for (auto it = pgraph_->v_begin(); it != pgraph_->v_end(); ++it)
+    {
+        const vertex_id id = pgraph_->get_vertex_id(it);
+        const vertex& v = *it;
+        unordered_set<vertex_id> adj_set;
+        
+        for (auto adj_it = v.out_begin(); adj_it != v.out_end(); ++adj_it)
+        {
+            if (adj_set.count(adj_it->v) != 0)
+            {
+                //cout << "MULTIPLE PAIR: " << id << " - " << adj_it->v << endl;
+                ++counter;
+            }
+            adj_set.insert(adj_it->v);
+        }
+    }
+
+    cout << "Total multiple edges: " << counter << endl;
 }

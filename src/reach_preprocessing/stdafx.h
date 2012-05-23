@@ -5,9 +5,13 @@
 
 #pragma once
 
+#define DISABLE_VIS
+
 #include <Windows.h>
 #include "../shared/common.h"
 #include "../rapidxml/rapidxml.hpp"
 
 #include <omp.h>
+
+#include "reach_common.h"
 

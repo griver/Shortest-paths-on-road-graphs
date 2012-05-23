@@ -15,7 +15,7 @@ d3d_vis::d3d_vis (int width, int height)
     , bg_color_ (D3DCOLOR_XRGB(255,255,255))
     , ofs_ (0, 0, 0)
     , scale_ (1.0f)
-    , rot_ (-3.14159f * 0.5f)
+    , rot_ (0)
 
     , pdevice_      (NULL)
     , pfont_        (NULL)
