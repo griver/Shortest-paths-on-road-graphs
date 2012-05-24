@@ -92,5 +92,8 @@
     <ClInclude Include="shortcuts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="graph_serialize.h">
+      <Filter>shared</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

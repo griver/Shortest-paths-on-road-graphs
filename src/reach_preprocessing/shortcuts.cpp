@@ -41,7 +41,7 @@ boost::optional<edge_id> try_to_add_shortcut(reach_graph &g, vertex_id id1, vert
     return g.add_edge(id1, id2, data);
 }
 
-void add_shortcuts(reach_graph &g, size_t degree, vector<shortcut> &dst, edge_id next_edge)
+edge_id add_shortcuts(reach_graph &g, size_t degree, vector<shortcut> &dst, edge_id next_edge)
 {
     const my_graph::edge_weight SHORTCUT_EPSILON = 0;
     vector<bool> shortcutted(g.v_count(), false);
@@ -93,8 +93,8 @@ void add_shortcuts(reach_graph &g, size_t degree, vector<shortcut> &dst, edge_id
                     s.verts[1] = id;
                     s.verts[2] = adj[j].v;
 
-                    s.edges[0] = adj[i].e;
-                    s.edges[1] = adj[j].e;
+                    s.edges[0] = e1.get_data().orig_id;
+                    s.edges[1] = e2.get_data().orig_id;
 
                     shortcutted[id] = true;
                     ++n_shortcuts;
@@ -105,10 +105,11 @@ void add_shortcuts(reach_graph &g, size_t degree, vector<shortcut> &dst, edge_id
 
     }
 
-    cout << "Shortcuts: " << n_shortcuts << endl;
+    /*cout << "Shortcuts: " << n_shortcuts << endl;
     cout << "Shortcuts mult counter: " << g_mult_counter << endl;
-    cout << "Shortcuts max diff: " << g_max_diff << endl;
+    cout << "Shortcuts max diff: " << g_max_diff << endl;*/
 
+    return next_edge;
 }
 
 void add_shortcuts_temp (reach_graph &g)

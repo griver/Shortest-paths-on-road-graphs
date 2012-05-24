@@ -34,6 +34,13 @@ struct coord : boost::addable<coord<T> >, boost::subtractable<coord<T> >, boost:
         return res;
     }
 
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & x;
+        ar & y;
+    }
+
     T x, y;
 };
 

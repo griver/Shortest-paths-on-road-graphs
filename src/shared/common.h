@@ -1,6 +1,6 @@
 #pragma once
 
-#define _HAS_ITERATOR_DEBUGGING 0
+//#define _HAS_ITERATOR_DEBUGGING 0
 
 #include <cstdlib>
 
@@ -42,6 +42,14 @@ using boost::scoped_array;
 using boost::shared_ptr;
 
 #include <cmath>
+
+#pragma warning (push)
+#pragma warning (disable : 4244)
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+
+#include <boost/serialization/vector.hpp>
+#pragma warning (pop)
 
 #if defined (NDEBUG) || !defined (_WIN32)
     #define USE_BOOST_HASHMAP

@@ -327,7 +327,7 @@ coord<float> d3d_vis::screen2world( coord<int> screen ) const
     /*coord<float> world (static_cast<float>(screen.x), static_cast<float>(screen.y));
     world -= ofs_;
     world *= 1.0f/scale_;*/
-    coord<int> world (static_cast<int>(vec_world.x), static_cast<int>(vec_world.y));
+    coord<float> world (static_cast<float>(vec_world.x), static_cast<float>(vec_world.y));
     return world;
 }
 

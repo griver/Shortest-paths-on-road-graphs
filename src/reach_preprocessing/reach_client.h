@@ -44,6 +44,9 @@ private:
     coord<float> mouse_coords_world_;
     float radius_;
 
+    coord<float> square1_, square2_;
+    bool selecting_;
+
     boost::optional<tree_desc> lit1_, lit2_;
     unordered_set<my_graph::vertex_id> marked_;
 };

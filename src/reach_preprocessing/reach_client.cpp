@@ -13,14 +13,49 @@ void test_circles (const reach_graph &g);
 reach_graph *run_reaches_update(const reach_graph &ref_graph, my_graph::edge_weight dist);
 
 
-/*void inject_edge_ids(reach_graph &g)
+void inject_ids(reach_graph &g)
 {
-    for (auto it = g.v_begin(); it != g.v_end(); ++g)
+    for (auto it = g.v_begin(); it != g.v_end(); ++it)
+        it->get_data().orig_id = g.get_vertex_id(it);
+    
+    for (auto it = g.e_begin(); it != g.e_end(); ++it)
+        it->get_data().orig_id = g.get_edge_id(it);
+}
+
+void load_shortcuts_from_array(reach_graph &g, const vector<shortcut> &shortcuts)
+{
+    for (auto it = shortcuts.begin(); it != shortcuts.end(); ++it)
     {
-        const vertex_id id = g.get_vertex_id(it);
-        it->get_data().
+        edge_weight len = 0;
+        for (auto e_it = it->edges.begin(); e_it != it->edges.end(); ++e_it)
+        {
+            const reach_edge &e = g.get_edge(*e_it);
+            len += e.get_data().len;
+        }
+        const reach_edge_data data (len);
+        g.add_edge(it->verts.front(), it->verts.back(), data);
     }
-}*/
+}
+
+void get_mins_maxs(const reach_graph &g, vis_coord &mins, vis_coord &maxs)
+{
+    bool init = false;
+    for (auto it = g.v_begin(); it != g.v_end(); ++it)
+    {
+        vis_coord coord = it->get_data().c;
+
+        if (!init)
+        {
+            mins = coord;
+            maxs = coord;
+            init = true;
+        }
+        if (coord.x < mins.x) mins.x = coord.x;
+        if (coord.y < mins.y) mins.y = coord.y;
+        if (coord.x > maxs.x) maxs.x = coord.x;
+        if (coord.y > maxs.y) maxs.y = coord.y;
+    }
+}
 
 reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope *pscope)
     : base_visualizer_client(pvis, pscope)
@@ -30,21 +65,65 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
     , draw_graph (true)
     , draw_shortcuts (false)
 {
+    const bool save_shortcuts = true, save_graph = false;
     reach_coord mins, maxs;
 
-    load_osm(filename, *pgraph_, mins, maxs);
+
+    if(save_graph)
+    {
+        load_osm(filename, *pgraph_, mins, maxs);
+
+        cout << "saving graph...";
+        std::ofstream ofs (filename + ".szd", std::ios_base::out | std::ios_base::binary);
+        boost::archive::binary_oarchive ar (ofs);
+        ar << *pgraph_;
+        cout << "done" << endl;
+    }
+    else
+    {
+        cout << "loading graph...";
+        std::ifstream ifs (filename + ".szd", std::ios_base::in | std::ios_base::binary);
+        boost::archive::binary_iarchive ar (ifs);
+        ar >> *pgraph_;
+        cout << "done" << endl;
+        get_mins_maxs(*pgraph_, mins, maxs);
+    }
+
+    inject_ids(*pgraph_);
 
     print_stats();
     n_original_edges = pgraph_->e_count();
     
     vector<shortcut> shortcuts;
-    add_shortcuts(*pgraph_, 3, shortcuts, pgraph_->e_count());
-    cout << shortcuts.size() << " shortcuts in array" << endl;
+    
+    /*if (save_shortcuts) 
+    {
+        add_shortcuts(*pgraph_, 3, shortcuts, pgraph_->e_count());
+        cout << shortcuts.size() << " shortcuts in array" << endl;
+
+        cout << "saving shortcuts...";
+        std::ofstream ofs (filename + ".shortcuts", std::ios_base::out | std::ios_base::binary);
+        boost::archive::binary_oarchive ar (ofs);
+        ar << shortcuts;
+        cout << "done" << endl;
+    } 
+    else 
+    {
+        cout << "loading shortcuts...";
+        std::ifstream ofs (filename + ".shortcuts", std::ios_base::in | std::ios_base::binary);
+        boost::archive::binary_iarchive ar (ofs);
+        ar >> shortcuts;
+        load_shortcuts_from_array(*pgraph_, shortcuts);
+        cout << "done" << endl;
+    }*/
 
     g_desc = upload_graph(*pgraph_);
     zoom(mins, maxs);
+    
+    square1_ = square2_ = mins;
+    selecting_ = false;
 
-    check_multiple_edges();
+    //check_multiple_edges();
 }
 
 reach_client::~reach_client()
@@ -126,6 +205,9 @@ void reach_client::draw(visualizer &d, draw_scope &scope)
     draw_vertex (g_marked_v1);
     draw_vertex (g_marked_v2);
 
+    d.set_color(0, 255, 255);
+    d.draw_rect_world(square1_, square2_);
+
 
 }
 
@@ -162,11 +244,11 @@ void reach_client::on_key_down(int key)
         if (selected_.is_initialized())
         {
             const reach_vertex &v = pgraph_->get_vertex(*selected_);
-            cout << "Vertex " << *selected_ << /*", osm id " << v.get_data().osm_id <<*/ endl;
+            cout << "Vertex " << *selected_ << ", orig id " << v.get_data().orig_id << endl;
             for (auto it = v.out_begin(); it != v.out_end(); ++it)
             {
                 const reach_edge &e = pgraph_->get_edge(it->e);
-                cout << "  " << "vertex " << it->v << " edge " << it->e << " len " << e.get_data().len << endl;
+                cout << "  " << "vertex " << it->v << " edge " << it->e << " orig id " << e.get_data().orig_id << " len " << e.get_data().len << endl;
             }
         }
         break;
@@ -221,9 +303,15 @@ void reach_client::on_key_down(int key)
             cout << "Tree size: " << m1.size() << endl;
         }
         break;
-    case 'N':
-    case 'n':
-        test_circles (*pgraph_);
+    case 'C':
+    case 'c':
+        selecting_ = !selecting_;
+        if (selecting_)
+        {
+            square1_ = mouse_coords_world_;
+            square2_ = mouse_coords_world_;
+        }
+        cout << "Mouse: " << mouse_coords_world_ << endl;
         break;
     case 'O':
     case 'o':
@@ -257,32 +345,47 @@ void reach_client::print_stats() const
 void reach_client::on_mouse_move(int x, int y)
 {
     mouse_coords_world_ = get_scope().screen2world(coord<int>(x, y));
+
+    if (selecting_)
+        square2_ = mouse_coords_world_;
+
     base_visualizer_client::on_mouse_move(x, y);
 }
 
 void reach_client::delete_verts()
 {
-    if (marked_.empty())
-        return;
+
+    double x1 = std::min(square1_.x, square2_.x);
+    double y1 = std::min(square1_.y, square2_.y);
+    double x2 = std::max(square1_.x, square2_.x);
+    double y2 = std::max(square1_.y, square2_.y);
+
 
     reach_graph *dst = new reach_graph();
 
     my_graph::graph_filter<reach_vertex_data, reach_edge_data> filter;
     filter.set_verts_filter([&](my_graph::vertex_id id) -> bool 
     {
-        return marked_.count(id) == 0;
+        const reach_vertex& v = pgraph_->get_vertex(id);
+        const vis_coord &c = v.get_data().c;
+        return (c.x >= x1 && c.y >= y1 && c.x <= x2 && c.y <= y2);
     });
 
     filter.filter_graph(*pgraph_, *dst);
-
-
+    
     pgraph_.reset(dst);
     free_vb(g_desc.vb);
     free_ib(g_desc.ib);
 
     g_desc = upload_graph(*pgraph_);
 
-    marked_.clear();
+    cout << "saving graph...";
+    std::ofstream ofs ("cropped.szd", std::ios_base::out | std::ios_base::binary);
+    boost::archive::binary_oarchive ar (ofs);
+    ar << *pgraph_;
+    cout << "done" << endl;
+
+
     selected_.reset();
 }
 

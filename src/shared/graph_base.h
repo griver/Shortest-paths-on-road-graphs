@@ -20,10 +20,18 @@ namespace my_graph
         typedef my_graph::vertex_id vertex_id;
         typedef my_graph::edge_id edge_id;
 
+
         vert_edge (vertex_id v, edge_id e) : v(v), e(e) {};
 
         vertex_id v;
         edge_id e;
+
+#if defined (SERIALIZE_GRAPH)
+        vert_edge () {};
+
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version);
+#endif
     };
 
     /*
@@ -52,6 +60,13 @@ namespace my_graph
 
         inline size_t get_degree () const {return adj.size();};
         const vector<vert_edge> &get_adj() const {return adj;};
+
+#if defined (SERIALIZE_GRAPH)
+        vertex_base () {};
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version);
+#endif
+
     public:
         data_type data;
 		my_graph::vertex_id id;
@@ -76,6 +91,12 @@ namespace my_graph
 
         data_type &get_data()       {return data;}
         const data_type &get_data() const {return data;}
+
+#if defined (SERIALIZE_GRAPH)
+        edge_base () {};
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version);
+#endif
     public:
         data_type data;
     };
@@ -137,7 +158,13 @@ namespace my_graph
 
         inline vertex_id get_vertex_id(const v_const_iterator &it) const {return it - v_begin();}
         inline vertex_id get_vertex_id(const v_iterator &it) {return it - v_begin();}
+        inline edge_id get_edge_id(const e_const_iterator &it) const {return it - e_begin();}
+        inline edge_id get_edge_id(const e_iterator &it) {return it - e_begin();}
 
+#if defined (SERIALIZE_GRAPH)
+        template<class Archive>
+        void serialize(Archive & ar, const unsigned int version);
+#endif
     private:
         vertex_map vertices_;
         edge_map edges_;
@@ -212,4 +239,10 @@ namespace my_graph
         edges_.clear();
     }
 
+#if defined (SERIALIZE_GRAPH)
+#include "graph_serialize.h"
+#endif
+
+
 }
+
