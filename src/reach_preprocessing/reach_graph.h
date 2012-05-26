@@ -60,3 +60,5 @@ using my_graph::vert_edge;
 
 using my_graph::path_map;
 using my_graph::path_vertex;
+
+typedef unordered_map<vertex_id, edge_weight> reach_map;

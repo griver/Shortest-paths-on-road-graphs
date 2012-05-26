@@ -23,3 +23,4 @@ struct shortcut
 };
 
 edge_id add_shortcuts(reach_graph &g, size_t degree, vector<shortcut> &dst, edge_id);
+void add_shortcuts_temp (reach_graph &g);

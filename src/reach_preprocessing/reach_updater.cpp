@@ -7,42 +7,15 @@ typedef my_graph::heap_vertex heap_vertex;
 typedef my_graph::path_vertex path_vertex;
 typedef my_graph::path_map path_map;
 typedef my_graph::edge_weight edge_weight;
-typedef my_graph::reach_map reach_map;
 
-typedef unordered_map<vertex_id, vertex_id> candidate_map;
-typedef unordered_map<vertex_id, edge_weight> threshold_map;
 
 #include "reach_dijkstra.h"
+#include "reach_updater.h"
 
 DWORD g_tree_build_time, g_reach_update_time;
 DWORD g_dijkstra_check_time;
 
-class reach_updater
-{
-public:
-    void calculate_reaches(const reach_graph &graph, vertex_id root, edge_weight epsilon, reach_map &ref_reaches);
-    const path_map &get_tree() {return tree_;};
-    const candidate_map &get_candidates() {return candidates_;};
 
-private:
-    void build_tree();
-    void update_reaches_with_tree();
-    edge_weight update_reaches_recursive(vertex_id id);
-
-
-private:
-
-    const reach_graph *pgraph_;
-    unordered_set<vertex_id> saved_;
-    path_map tree_;
-    candidate_map candidates_;
-    threshold_map thresholds_;
-    reach_map *preaches_;
-    edge_weight epsilon_;
-    vertex_id root_;
-
-    unordered_set<vertex_id> visited;
-};
 
 
 void reach_updater::calculate_reaches(const reach_graph &graph, vertex_id root, edge_weight epsilon, reach_map &ref_reaches)
@@ -163,13 +136,15 @@ void reach_updater::build_tree()
 void reach_updater::update_reaches_with_tree()
 {
     visited.clear();
-    update_reaches_recursive(root_);
+    const reach_vertex &v = pgraph_->get_vertex(root_);
+    update_reaches_recursive(root_, v.data.penalty);
 }
 
-edge_weight reach_updater::update_reaches_recursive(vertex_id id)
+edge_weight reach_updater::update_reaches_recursive(vertex_id id, edge_weight root_penalty)
 {
     const reach_vertex &v = pgraph_->get_vertex(id);
     const path_vertex &pv = unordered_safe_find_const(tree_, id);
+    const edge_weight depth = pv.d + root_penalty;
 
     if (visited.count(id) != 0)
     {
@@ -179,6 +154,7 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
     visited.insert(id);
     
     edge_weight height = 0;
+    bool leaf = true;
     for (reach_vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
     {
         if (tree_.count (it->v) == 0)
@@ -197,12 +173,16 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
             const reach_edge &e = pgraph_->get_edge(it->e);
             cout << "e " << it->e << ": len " << e.data.len << endl;
         }*/
-        edge_weight new_height = update_reaches_recursive (it->v) + pv_child.d - pv.d;
+        leaf = false;
+        edge_weight new_height = update_reaches_recursive (it->v, root_penalty) + pv_child.d - pv.d;
         if (new_height > height)
             height = new_height;
     }
 
-    edge_weight new_reach = std::min(pv.d, height);
+    if (leaf)
+        height = v.data.penalty;
+
+    edge_weight new_reach = std::min(depth, height);
 
     if (preaches_->count(id) == 0 || unordered_safe_find_const(*preaches_, id) < new_reach)
         (*preaches_)[id] = new_reach;
@@ -210,6 +190,118 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id)
     return height;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+reach_graph *cut_graph(const reach_graph &src, const reach_map &reaches, edge_weight epsilon)
+{
+    reach_graph *pdst = new reach_graph();
+    reach_graph &dst = *pdst;
+
+    unordered_map<vertex_id, vertex_id> verts_map;
+    verts_map.rehash(src.v_count());
+
+    for (reach_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
+    {
+        const vertex_id src_id = src.get_vertex_id(it);
+
+        const edge_weight &reach = unordered_safe_find_const(reaches, src_id);
+        if (reach >= epsilon)
+        {
+            const vertex_id dst_id = dst.add_vertex(it->get_data());
+            verts_map[src_id] = dst_id;
+        }
+    }
+
+    for (reach_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
+    {
+        const vertex_id src_id = src.get_vertex_id(it);
+
+        auto m1 = verts_map.find(src_id);
+        if (m1 == verts_map.end())
+            continue;
+
+        const reach_vertex &src_v = *it;
+        for (reach_vertex::adj_iterator adj = src_v.out_begin(); adj != src_v.out_end(); ++adj)
+        {
+            auto m2 = verts_map.find(adj->v);
+            if (m2 == verts_map.end())
+                continue;
+
+
+            const reach_edge &e = src.get_edge(adj->e);
+            dst.add_edge(m1->second, m2->second, e.get_data());
+        }
+
+        // erase traversed verts so that edges won't be added twice
+        verts_map.erase(m1);
+    }
+
+
+    return pdst;
+}
+
+reach_graph *run_reaches_update(const reach_graph &ref_graph, edge_weight dist)
+{
+    const size_t PRINT_EACH_VERTS = 10000;
+    const DWORD PRINT_EACH_MS = 30000;
+
+    cout << "Epsilon: " << dist << endl;
+
+    g_dijkstra_check_time = g_tree_build_time = g_reach_update_time = 0;
+
+
+    DWORD last_time = timeGetTime();
+    reach_map little_reaches;
+    size_t counter = 0;
+    for (reach_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
+    {
+        vertex_id id = ref_graph.get_vertex_id(it);
+
+        reach_updater little_updater;
+        little_updater.calculate_reaches(ref_graph, id, dist, little_reaches);
+
+        ++counter;
+        DWORD new_time = timeGetTime();
+        if (new_time - last_time > PRINT_EACH_MS || counter >= PRINT_EACH_VERTS)
+        {
+            cout << counter << " verts processed" << endl;
+            counter = 0;
+            last_time = new_time;
+        }
+    }
+
+    cout << "Times: " << g_tree_build_time << ", " << g_reach_update_time << endl;
+    cout << "Dijkstra check time: " << g_dijkstra_check_time << endl;
+
+    counter = 0;
+    for (reach_map::const_iterator it = little_reaches.begin(); it != little_reaches.end(); ++it)
+    {
+        if (it->second >= dist)
+            ++counter;
+    }
+
+    cout << "Left " << counter << " out of " << ref_graph.v_count() << " verts" << endl;
+
+    //return NULL;
+    return cut_graph(ref_graph, little_reaches, dist);
+}
+
+#if 0
 
 /*void reach_preprocessor::run_dijkstra(vertex_id root)
 {
@@ -489,105 +581,8 @@ void test_candidates(const reach_graph &ref_graph, vertex_id start, vertex_id en
 
 }
 
-reach_graph *cut_graph(const reach_graph &src, const reach_map &reaches, edge_weight epsilon)
-{
-    reach_graph *pdst = new reach_graph();
-    reach_graph &dst = *pdst;
-    
-    unordered_map<vertex_id, vertex_id> verts_map;
-    verts_map.rehash(src.v_count());
 
-    for (reach_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
-    {
-#if defined (GRAPH_ITER_WRAPPER_CHECK)
-#error Fixme: V_ITER_WRAPPER normal iterator wrapper needed
-#endif 
-        const vertex_id src_id = it - src.v_begin();
 
-        const edge_weight &reach = unordered_safe_find_const(reaches, src_id);
-        if (reach >= epsilon)
-        {
-            const vertex_id dst_id = dst.add_vertex(it->get_data());
-            verts_map[src_id] = dst_id;
-        }
-    }
-
-    for (reach_graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
-    {
-#if defined (GRAPH_ITER_WRAPPER_CHECK)
-#error Fixme: V_ITER_WRAPPER normal iterator wrapper needed
-#endif 
-        const vertex_id src_id = it - src.v_begin();
-
-        auto m1 = verts_map.find(src_id);
-        if (m1 == verts_map.end())
-            continue;
-
-        const reach_vertex &src_v = *it;
-        for (reach_vertex::adj_iterator adj = src_v.out_begin(); adj != src_v.out_end(); ++adj)
-        {
-            auto m2 = verts_map.find(adj->v);
-            if (m2 == verts_map.end())
-                continue;
-
-            
-            const reach_edge &e = src.get_edge(adj->e);
-            dst.add_edge(m1->second, m2->second, e.get_data());
-        }
-
-        // erase traversed verts so that edges won't be added twice
-        verts_map.erase(m1);
-    }
-
-    
-    return pdst;
-}
-
-reach_graph *run_reaches_update(const reach_graph &ref_graph, edge_weight dist)
-{
-    const size_t PRINT_EACH_VERTS = 10000;
-    const DWORD PRINT_EACH_MS = 30000;
-
-    cout << "Epsilon: " << dist << endl;
-
-    g_dijkstra_check_time = g_tree_build_time = g_reach_update_time = 0;
-    
-    
-    DWORD last_time = timeGetTime();
-    reach_map little_reaches;
-    size_t counter = 0;
-    for (reach_graph::v_const_iterator it = ref_graph.v_begin(); it != ref_graph.v_end(); ++it)
-    {
-        vertex_id id = ref_graph.get_vertex_id(it);
-
-        reach_updater little_updater;
-        little_updater.calculate_reaches(ref_graph, id, dist, little_reaches);
-
-        ++counter;
-        DWORD new_time = timeGetTime();
-        if (new_time - last_time > PRINT_EACH_MS || counter >= PRINT_EACH_VERTS)
-        {
-            cout << counter << " verts processed" << endl;
-            counter = 0;
-            last_time = new_time;
-        }
-    }
-
-    cout << "Times: " << g_tree_build_time << ", " << g_reach_update_time << endl;
-    cout << "Dijkstra check time: " << g_dijkstra_check_time << endl;
-
-    counter = 0;
-    for (reach_map::const_iterator it = little_reaches.begin(); it != little_reaches.end(); ++it)
-    {
-        if (it->second >= dist)
-            ++counter;
-    }
-
-    cout << "Left " << counter << " out of " << ref_graph.v_count() << " verts" << endl;
-    
-    return NULL;
-    //return cut_graph(ref_graph, little_reaches, dist);
-}
 
 
 void draw_circle (const reach_graph &ref_graph, vertex_id start, edge_weight dist, path_map &ref_out, path_map &ref_out2)
@@ -636,3 +631,5 @@ void test_circles (const reach_graph &g)
     const DWORD avg_time = times / N;
     cout << endl << "Avg time: " << avg_time << endl;
 }
+
+#endif

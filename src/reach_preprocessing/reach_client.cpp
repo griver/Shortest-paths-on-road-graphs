@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "../shared/graph_filter.h"
 #include "../shared/osm_loader.h"
+#include "penalties_preprocessor.h"
 #include "reach_client.h"
 #include "reach_dijkstra.h"
 #include "shortcuts.h"
-
 
 void test_reach_updater(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
 void draw_circle(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
@@ -89,14 +89,15 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
         get_mins_maxs(*pgraph_, mins, maxs);
     }
 
+    cout << "Graph: " << pgraph_->v_count() << " verts, " << pgraph_->e_count() << " edges" << endl;
     inject_ids(*pgraph_);
 
     print_stats();
     n_original_edges = pgraph_->e_count();
     
-    vector<shortcut> shortcuts;
+    /*vector<shortcut> shortcuts;
     
-    /*if (save_shortcuts) 
+    if (save_shortcuts) 
     {
         add_shortcuts(*pgraph_, 3, shortcuts, pgraph_->e_count());
         cout << shortcuts.size() << " shortcuts in array" << endl;
@@ -116,6 +117,8 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
         load_shortcuts_from_array(*pgraph_, shortcuts);
         cout << "done" << endl;
     }*/
+
+    pprep_.reset(new penalties_preprocessor (pgraph_.get(), 0.01, 2));
 
     g_desc = upload_graph(*pgraph_);
     zoom(mins, maxs);
@@ -196,14 +199,24 @@ void reach_client::draw(visualizer &d, draw_scope &scope)
     for (auto it = marked_.begin(); it != marked_.end(); ++it) {
         draw_vertex (*it);
     }
+    /*d.set_color(255, 0, 255);
+    draw_vertex (g_marked_v1);
+    draw_vertex (g_marked_v2);*/
+    d.set_color(255, 0, 255);
+    for (auto it = pgraph_->v_begin(); it != pgraph_->v_end(); ++it)
+    {
+        const vertex_id id = pgraph_->get_vertex_id(it);
+        if (it->data.orig_id == 77722)
+        {
+            draw_vertex(id);
+        }
+    }
     if (selected_.is_initialized())
     {
         d.set_color(0, 255, 0);
         draw_vertex(*selected_);
     }
-    d.set_color(255, 0, 255);
-    draw_vertex (g_marked_v1);
-    draw_vertex (g_marked_v2);
+
 
     d.set_color(0, 255, 255);
     d.draw_rect_world(square1_, square2_);
@@ -245,6 +258,8 @@ void reach_client::on_key_down(int key)
         {
             const reach_vertex &v = pgraph_->get_vertex(*selected_);
             cout << "Vertex " << *selected_ << ", orig id " << v.get_data().orig_id << endl;
+            cout << "Reach " << pprep_->get_reaches()[v.get_data().orig_id] << endl;
+            cout << "Penalty " << v.data.penalty << endl;
             for (auto it = v.out_begin(); it != v.out_end(); ++it)
             {
                 const reach_edge &e = pgraph_->get_edge(it->e);
@@ -278,7 +293,10 @@ void reach_client::on_key_down(int key)
 
     case 'M':
     case 'm':
-        if (lit1_.is_initialized())
+        reset_graph(pprep_->iterate());
+        break;
+        //pgraph_.reset(pprep_->iterate())
+        /*if (lit1_.is_initialized())
         {
             get_visualizer().free_ib(lit1_->ib);
             lit1_.reset();
@@ -302,7 +320,7 @@ void reach_client::on_key_down(int key)
             lit2_.reset(upload_tree(m2, desc));
             cout << "Tree size: " << m1.size() << endl;
         }
-        break;
+        break;*/
     case 'C':
     case 'c':
         selecting_ = !selecting_;
@@ -316,6 +334,11 @@ void reach_client::on_key_down(int key)
     case 'O':
     case 'o':
         run_reaches_update(*pgraph_, 0.02);
+        break;
+    case 's':
+    case 'S':
+        ::add_shortcuts_temp(*pgraph_);
+        reset_graph(pgraph_.get());
         break;
     case VK_DELETE:
         delete_verts();
@@ -410,4 +433,18 @@ void reach_client::check_multiple_edges()
     }
 
     cout << "Total multiple edges: " << counter << endl;
+}
+
+void reach_client::reset_graph(reach_graph *p)
+{
+    if (pgraph_.get() != p)
+    {
+        selected_.reset();
+        pgraph_.reset(p);
+    }
+
+    free_vb(g_desc.vb);
+    free_ib(g_desc.ib);
+    g_desc = upload_graph(*pgraph_);
+
 }

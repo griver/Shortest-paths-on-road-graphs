@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../shared/base_visualizer_client.h"
+#include "penalties_preprocessor.h"
 
 class reach_client : public base_visualizer_client
 {
@@ -29,6 +30,7 @@ private:
     void print_stats() const;
     void delete_verts();
     void check_multiple_edges();
+    void reset_graph(reach_graph *p);
 private:
     bool draw_graph;
     bool draw_shortcuts;
@@ -49,4 +51,6 @@ private:
 
     boost::optional<tree_desc> lit1_, lit2_;
     unordered_set<my_graph::vertex_id> marked_;
+
+    boost::scoped_ptr<penalties_preprocessor> pprep_;
 };

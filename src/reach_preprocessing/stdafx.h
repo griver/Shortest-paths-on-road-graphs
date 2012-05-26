@@ -7,7 +7,10 @@
 
 #define DISABLE_VIS
 
+#if defined (WIN32)
 #include <Windows.h>
+#endif
+
 #include "../shared/common.h"
 #include "../rapidxml/rapidxml.hpp"
 

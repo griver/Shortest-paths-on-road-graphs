@@ -248,6 +248,7 @@
     <ClInclude Include="..\shared\graph_filter.h" />
     <ClInclude Include="..\shared\osm_loader.h" />
     <ClInclude Include="graph_serialize.h" />
+    <ClInclude Include="penalties_preprocessor.h" />
     <ClInclude Include="reach_client.h" />
     <ClInclude Include="reach_common.h" />
     <ClInclude Include="reach_dijkstra.h" />

@@ -95,5 +95,8 @@
     <ClInclude Include="graph_serialize.h">
       <Filter>shared</Filter>
     </ClInclude>
+    <ClInclude Include="penalties_preprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
