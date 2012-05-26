@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "c9_prep.h"
 
-c9_prep::c9_prep(const reach_graph &g, size_t num_threads)
+c9_prep::c9_prep(const reach_graph &g, const grid &gr, size_t num_threads)
 : pgraph_(&g)
 , reaches_(g.v_count(), 0)
+, gr_(gr)
 , num_threads_(num_threads)
 {
 
@@ -45,4 +46,9 @@ void c9_prep::assemble_reaches(const vector<edge_weight> &local_reaches)
         if (local_reaches[i] > reaches_[i])
             reaches_[i] = local_reaches[i];
     }
+}
+
+void c9_prep::calculate_reaches(vertex_id root, vector<edge_weight> &dst)
+{
+
 }

@@ -1,13 +1,8 @@
 #include "stdafx.h"
 #include "reach_client.h"
-#include "c9_prep.h"
+#include "../shared/osm_loader.h"
 
 visualizer *create_visualizer(draw_scope **ppscope);
-
-int c9_main(int argc, char* argv[])
-{
-
-}
 
 
 int main(int argc, char* argv[])
@@ -19,7 +14,6 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    return c9_main(argc, argv);
         
     /*string path = argv[1];
     graph_loader loader = boost::bind (load_osm, path, _1, _2, _3);*/

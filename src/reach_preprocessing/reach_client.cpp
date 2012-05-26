@@ -5,8 +5,7 @@
 #include "reach_client.h"
 #include "reach_dijkstra.h"
 #include "shortcuts.h"
-#include "grid.h"
-#include "c9_dijkstra.h"
+#include "../shared/grid.h"
 
 void test_reach_updater(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
 void draw_circle(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
@@ -467,12 +466,12 @@ void reach_client::build_c9_tree(vertex_id root_id)
 
     DWORD time = timeGetTime();
     
-    c9_dijkstra d (*pgraph_, *pgrid_, root_id, tree_/*, [&](vertex_id id) -> bool 
+    reach_dijkstra d (*pgraph_, root_id, tree_, [&](vertex_id id) -> bool 
     {
         const vertex &v = pgraph_->get_vertex(id);
         const coord<int> d = pgrid_->getCell(v.data.c) - root_cell;
         return std::max(std::abs(d.x), std::abs(d.y)) <= 100;
-    }*/);
+    });
 
     size_t count = 0;
     while (!d.done())

@@ -3,7 +3,7 @@
 #include "../shared/base_visualizer_client.h"
 #include "penalties_preprocessor.h"
 #include "../shared/new_vis_graph.h"
-#include "grid.h"
+#include "../shared/grid.h"
 
 class reach_client : public base_visualizer_client
 {

@@ -2,6 +2,7 @@
 
 #include "../shared/new_vis_graph.h"
 #include "../shared/common_algorithms/path.h"
+#include "../shared/grid.h"
 
 
 class c9_dijkstra
@@ -18,7 +19,6 @@ public:
     typedef reach_graph graph;
     typedef reach_vertex vertex;
     typedef reach_edge edge;
-    typedef boost::function<bool(vertex_id)> vert_checker;
 
     //c9_dijkstra(const graph &ref_graph, vertex_id start, path_map &ref_out);
     inline c9_dijkstra(const graph &ref_graph, const grid &gr, vertex_id start, path_map &ref_out);

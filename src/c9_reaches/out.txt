@@ -1,0 +1,172 @@
+In file included from stdafx.h:16:0,
+                 from c9_main.cpp:1:
+../shared/common.h:46:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+../shared/common.h:47:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:16:0,
+                 from c9_main.cpp:1:
+../shared/common.h:52:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from c9_main.cpp:3:0:
+../shared/grid.h: In constructor 'grid::grid(const coord<double>&, const coord<double>&, size_t, size_t)':
+../shared/grid.h:21:12: warning: 'grid::height_' will be initialized after [-Wreorder]
+../shared/grid.h:18:17: warning:   'coord<double> grid::cell_size_' [-Wreorder]
+../shared/grid.h:24:1: warning:   when initialized here [-Wreorder]
+In file included from stdafx.h:16:0,
+                 from c9_prep.cpp:1:
+../shared/common.h:46:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+../shared/common.h:47:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:16:0,
+                 from c9_prep.cpp:1:
+../shared/common.h:52:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+c9_prep.cpp:31:0: warning: ignoring #pragma omp parallel [-Wunknown-pragmas]
+In file included from c9_prep.h:3:0,
+                 from c9_prep.cpp:2:
+../shared/grid.h: In constructor 'grid::grid(const coord<double>&, const coord<double>&, size_t, size_t)':
+../shared/grid.h:21:12: warning: 'grid::height_' will be initialized after [-Wreorder]
+../shared/grid.h:18:17: warning:   'coord<double> grid::cell_size_' [-Wreorder]
+../shared/grid.h:24:1: warning:   when initialized here [-Wreorder]
+In file included from stdafx.h:16:0,
+                 from stdafx.cpp:5:
+../shared/common.h:46:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+../shared/common.h:47:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:16:0,
+                 from stdafx.cpp:5:
+../shared/common.h:52:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~extended_type_info_typeid':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:93: undefined reference to `boost::serialization::extended_type_info::key_unregister() const'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:94: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::type_unregister()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `binary_oarchive_impl':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:84: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::basic_binary_oprimitive(std::basic_streambuf<char, std::char_traits<char> >&, bool)'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `common_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:75: undefined reference to `boost::archive::detail::basic_oarchive::basic_oarchive(unsigned int)'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive20binary_oarchive_implINS0_15binary_oarchiveEcSt11char_traitsIcEE4initEj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:57: undefined reference to `boost::archive::basic_binary_oarchive<boost::archive::binary_oarchive>::init()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:58: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::init()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `invoke<std::vector<double> >':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:253: undefined reference to `boost::archive::detail::basic_oarchive::save_object(void const*, boost::archive::detail::basic_oserializer const&)'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~common_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~binary_oarchive_impl':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~common_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `binary_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:84: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~binary_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~oserializer':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:133: undefined reference to `boost::archive::detail::basic_oserializer::~basic_oserializer()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~extended_type_info_typeid':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive6detail15common_oarchiveINS0_15binary_oarchiveEED1Ev':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost13serialization25extended_type_info_typeidISt6vectorIdSaIdEEED1Ev':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:93: undefined reference to `boost::serialization::extended_type_info::key_unregister() const'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:94: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::type_unregister()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive6detail11oserializerINS0_15binary_oarchiveESt6vectorIdSaIdEEED1Ev':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:133: undefined reference to `boost::archive::detail::basic_oserializer::~basic_oserializer()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~oserializer':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:133: undefined reference to `boost::archive::detail::basic_oserializer::~basic_oserializer()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:133: undefined reference to `boost::archive::detail::basic_oserializer::~basic_oserializer()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~common_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive20binary_oarchive_implINS0_15binary_oarchiveEcSt11char_traitsIcEED1Ev':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~common_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~binary_oarchive_impl':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~binary_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~extended_type_info_typeid':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:93: undefined reference to `boost::serialization::extended_type_info::key_unregister() const'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:94: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::type_unregister()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~singleton_wrapper':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~oserializer':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:133: undefined reference to `boost::archive::detail::basic_oserializer::~basic_oserializer()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~common_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~binary_oarchive_impl':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~common_oarchive':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/common_oarchive.hpp:35: undefined reference to `boost::archive::detail::basic_oarchive::~basic_oarchive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~binary_oarchive_impl':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/binary_oarchive_impl.hpp:34: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::~basic_binary_oprimitive()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `~extended_type_info_typeid':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:93: undefined reference to `boost::serialization::extended_type_info::key_unregister() const'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:94: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::type_unregister()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:93: undefined reference to `boost::serialization::extended_type_info::key_unregister() const'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:94: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::type_unregister()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:95: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, std::basic_string<char> >':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:88: undefined reference to `boost::archive::basic_binary_oprimitive<boost::archive::binary_oarchive, char, std::char_traits<char> >::save(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `extended_type_info_typeid':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:87: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::extended_type_info_typeid_0(char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:89: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::type_register(std::type_info const&)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:90: undefined reference to `boost::serialization::extended_type_info::key_register() const'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `singleton_wrapper':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/extended_type_info_typeid.hpp:87: undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::~extended_type_info_typeid_0()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive6detail11oserializerINS0_15binary_oarchiveESt6vectorIdSaIdEEEC1Ev':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:112: undefined reference to `boost::archive::detail::basic_oserializer::basic_oserializer(boost::serialization::extended_type_info const&)'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive6detail11oserializerINS0_15binary_oarchiveESt6vectorIdSaIdEEEC2Ev':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:112: undefined reference to `boost::archive::detail::basic_oserializer::basic_oserializer(boost::serialization::extended_type_info const&)'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `archive_exception':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/archive_exception.hpp:43: undefined reference to `vtable for boost::archive::archive_exception'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost13serialization15throw_exceptionINS_7archive17archive_exceptionEEEvRKT_':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/serialization/throw_exception.hpp:36: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, boost::serialization::collection_size_type>':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive23basic_binary_oprimitiveINS0_15binary_oarchiveEcSt11char_traitsIcEE11save_binaryEPKvj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, boost::archive::object_reference_type>':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive23basic_binary_oprimitiveINS0_15binary_oarchiveEcSt11char_traitsIcEE11save_binaryEPKvj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, boost::archive::object_id_type>':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive23basic_binary_oprimitiveINS0_15binary_oarchiveEcSt11char_traitsIcEE11save_binaryEPKvj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, boost::archive::version_type>':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive23basic_binary_oprimitiveINS0_15binary_oarchiveEcSt11char_traitsIcEE11save_binaryEPKvj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, boost::archive::class_id_reference_type>':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive23basic_binary_oprimitiveINS0_15binary_oarchiveEcSt11char_traitsIcEE11save_binaryEPKvj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, boost::archive::class_id_type>':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive23basic_binary_oprimitiveINS0_15binary_oarchiveEcSt11char_traitsIcEE11save_binaryEPKvj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `save_primitive<boost::archive::binary_oarchive, boost::archive::tracking_type>':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/detail/oserializer.hpp:87: undefined reference to `boost::archive::detail::basic_oarchive::end_preamble()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o: In function `_ZN5boost7archive23basic_binary_oprimitiveINS0_15binary_oarchiveEcSt11char_traitsIcEE11save_binaryEPKvj':
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::archive_exception(boost::archive::archive_exception::exception_code, char const*, char const*)'
+c:/dumb/mingw/bin/../lib/gcc/i686-pc-mingw32/4.7.0/../../../../include/boost/archive/basic_binary_oprimitive.hpp:171: undefined reference to `boost::archive::archive_exception::~archive_exception()'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o:c9_prep.cpp:(.rdata$_ZTVN5boost13serialization6detail17singleton_wrapperINS0_25extended_type_info_typeidISt6vectorIdSaIdEEEEEE[vtable for boost::serialization::detail::singleton_wrapper<boost::serialization::extended_type_info_typeid<std::vector<double, std::allocator<double> > > >]+0x8): undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::is_less_than(boost::serialization::extended_type_info const&) const'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o:c9_prep.cpp:(.rdata$_ZTVN5boost13serialization6detail17singleton_wrapperINS0_25extended_type_info_typeidISt6vectorIdSaIdEEEEEE[vtable for boost::serialization::detail::singleton_wrapper<boost::serialization::extended_type_info_typeid<std::vector<double, std::allocator<double> > > >]+0xc): undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::is_equal(boost::serialization::extended_type_info const&) const'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o:c9_prep.cpp:(.rdata$_ZTVN5boost13serialization25extended_type_info_typeidISt6vectorIdSaIdEEEE[vtable for boost::serialization::extended_type_info_typeid<std::vector<double, std::allocator<double> > >]+0x8): undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::is_less_than(boost::serialization::extended_type_info const&) const'
+C:\Users\Vasya\AppData\Local\Temp\ccMYeimS.o:c9_prep.cpp:(.rdata$_ZTVN5boost13serialization25extended_type_info_typeidISt6vectorIdSaIdEEEE[vtable for boost::serialization::extended_type_info_typeid<std::vector<double, std::allocator<double> > >]+0xc): undefined reference to `boost::serialization::typeid_system::extended_type_info_typeid_0::is_equal(boost::serialization::extended_type_info const&) const'
+collect2.exe: error: ld returned 1 exit status
+make: *** [../../data/c9_reaches] Error 1
