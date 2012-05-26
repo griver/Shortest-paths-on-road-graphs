@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reach_preprocessing", "reac
 		{AE65B3DA-D509-4B80-B8B2-C26FAC531BC4} = {AE65B3DA-D509-4B80-B8B2-C26FAC531BC4}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "routes_lib", "routes_lib\routes_lib.vcxproj", "{2CD09623-8643-4D3C-8005-8E5C87A0A44D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -71,6 +73,15 @@ Global
 		{6771C079-0D19-4452-AE50-8D1C1D0B7DF8}.Unoptimized|Win32.Build.0 = Unoptimized|Win32
 		{6771C079-0D19-4452-AE50-8D1C1D0B7DF8}.Unoptimized|x64.ActiveCfg = Unoptimized|x64
 		{6771C079-0D19-4452-AE50-8D1C1D0B7DF8}.Unoptimized|x64.Build.0 = Unoptimized|x64
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Debug|Win32.Build.0 = Debug|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Debug|x64.ActiveCfg = Debug|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Release|Win32.ActiveCfg = Release|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Release|Win32.Build.0 = Release|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Release|x64.ActiveCfg = Release|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Unoptimized|Win32.ActiveCfg = Release|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Unoptimized|Win32.Build.0 = Release|Win32
+		{2CD09623-8643-4D3C-8005-8E5C87A0A44D}.Unoptimized|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,8 @@
 #include "reach_client.h"
 #include "reach_dijkstra.h"
 #include "shortcuts.h"
+#include "grid.h"
+#include "c9_dijkstra.h"
 
 void test_reach_updater(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
 void draw_circle(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
@@ -64,6 +66,7 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
     
     , draw_graph (true)
     , draw_shortcuts (false)
+
 {
     const bool save_shortcuts = true, save_graph = false;
     reach_coord mins, maxs;
@@ -125,6 +128,8 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
     
     square1_ = square2_ = mins;
     selecting_ = false;
+
+    pgrid_.reset(new grid(mins, maxs, 100, 100));
 
     //check_multiple_edges();
 }
@@ -340,6 +345,11 @@ void reach_client::on_key_down(int key)
         ::add_shortcuts_temp(*pgraph_);
         reset_graph(pgraph_.get());
         break;
+    case '9':
+        if (selected_.is_initialized())
+            build_c9_tree(*selected_);
+        break;
+
     case VK_DELETE:
         delete_verts();
         break;
@@ -447,4 +457,36 @@ void reach_client::reset_graph(reach_graph *p)
     free_ib(g_desc.ib);
     g_desc = upload_graph(*pgraph_);
 
+}
+
+void reach_client::build_c9_tree(vertex_id root_id)
+{
+    tree_.clear();
+    const vertex &root = pgraph_->get_vertex(root_id);
+    const coord<int> root_cell = pgrid_->getCell(root.data.c);
+
+    DWORD time = timeGetTime();
+    
+    c9_dijkstra d (*pgraph_, *pgrid_, root_id, tree_/*, [&](vertex_id id) -> bool 
+    {
+        const vertex &v = pgraph_->get_vertex(id);
+        const coord<int> d = pgrid_->getCell(v.data.c) - root_cell;
+        return std::max(std::abs(d.x), std::abs(d.y)) <= 100;
+    }*/);
+
+    size_t count = 0;
+    while (!d.done())
+    {
+        d.iterate();
+        ++count;
+    }
+
+    time = timeGetTime() - time;
+
+    cout << "c9 time " << time << ": " << count << " verts" << endl;
+
+    tree_desc desc;
+    desc.ib = g_desc.ib;
+    desc.ib_size = g_desc.ib_size;
+    lit1_.reset(upload_tree(tree_, desc));
 }

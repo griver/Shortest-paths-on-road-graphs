@@ -36,6 +36,9 @@
     <ClCompile Include="penalties_preprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="c9_prep.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="reach_dijkstra.h">
@@ -96,6 +99,15 @@
       <Filter>shared</Filter>
     </ClInclude>
     <ClInclude Include="penalties_preprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tnr_utils\grid_info.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="grid.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="c9_prep.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

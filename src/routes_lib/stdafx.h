@@ -5,20 +5,16 @@
 
 #pragma once
 
-//#define DISABLE_VIS
-
-#if defined (WIN32)
-#include <Windows.h>
-#else
-#include "../shared/linux_time.h"
-#endif
-
 #include "../shared/common.h"
 #include "../rapidxml/rapidxml.hpp"
 
-#if defined USE_OPENMP
-#include <omp.h>
-#endif
+#include "../shared/new_vis_graph.h"
+#include "../shared/common_algorithms/path.h"
 
-#include "reach_common.h"
+using my_graph::vertex_id;
+using my_graph::edge_id;
+using my_graph::edge_weight;
+using my_graph::vert_edge;
 
+using my_graph::path_map;
+using my_graph::path_vertex;

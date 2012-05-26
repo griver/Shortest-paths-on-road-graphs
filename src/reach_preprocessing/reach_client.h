@@ -2,6 +2,8 @@
 
 #include "../shared/base_visualizer_client.h"
 #include "penalties_preprocessor.h"
+#include "../shared/new_vis_graph.h"
+#include "grid.h"
 
 class reach_client : public base_visualizer_client
 {
@@ -31,6 +33,7 @@ private:
     void delete_verts();
     void check_multiple_edges();
     void reset_graph(reach_graph *p);
+    void build_c9_tree(vertex_id id);
 private:
     bool draw_graph;
     bool draw_shortcuts;
@@ -53,4 +56,8 @@ private:
     unordered_set<my_graph::vertex_id> marked_;
 
     boost::scoped_ptr<penalties_preprocessor> pprep_;
+
+    boost::scoped_ptr<grid> pgrid_;
+    path_map tree_;
+  
 };

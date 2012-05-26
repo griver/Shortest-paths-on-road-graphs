@@ -228,6 +228,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="c9_prep.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="penalties_preprocessor.cpp" />
     <ClCompile Include="reach_client.cpp" />
@@ -247,7 +248,10 @@
     <ClInclude Include="..\shared\graph_base.h" />
     <ClInclude Include="..\shared\graph_filter.h" />
     <ClInclude Include="..\shared\osm_loader.h" />
+    <ClInclude Include="..\tnr_utils\grid_info.h" />
+    <ClInclude Include="c9_prep.h" />
     <ClInclude Include="graph_serialize.h" />
+    <ClInclude Include="grid.h" />
     <ClInclude Include="penalties_preprocessor.h" />
     <ClInclude Include="reach_client.h" />
     <ClInclude Include="reach_common.h" />
