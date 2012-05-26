@@ -29,13 +29,13 @@ void reach_updater::calculate_reaches(const reach_graph &graph, vertex_id root, 
     candidates_.clear();
     thresholds_.clear();
 
-    DWORD start_time = timeGetTime();
+    //DWORD start_time = timeGetTime();
     build_tree();
-    g_tree_build_time += timeGetTime() - start_time;
+    //g_tree_build_time += timeGetTime() - start_time;
 
-    start_time = timeGetTime();
+    //start_time = timeGetTime();
     update_reaches_with_tree();
-    g_reach_update_time += timeGetTime() - start_time;
+    //g_reach_update_time += timeGetTime() - start_time;
 }
 
 void reach_updater::build_tree()
@@ -125,9 +125,9 @@ void reach_updater::build_tree()
 
 
 
-        DWORD start_time = timeGetTime();
+        //DWORD start_time = timeGetTime();
         const vertex_id id2 = d.iterate();
-        g_dijkstra_check_time += timeGetTime() - start_time;
+        //g_dijkstra_check_time += timeGetTime() - start_time;
         assert(id2 == id);
     }
 

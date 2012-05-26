@@ -5,6 +5,9 @@
 #include "reach_updater.h"
 #include "reach_dijkstra.h"
 
+#if !defined USE_OPENMP
+#define omp_get_thread_num() 0
+#endif
 
 penalties_preprocessor::penalties_preprocessor(reach_graph *pg, edge_weight epsilon0, size_t num_threads)
     : pgraph_(pg)
@@ -68,7 +71,7 @@ void penalties_preprocessor::calculate_reaches()
         size_t &counter = vert_counters[omp_get_thread_num()];
         updater.calculate_reaches(*pgraph_, i, epsilon_, local_reaches[omp_get_thread_num()]);
 
-        if (counter % 1000 == 0)
+        if (counter % 100 == 0)
         {
 #pragma omp critical
             {

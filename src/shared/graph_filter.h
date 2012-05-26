@@ -8,9 +8,9 @@ namespace my_graph
     class graph_filter
     {
     public:
-        typedef typename graph_base<V, E> graph;
-        typedef typename vertex_base<V, E> vertex;
-        typedef typename edge_base<V, E> edge;
+        typedef graph_base<V, E> graph;
+        typedef vertex_base<V, E> vertex;
+        typedef edge_base<V, E> edge;
 
         typedef unordered_map<vertex_id, vertex_id> verts_map;
     public:
@@ -38,7 +38,7 @@ namespace my_graph
     {
         verts_.clear();
         
-        for (graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
+        for (typename graph::v_const_iterator it = src.v_begin(); it != src.v_end(); ++it)
         {
             const vertex_id id = src.get_vertex_id(it);
             const vertex& v = *it;
@@ -49,7 +49,7 @@ namespace my_graph
             const vertex_id id1 = dst.add_vertex(v.get_data());
             verts_[id] = id1;
 
-            for (vertex::adj_iterator adj_it = v.out_begin(); adj_it != v.out_end(); ++adj_it)
+            for (typename vertex::adj_iterator adj_it = v.out_begin(); adj_it != v.out_end(); ++adj_it)
             {
                 if (edges_filter_ != NULL && !edges_filter_(adj_it->e))
                     continue;

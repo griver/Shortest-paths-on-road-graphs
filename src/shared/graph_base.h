@@ -177,7 +177,7 @@ namespace my_graph
     }
 
     template<typename V, typename E>
-    typename const graph_base<V, E>::vertex &graph_base<V, E>::get_vertex(vertex_id id) const
+    const typename graph_base<V, E>::vertex &graph_base<V, E>::get_vertex(vertex_id id) const
     {
         return vertices_[id];
     }
@@ -189,7 +189,7 @@ namespace my_graph
     }
 
     template<typename V, typename E>
-    typename const graph_base<V, E>::edge &graph_base<V, E>::get_edge(edge_id id) const
+    const typename graph_base<V, E>::edge &graph_base<V, E>::get_edge(edge_id id) const
     {
         return edges_[id];
     }
