@@ -1,7 +1,7 @@
 #ifndef TRANSIT_NODE_FILTER_H
 #define TRANSIT_NODE_FILTER_H
-#include "queue_filter.h"
-#include "tnr_utils.h"
+
+#include "../../tnr_utils/tnr_utils.h"
 
 namespace tnr {
 	enum reached_state{
@@ -9,7 +9,7 @@ namespace tnr {
 		BEFORE_TNR = 8
 	};
 
-	class transit_node_filter : public my_algorithm::queue_filter {
+	class transit_node_filter : public base_algorithm::queue_filter {
 	private:	
 		shared_ptr<vertex_set> transit_nodes;
 		unordered_map<vertex_id, reached_state> when_reached; 

@@ -1,8 +1,7 @@
 #ifndef NODE_SELECTOR_H
 #define NODE_SELECTOR_H
 
-#include "algorithm_utils.h"
-#include "tnr_utils.h"
+#include "../../tnr_utils/tnr_utils.h"
 
 
 namespace tnr{

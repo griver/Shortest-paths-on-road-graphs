@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-namespace my_algorithm {
+namespace base_algorithm {
 	using namespace my_graph;
 
 	typedef vis_vertex vertex_t;

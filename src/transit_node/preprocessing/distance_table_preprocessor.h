@@ -1,15 +1,15 @@
 #ifndef FULL_DISTANCE_TABLE_PREPROCESSOR_H
 #define FULL_DISTANCE_TABLE_PREPROCESSOR_H
 
-#include "tnr_utils.h"
-#include "distance_table.h"
+#include "../../tnr_utils/tnr_utils.h"
+#include "../../tnr_utils/distance_table.h"
 
 namespace tnr {
 
-	class full_distance_table_preprocessor {
+	class distance_table_preprocessor {
 	private: ///
 		vis_graph const &graph;
-		shared_ptr<full_access_map> access_nodes;
+		shared_ptr<access_map> access_nodes;
 		shared_ptr<vertex_set> transit_nodes;
 		shared_ptr<vis_graph> tn_graph;
 		unordered_map<vertex_id, vertex_id> mapping;
@@ -17,14 +17,14 @@ namespace tnr {
 		shared_ptr< dist_table> table;
 
 	public: ///
-		full_distance_table_preprocessor(vis_graph const &graph, shared_ptr<full_access_map>& access_nodes, shared_ptr<vertex_set>& transit_nodes)
+		distance_table_preprocessor(vis_graph const &graph, shared_ptr<access_map>& access_nodes, shared_ptr<vertex_set>& transit_nodes)
 			:graph(graph),
 			access_nodes(access_nodes),
 			transit_nodes(transit_nodes),
 			table(new  dist_table(transit_nodes)),
 			tn_graph(new vis_graph()){
 				cout << "constructor()" << endl;
-				this->create_transit_nonde_graph();
+				this->create_transit_node_graph();
 		}
 
 	public:
@@ -55,7 +55,7 @@ namespace tnr {
 		}
 
 	private:
-		void create_transit_nonde_graph() {
+		void create_transit_node_graph() {
 			
 			vertex_set::const_iterator tn_iter = transit_nodes->begin();
 			for(tn_iter; tn_iter != transit_nodes->end(); ++tn_iter) {
@@ -70,8 +70,8 @@ namespace tnr {
 			for(tn_iter; tn_iter != transit_nodes->end(); ++tn_iter) {
 				vertex_id t_id= (*tn_iter);
 				
-				unordered_map<vertex_id, full_access_info>::const_iterator an_iter = (*access_nodes)[t_id].begin();
-				unordered_map<vertex_id, full_access_info>::const_iterator an_end_iter = (*access_nodes)[t_id].end();
+				unordered_map<vertex_id, access_info>::const_iterator an_iter = (*access_nodes)[t_id].begin();
+				unordered_map<vertex_id, access_info>::const_iterator an_end_iter = (*access_nodes)[t_id].end();
 
 				for(an_iter; an_iter != an_end_iter; ++an_iter) {
 					vertex_id an_id = an_iter->first;

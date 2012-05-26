@@ -5,7 +5,7 @@
 #include "../shared/coord.h"
 #include "../shared/common.h"
 
-namespace my_algorithm {
+namespace base_algorithm {
 	struct request_data_t {
 		const graph_t &graph;
 		vertex_id start_vertex;

@@ -3,63 +3,22 @@
 
 
 
-#include "path_finder.h"
-#include "grid_info.h"
-#include "coordinate_filter.h"
-#include "transit_node_filter.h"
-#include "node_selector.h"
-#include "tnr_utils.h"
-#include "request_data.h"
-#include "tnr_path_finder.h"
+#include "../../tnr_utils/grid_info.h"
+#include "../preprocessing/transit_node_filter.h"
+#include "../preprocessing/node_selector.h"
+#include "../../tnr_utils/tnr_utils.h"
+#include "../base_algorithm/request_data.h"
+#include "../base_algorithm/run_algorithms.h" 
+#include "../tnr_path_finder.h"
+
 #include <cstdlib>
 #include <ctime>
 #include <cfloat>
 
-#include "run_algorithms.h" 
 
-#include "full_tnr_path_finder.h"
+
 
 namespace tnr {
-	bool an_checking_dijkstra(request_data_t data, shared_ptr<access_map> access_nodes) {
-		my_algorithm::run_dijkstra(data.graph, data.start_vertex, data.end_vertex, data.visited1, data.visited2, data.shortest_path);
-		
-		vertex_id start = data.start_vertex;
-		vertex_id end = data.end_vertex;
-		path_map& path = *(data.shortest_path);
-		
-		if(path.size() == 0)
-			return true;
-		
-		path_vertex current = path[end];
-		vertex_id current_id = end;
-		
-		int start_an_index = -1;
-		int end_an_index = -1;
-		int index = 0;
-
-		while(current.inc.is_initialized()) {
-			if(current_id != end && current_id != start) {
-				if((*access_nodes)[end].count(current_id) != 0) {
-					cout << "end access node: " << current_id << endl;
-					end_an_index = index;
-				}
-				if((*access_nodes)[start].count(current_id) != 0) {
-					cout << "start access node: " << current_id << endl;
-					start_an_index = index;	
-				}
-
-			}
-			++index;
-			current_id = (*current.parent);
-			current = path[(*current.parent)];
-		}
-		
-		if(end_an_index != -1 && start_an_index != -1 && start_an_index >= end_an_index)
-			return true;
-		else
-			return false;
-	}
-
 	void print_result(bool result, vertex_id start, vertex_id end, int index) {
 		std::cerr << index << std::endl;
 		std::cerr << "path from: " << start << " to: " << end;
@@ -71,35 +30,6 @@ namespace tnr {
 	}
 
 
-	void check_access_nodes(request_data_t data, shared_ptr<access_map> access_nodes) {
-		grid_info info(data.graph, 100, 100);
-		srand ( time(NULL) );
-		int index = 0;
-		while(index < 10000) {
-			data.shortest_path->clear();
-			data.visited1->clear();
-			data.visited2->clear();
-			data.start_vertex = rand() % (data.graph.v_count()-1) + 1;
-			data.end_vertex = rand() % (data.graph.v_count()-1) + 1;
-			coord_t const &start_c = data.graph.get_vertex(data.start_vertex).data.c;
-			coord_t const &end_c = data.graph.get_vertex(data.end_vertex).data.c;
-			grid_cell start_cell = info.get_cell(start_c);
-			grid_cell end_cell = info.get_cell(end_c);
-
-			if(std::abs(start_cell.x - end_cell.x) > 4) {
-				index++;
-				bool result = an_checking_dijkstra(data, access_nodes);
-				print_result(result, data.start_vertex, data.end_vertex, index);
-				if(!result) return;
-			}
-			else if(std::abs(start_cell.y - end_cell.y) > 4) {
-				index++;
-				bool result = an_checking_dijkstra(data, access_nodes);
-				print_result(result, data.start_vertex, data.end_vertex, index);
-				if(!result) return;
-			}
-		}
-	}
 
 
 	void an_graph_check(shared_ptr<access_map> an, shared_ptr<vertex_set>  tn) {
@@ -151,7 +81,8 @@ namespace tnr {
 		cout << "max_diff = " << max_diff << endl;
 		cout << "null_count = " << null_count << endl; 
 	}
-//ddgdffghf
+
+
 	bool compare_paths(path_map* a, path_map* b) {
 		path_map::const_iterator iter_a = a->begin();
 		path_map::const_iterator end_a = a->end();
@@ -192,8 +123,7 @@ namespace tnr {
 	}
 	
 	bool compare_paths_dist(path_map* a, path_map* b, vertex_id target) {
-		if(((*a)[target].d - (*b)[target].d) > 0.0000001f ) {
-			//cout << (*a)[target].d << " != " << (*b)[target].d << endl;
+		if(((*a)[target].d - (*b)[target].d) > 0.00001f ) {
 			cout << (*a)[target].d - (*b)[target].d << " != " << 0.0f << endl;
 			return false;
 		}
@@ -253,52 +183,14 @@ namespace tnr {
 				index++;
 				finder.search(data.start_vertex, data.end_vertex);
 				run_astar(data.graph, data.start_vertex, data.end_vertex, data.visited1, data.visited2, d_path);
-				bool result = compare_paths(d_path, data.shortest_path);
-				//bool result = compare_paths_edges(d_path, data.shortest_path, data.graph);
+				//bool result = compare_paths(d_path, data.shortest_path);
+				bool result = compare_paths_dist(d_path, data.shortest_path, data.end_vertex);
 				print_result(result, data.start_vertex, data.end_vertex, index);
 				
 				if(!result) return;
 			}
 		}
 	}
-
-	void full_check_tnr_path_finder(request_data_t data, full_tnr_path_finder& finder) {
-		grid_info info(data.graph, 100, 100);
-		srand ( time(NULL) );
-		int index = 0;
-		path_map* d_path = new path_map();
-
-		while(index < 10000) {
-			data.shortest_path->clear();
-			data.visited1->clear();
-			d_path->clear();
-
-			data.start_vertex = rand() % (data.graph.v_count()-1) + 1;
-			data.end_vertex = rand() % (data.graph.v_count()-1) + 1;
-			coord_t const &start_c = data.graph.get_vertex(data.start_vertex).data.c;
-			coord_t const &end_c = data.graph.get_vertex(data.end_vertex).data.c;
-			grid_cell start_cell = info.get_cell(start_c);
-			grid_cell end_cell = info.get_cell(end_c);
-			bool far_enough = false;
-			if(std::abs(start_cell.x - end_cell.x) > 4)
-				far_enough = true;
-			else if(std::abs(start_cell.y - end_cell.y) > 4) 
-				far_enough = true;
-
-			if(far_enough) {
-				index++;
-				finder.search(data.start_vertex, data.end_vertex);
-				run_astar(data.graph, data.start_vertex, data.end_vertex, data.visited1, data.visited2, d_path);
-				bool result = compare_paths(d_path, data.shortest_path);
-				//bool result = compare_paths_edges(d_path, data.shortest_path, data.graph);
-				print_result(result, data.start_vertex, data.end_vertex, index);
-				
-				if(!result) return;
-			}
-		}
-	}
-
-
 }
 
 #endif

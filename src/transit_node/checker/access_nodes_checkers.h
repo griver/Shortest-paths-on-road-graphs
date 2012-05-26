@@ -2,12 +2,11 @@
 #define FULL_ACCESS_NODES_CHECKERS
 
 
-
 #include "tnr_checkers.h"
 
 namespace tnr {
-	bool full_an_checking_dijkstra(request_data_t data, shared_ptr<full_access_map> access_nodes) {
-		my_algorithm::run_dijkstra(data.graph, data.start_vertex, data.end_vertex, data.visited1, data.visited2, data.shortest_path);
+	bool an_checking_dijkstra(request_data_t data, shared_ptr<access_map> access_nodes) {
+		base_algorithm::run_dijkstra(data.graph, data.start_vertex, data.end_vertex, data.visited1, data.visited2, data.shortest_path);
 		
 		vertex_id start = data.start_vertex;
 		vertex_id end = data.end_vertex;
@@ -48,7 +47,7 @@ namespace tnr {
 
 
 
-	void full_check_access_nodes(request_data_t data, shared_ptr<full_access_map> access_nodes) {
+	void check_access_nodes(request_data_t data, shared_ptr<access_map> access_nodes) {
 		grid_info info(data.graph, 100, 100);
 		srand ( time(NULL) );
 		int index = 0;
@@ -65,13 +64,13 @@ namespace tnr {
 
 			if(std::abs(start_cell.x - end_cell.x) > 4) {
 				index++;
-				bool result = full_an_checking_dijkstra(data, access_nodes);
+				bool result = an_checking_dijkstra(data, access_nodes);
 				print_result(result, data.start_vertex, data.end_vertex, index);
 				if(!result) return;
 			}
 			else if(std::abs(start_cell.y - end_cell.y) > 4) {
 				index++;
-				bool result = full_an_checking_dijkstra(data, access_nodes);
+				bool result = an_checking_dijkstra(data, access_nodes);
 				print_result(result, data.start_vertex, data.end_vertex, index);
 				if(!result) return;
 			}

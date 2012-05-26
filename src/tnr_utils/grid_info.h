@@ -31,18 +31,17 @@ namespace tnr {
 		grid_info(graph_t const &graph,  int x_partition = 1, int y_partition = 1): graph(graph), x_partition(x_partition), y_partition(y_partition) {
 			calculate_limits(graph);
 			calculate_steps();
-			calculate_border_vertices(graph);
+			//calculate_border_vertices(graph);
 		}
 
 		grid_info(graph_t const &graph, my_graph::path_map *path, int x_partition = 1, int y_partition = 1): graph(graph), x_partition(x_partition), y_partition(y_partition) {
 			calculate_limits(graph);
 			calculate_steps();
 			calculate_border_vertices(graph, path);
-			std::cout <<"BORDER VERICES SIZE:" << border_vertices.size() << std::endl;
+			//std::cout <<"BORDER VERICES SIZE:" << border_vertices.size() << std::endl;
 		}
 
-	private: 
-		
+	public: 
 		void calculate_border_vertices(graph_t const &graph, path_map* path) {
 			border_vertices.clear();
 				
@@ -72,6 +71,31 @@ namespace tnr {
 			}
 		}
 
+		void calculate_border_vertices(graph_t const &graph) {
+			border_vertices.clear();
+				
+			size_t size = graph.v_count();
+			vertex_t::adj_iterator iter;
+			vertex_t::adj_iterator end;
+			grid_cell v_cell, u_cell; 
+			vertex_id u_id, v_id;
+
+			for(int i = 0; i < size; ++i) {
+				v_id = i;
+				vertex_t const &v = graph.get_vertex(v_id);
+				grid_cell v_cell = get_cell(v.data.c);
+				iter = v.in_begin();
+				end = v.in_end();
+				for(iter; iter != end; ++iter) {
+					u_id = (*iter).v;
+					u_cell = get_cell(graph.get_vertex(u_id).data.c);
+					if(u_cell != v_cell) {
+						border_vertices[u_cell].insert(u_id);
+						border_vertices[v_cell].insert(v_id);
+					}
+				}
+			}
+		}
 
 	private: //private methods 
 		void calculate_limits(graph_t const &graph) {
@@ -102,45 +126,12 @@ namespace tnr {
 			y_step = get_width() / (double)y_partition;
 		}
 
-
-		void calculate_border_vertices(graph_t const &graph) {
-			/*graph_t::v_const_iterator iter = graph.v_begin();
-			for(iter; iter!= graph.v_end(); ++iter) {
-				grid_coord coord = (*iter).data.c;
-				grid_cell cell = this->get_cell(coord);
-			
-			}*/
-			border_vertices.clear();
-				
-			size_t size = graph.v_count();
-			vertex_t::adj_iterator iter;
-			vertex_t::adj_iterator end;
-			grid_cell v_cell, u_cell; 
-			vertex_id u_id, v_id;
-
-			for(int i = 0; i < size; ++i) {
-				v_id = i;
-				vertex_t const &v = graph.get_vertex(v_id);
-				grid_cell v_cell = get_cell(v.data.c);
-				iter = v.in_begin();
-				end = v.in_end();
-				for(iter; iter != end; ++iter) {
-					u_id = (*iter).v;
-					u_cell = get_cell(graph.get_vertex(u_id).data.c);
-					if(u_cell != v_cell) {
-						border_vertices[u_cell].insert(u_id);
-						border_vertices[v_cell].insert(v_id);
-					}
-				}
-			}
-		}
-
 	public: //methods
 		void set_partition(size_t vertical, size_t horisontal) {
 			x_partition = vertical;
 			y_partition = horisontal;
 			calculate_steps();
-			calculate_border_vertices(graph);
+			
 		}
 		double get_height() const {
 			return abs(highs.x - lows.x);
@@ -161,7 +152,6 @@ namespace tnr {
 		grid_coord const get_highs() const {
 			return highs;
 		}
-		// координату горизонтальной линии
 		double get_x_line(int i) const {
 			if(i <= x_partition && i >= 0)
 				return lows.x + x_step*((double)i);
@@ -208,7 +198,7 @@ namespace tnr {
 			return this->y_step;
 		}
 		vertex_set const & get_cell_borders(grid_cell cell) {
-			 return border_vertices[cell];
+			return border_vertices[cell];
 		}
 		border_map & get_border_map() {
 			return border_vertices;

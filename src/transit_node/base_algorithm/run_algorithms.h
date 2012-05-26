@@ -3,7 +3,7 @@
 
 #include "path_finder.h"
 
-namespace my_algorithm {
+namespace base_algorithm {
 	
 	void run_astar(const graph_t &graph,
 					   vertex_id start_vertex,

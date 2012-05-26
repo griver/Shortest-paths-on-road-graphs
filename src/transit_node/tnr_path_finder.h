@@ -1,19 +1,9 @@
-#ifndef TNR_PATH_FINDER_H
-#define TNR_PATH_FINDER_H
+#ifndef FULL_TNR_PATH_FINDER_H
+#define FULL_TNR_PATH_FINDER_H
 
-#include "tnr_utils.h"
-#include "distance_table.h"
-#include "path_building_exception.h"
-/*
-(a(2883) != b(2880))
-216
-path from: 18603 to: 7276 : PROBLEM!!!!
+#include "../tnr_utils/tnr_utils.h"
+#include "../tnr_utils/distance_table.h"
 
-(a(1910) != b(1908))
-52
-path from: 928 to: 29952 :     PROBLEM!!!!
-
-//*/
 namespace tnr {
 
 	class tnr_path_finder {
@@ -35,15 +25,14 @@ namespace tnr {
 			edge_weight expected;
 			
 			expected = find_dist(start, end, start_access, end_access);
-			//cout <<"expected dist: " << expected << endl;
-			//return;
-			//end_access = 7511;
+		
 			if(start_access == -1 || end_access == -1) {
 				cout << "path does not exist" << endl; 
 				return;
 			}
-			cout << "start access node: " << start_access << endl;
-			cout << "end access node: " << end_access << endl;
+			//cout << "start access node: " << start_access << endl;
+			//cout << "end access node: " << end_access << endl;
+
 			edge_weight resulting = 0.0f;
 			vertex_id current = start_access;
 			vertex_id next;
@@ -55,23 +44,12 @@ namespace tnr {
 				this->build_path_to_access(current, next, resulting);
 				current = next;
 			}
-			//cout << "after while " << endl;
-			if(resulting != (*path)[end_access].d) {
-				cout <<"LAST ACCESS NODE INCORECT DIST" << endl;
-				cout << (*path)[end_access].d << endl;
-				cout <<  resulting << endl;
-			}
 
 			this->build_path_from_access(end, end_access, resulting);
 
-			cout <<"resulting dist: " << resulting << endl;
+			//cout <<"resulting dist: " << resulting << endl;
 			//cout <<"expected dist: " << expected << endl;
 
-			if(resulting != (*path)[end].d) {
-				cout <<"LAST ACCESS NODE INCORECT DIST" << endl;
-				cout << (*path)[end_access].d << endl;
-				cout <<  resulting << endl;
-			}
 		}
 
 	private:
@@ -95,10 +73,15 @@ namespace tnr {
 			vertex_id current = base;
 			edge_id next_edge = -1;
 			vertex_id next = -1;
-
+			size_t next_ind = -1;
+			vertex_t::adj_iterator next_iter;
 			while(current != access) {
-				next = ((*access_nodes)[current][access]).next;
-				next_edge = get_next_edge(current, next);	
+				next_ind = ((*access_nodes)[current][access]).next;
+				next_iter  = (graph.get_vertex(current).out_begin() + next_ind);
+
+				next_edge = next_iter->e;
+				next = next_iter->v;
+
 				common_dist += graph.get_edge(next_edge).data.len;
 				(*path)[next] = path_vertex(next, common_dist, next_edge, current);
 				current = next;
@@ -110,16 +93,21 @@ namespace tnr {
 			edge_id next_edge = -1;
 			vertex_id next = -1;
 			edge_weight access_dist = 0.0f;
+			size_t next_ind = -1;
+			vertex_t::adj_iterator next_iter;
 
 			while(current != access) {
-				next = ((*access_nodes)[current][access]).next;
+				next_ind = ((*access_nodes)[current][access]).next;
 				access_dist = ((*access_nodes)[current][access]).dist;
-				next_edge = get_next_edge(current, next);
+				next_iter  = (graph.get_vertex(current).out_begin() + next_ind);
+
+				next_edge = next_iter->e;
+				next = next_iter->v;
 
 				(*path)[current] = path_vertex(current, (common_dist + access_dist) , next_edge, next);
 				current = next;
 			}
-
+			// возможно лучше прибавлять по  ребрам
 			common_dist += ((*access_nodes)[base][access]).dist;
 		}
 
@@ -128,36 +116,27 @@ namespace tnr {
 			unordered_map<vertex_id, access_info>::const_iterator start_end = (*access_nodes)[start].end();
 			unordered_map<vertex_id, access_info>::const_iterator end_iter = (*access_nodes)[end].begin();
 			unordered_map<vertex_id, access_info>::const_iterator end_end = (*access_nodes)[end].end();
-			double min_dist = DBL_MAX;
-			
+			float min_dist = FLT_MAX;
+			float sum_dist;
 
-			//cout << "start access nodes number: " <<(*access_nodes)[start].size() << endl;
-			//cout << "end access nodes number: " <<(*access_nodes)[end].size() << endl;
+			unordered_map<vertex_id, access_info>::const_iterator end_start = (*access_nodes)[end].begin();
 
 			for(start_iter; start_iter != start_end; ++start_iter) {
-				end_iter = (*access_nodes)[end].begin();
+				end_iter = end_start;
 				for(end_iter; end_iter != end_end; ++end_iter) {
 					
-					double to_start = (double)start_iter->second.dist;
-					double to_end = (double)end_iter->second.dist;
-					double between = (double)table->get_dist(start_iter->first, end_iter->first);
-					if(start_iter->first == 4519 && (end_iter->first == 7511 || end_iter->first == 251841)) {
-						cout << start_iter->first << "  " << end_iter->first << endl;   
-						cout << to_start << "+" << between << "+" << to_end 
-							<< " = " << (to_start +  between + to_end) << endl;
-					}
-	
+					sum_dist = start_iter->second.dist 
+							+ end_iter->second.dist 
+							+ table->get_dist(start_iter->first, end_iter->first);
 
-					if(min_dist > (double)(to_start +  between + to_end)) {
-						min_dist = (to_start +  between + to_end);
+					if(min_dist > sum_dist) {
+						min_dist = sum_dist;
 						start_access = start_iter->first;
 						end_access = end_iter->first;
-
-				
 					}
 				}
 			}
-			return (float)min_dist;
+			return min_dist;
 		}
 
 	};

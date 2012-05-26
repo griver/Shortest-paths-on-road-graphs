@@ -3,7 +3,7 @@
 #include "queue_filter.h"
 
 
-namespace my_algorithm {
+namespace base_algorithm {
 
 	class coordinate_filter : public queue_filter {
 	private:

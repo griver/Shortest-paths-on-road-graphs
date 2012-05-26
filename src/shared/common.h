@@ -51,13 +51,14 @@ using boost::shared_ptr;
 #include <boost/serialization/vector.hpp>
 #pragma warning (pop)
 
-/*#if defined (NDEBUG) || !defined (_WIN32)
+/*#if defined (NDEBUG) || !defined (_MSC_VER)
     #define USE_BOOST_HASHMAP
 #else
     #define USE_TR1_HASHMAP
 #endif*/
 
 #define USE_BOOST_HASHMAP
+
 
 
 #if defined ( USE_TR1_HASHMAP )

@@ -2,12 +2,12 @@
 #define PRIORITY_QUEUE_H
 
 
-#include "../shared/common_algorithms/path.h"
-#include "../shared/new_vis_graph.h"
-#include "algorithm_utils.h"
+#include "../../shared/common_algorithms/path.h"
+#include "../../shared/new_vis_graph.h"
+#include "../../tnr_utils/algorithm_utils.h"
 
 
-namespace my_algorithm{
+namespace base_algorithm{
 
 	struct queue_vertex{
 		edge_weight dist;

@@ -8,11 +8,10 @@
 #include <map>
 #include <set>
 #include "priority_queue.h"
-#include "algorithm_utils.h"
-#include "queue_filter.h"
-#include "coordinate_filter.h"
+#include "filter/queue_filter.h"
+#include "filter/coordinate_filter.h"
 
-namespace my_algorithm {
+namespace base_algorithm {
 
 	class path_finder{
 	public:

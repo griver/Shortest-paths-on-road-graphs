@@ -1,12 +1,11 @@
 #ifndef TNR_ALGORITHMS_H
 #define	TNR_ALGORITHMS_H
 
-#include "path_finder.h"
-#include "grid_info.h"
-#include "coordinate_filter.h"
+#include "../base_algorithm/path_finder.h"
+#include "../../tnr_utils/grid_info.h"
 #include "node_selector.h"
-#include "tnr_utils.h"
-#include "access_node_preprocessing.h"
+#include "../../tnr_utils/tnr_utils.h"
+#include "../preprocessing/access_node_preprocessing.h"
 #include <fstream>
 
 namespace tnr {
@@ -55,6 +54,7 @@ namespace tnr {
 					   path_map *shortest_path) {
 		vertex_set transit_nodes;	
 		tnr::grid_info info(graph, shortest_path, 100, 100);
+		info.calculate_border_vertices(graph, shortest_path);
 		
 		path_finder forward(&graph, get_weight, visited_tree);
 		
@@ -83,6 +83,7 @@ namespace tnr {
 					   path_map *visited_tree, 
 					   path_map *shortest_path) {
 		grid_info info(graph, shortest_path, 100, 100);
+		info.calculate_border_vertices(graph, shortest_path);
 		vertex_set transit_nodes;
 
 		border_map & grid_borders = info.get_border_map();

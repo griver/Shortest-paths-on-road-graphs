@@ -1,8 +1,8 @@
 #ifndef QUEUE_FILTER_H
 #define QUEUE_FILTER_H
-#include "algorithm_utils.h"
+#include "../../tnr_utils/algorithm_utils.h"
 
-namespace my_algorithm {	
+namespace base_algorithm {	
 	class queue_filter {
 	private:
 		shared_ptr<queue_filter> next;

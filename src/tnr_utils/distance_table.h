@@ -5,7 +5,7 @@
 
 
 namespace tnr {
-	typedef access_info table_cell;
+	typedef table_info table_cell;
 	class dist_table {
 		unordered_map<vertex_id, vertex_id> mapping;
 		size_t size;

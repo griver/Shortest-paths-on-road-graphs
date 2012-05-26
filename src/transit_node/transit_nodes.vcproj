@@ -492,6 +492,54 @@
 			<File
 				RelativePath="..\loaders\new_osm_loader.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Reliease64|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Reliease64|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\stdafx.cpp"
@@ -539,7 +587,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="project headers"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
@@ -557,6 +605,10 @@
 			</File>
 			<File
 				RelativePath="..\shared\common.h"
+				>
+			</File>
+			<File
+				RelativePath="..\search\common_search.h"
 				>
 			</File>
 			<File
@@ -580,142 +632,138 @@
 				>
 			</File>
 			<File
+				RelativePath="..\shared\perfcounter.h"
+				>
+			</File>
+			<File
 				RelativePath="..\shared\visualizer.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="algorithms"
+			Name="base_algorithm"
 			>
 			<File
-				RelativePath=".\algorithm_utils.h"
+				RelativePath=".\base_algorithm\path_finder.h"
 				>
 			</File>
 			<File
-				RelativePath=".\path_finder.h"
+				RelativePath=".\base_algorithm\priority_queue.h"
 				>
 			</File>
 			<File
-				RelativePath=".\priority_queue.h"
+				RelativePath=".\base_algorithm\request_data.h"
 				>
 			</File>
 			<File
-				RelativePath=".\request_data.h"
-				>
-			</File>
-			<File
-				RelativePath=".\run_algorithms.h"
+				RelativePath=".\base_algorithm\run_algorithms.h"
 				>
 			</File>
 			<Filter
-				Name="filters"
+				Name="filter"
 				>
 				<File
-					RelativePath=".\coordinate_filter.h"
+					RelativePath=".\base_algorithm\filter\coordinate_filter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\queue_filter.h"
+					RelativePath=".\base_algorithm\filter\queue_filter.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
-			Name="transit_node"
+			Name="tnr_utils"
 			>
 			<File
-				RelativePath=".\distance_table.h"
+				RelativePath="..\tnr_utils\algorithm_utils.h"
 				>
 			</File>
 			<File
-				RelativePath=".\tnr_path_finder.h"
+				RelativePath="..\tnr_utils\distance_table.h"
+				>
+			</File>
+			<File
+				RelativePath="..\tnr_utils\grid_cell.h"
+				>
+			</File>
+			<File
+				RelativePath="..\tnr_utils\grid_info.h"
+				>
+			</File>
+			<File
+				RelativePath="..\tnr_utils\tnr_loader.h"
+				>
+			</File>
+			<File
+				RelativePath="..\tnr_utils\tnr_utils.h"
 				>
 			</File>
 			<Filter
-				Name="utils"
+				Name="exception"
 				>
 				<File
-					RelativePath=".\grid_cell.h"
+					RelativePath="..\tnr_utils\exception\mapping_exception.h"
 					>
 				</File>
 				<File
-					RelativePath=".\grid_info.h"
-					>
-				</File>
-				<File
-					RelativePath=".\node_selector.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tnr_checkers.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tnr_loader.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tnr_utils.h"
-					>
-				</File>
-				<File
-					RelativePath=".\transit_node_filter.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="exceptions"
-				>
-				<File
-					RelativePath=".\mapping_exception.h"
-					>
-				</File>
-				<File
-					RelativePath=".\path_building_exception.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="preprocessing"
-				>
-				<File
-					RelativePath=".\access_node_preprocessing.h"
-					>
-				</File>
-				<File
-					RelativePath=".\create_transit_node_graph.h"
-					>
-				</File>
-				<File
-					RelativePath=".\distance_table_preprocessor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\tnr_algorithms.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="full"
-				>
-				<File
-					RelativePath=".\full_access_nodes_checkers.h"
-					>
-				</File>
-				<File
-					RelativePath=".\full_distance_table_preprocessor.h"
-					>
-				</File>
-				<File
-					RelativePath=".\full_tnr_path_finder.h"
+					RelativePath="..\tnr_utils\exception\path_building_exception.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
+		<Filter
+			Name="checker"
 			>
-		</File>
+			<File
+				RelativePath=".\checker\access_nodes_checkers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\checker\tnr_checkers.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="tnr_algorithm"
+			>
+			<File
+				RelativePath=".\tnr_path_finder.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="preprocessing"
+			>
+			<File
+				RelativePath=".\preprocessing\access_node_preprocessing.h"
+				>
+			</File>
+			<File
+				RelativePath=".\preprocessing\distance_table_preprocessor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\preprocessing\node_selector.h"
+				>
+			</File>
+			<File
+				RelativePath=".\preprocessing\tnr_algorithms.h"
+				>
+			</File>
+			<File
+				RelativePath=".\preprocessing\transit_node_filter.h"
+				>
+			</File>
+			<Filter
+				Name="shortcuts"
+				>
+				<File
+					RelativePath=".\preprocessing\shortcut\shortcut.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
