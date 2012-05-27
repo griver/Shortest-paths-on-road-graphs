@@ -5,14 +5,15 @@
 
 typedef coord<double> vis_coord;
 
+
 #if !defined (DISABLE_VIS)
 struct vis_vertex_data
 {
     explicit vis_vertex_data (const vis_coord& c) : c(c) {};
-    vis_vertex_data (const vis_coord& c, unsigned __int64 osm_id) : c(c), orig_id(osm_id) {};
+    vis_vertex_data (const vis_coord& c,  __int64 osm_id) : c(c), orig_id(osm_id) {};
 
     vis_coord c;
-    unsigned __int64 orig_id;
+     __int64 orig_id;
 };
 
 struct vis_edge_data
