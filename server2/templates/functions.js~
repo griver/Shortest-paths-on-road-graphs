@@ -1,21 +1,4 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-	<meta charset='utf-8' />
-	<title>My OpenLayers Map</title>
-	
-	<style type="text/css">
-      html, body, #map_element {
-          width: 90%;
-          height: 90%;
-          margin: 0;
-      }
-    </style>
-
-	<script type='text/javascript' src='OpenLayers.js'></script>
-	<script type='text/javascript'>
-
-	var map;
+var map;
 	var navigation_control;
 	var mousePosition_control;
 	//var vector_layer = new OpenLayers.Layer.Vector('Basic Vector Layer');
@@ -41,9 +24,9 @@
 
 		var osm_layer = new OpenLayers.Layer.OSM(
 			"Base layer", 
-			["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-			"http://c.tile.openstreetmap.org/${z}/${x}/${y}.png",
-			"http://b.tile.openstreetmap.org/${z}/${x}/${y}.png"]
+			["http://a.tile.openstreetmap.org/\${z}/\${x}/\${y}.png",
+			"http://c.tile.openstreetmap.org/\${z}/\${x}/\${y}.png",
+			"http://b.tile.openstreetmap.org/\${z}/\${x}/\${y}.png"]
         );
 
 		map.addLayer(osm_layer);
@@ -96,6 +79,30 @@
     var markerOne;
     var markerTwo;
 
+    function sendLonLat(lonlat) {
+		if (lonlat == "") {
+		  document.getElementById("resp").innerHTML="";
+		  return;
+		} 
+		
+		if (window.XMLHttpRequest) {
+		// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp = new XMLHttpRequest();
+		} else {
+		// code for IE6, IE5
+		  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		xmlhttp.onreadystatechange = function() {
+		  if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+		    document.getElementById("resp").innerHTML = xmlhttp.responseText;
+		  }
+		}
+		
+		xmlhttp.open("GET","?lon=" + lonlat.lon + ";lat=" + lonlat.lat,true);
+		xmlhttp.send();
+    }
+
 	function placeMarker(e) {
 		var lonlat = map.getLonLatFromViewPortPx(e.xy);
 
@@ -107,7 +114,7 @@
 		    //         new OpenLayers.Projection("EPSG:900913")
 		    //       ),
 		    //       icon.clone())
-		    // );	
+		    // );
 			markerOne = new OpenLayers.Marker( lonlat, icon1.clone());
 		    markers.addMarker(markerOne);	
 		    markersOnTheMap = 1;
@@ -128,18 +135,10 @@
 	    	markers.addMarker(markerTwo);	
 	    	markersOnTheMap = 2;
 	    }
+
+	    sendLonLat(lonlat);
 	}
 
 	function start() {
-		addControl();
-	 	   
+		//addControl();
 	}
-	</script>
-</head>
-	<body onload='init(); start();'>
-		<div id='map_element' ></div>
-		<a href="?" id="permalink_link">Permalink</a>	
-				
-	</body>
-
-</html>

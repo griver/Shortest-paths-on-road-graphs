@@ -1,0 +1,173 @@
+var map;
+var navigation_control;
+var mousePosition_control;
+//var vector_layer = new OpenLayers.Layer.Vector('Basic Vector Layer');
+var markers = new OpenLayers.Layer.Markers( "Markers" );
+var markerOneLonLat;
+var lineLayer = new OpenLayers.Layer.Vector("Line Layer"); 
+
+function init() {
+	map = new OpenLayers.Map('map_element', { 
+		controls: []
+	});
+	map.addLayer(lineLayer);       
+	map.addControl(new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path));               
+
+	navigation_control = new OpenLayers.Control.Navigation({});
+	mousePosition_control = new OpenLayers.Control.MousePosition();
+	map.addControl(navigation_control);
+	map.addControl(new OpenLayers.Control.PanZoomBar());
+	map.addControl(new OpenLayers.Control.LayerSwitcher({/*'ascending':false*/}));
+	//map.addControl(new OpenLayers.Control.Permalink());
+	map.addControl(new OpenLayers.Control.Permalink('permalink_link'));
+	map.addControl(mousePosition_control);
+	map.addControl(new OpenLayers.Control.OverviewMap());
+	map.addControl(new OpenLayers.Control.KeyboardDefaults({slideFactor: 75}));
+
+	map.events.register('click', map, placeMarker);
+	//map.addControl(new OpenLayers.Control.EditingToolbar(vector_layer));
+
+	var osm_layer = new OpenLayers.Layer.OSM(
+		"Base layer", 
+		["http://a.tile.openstreetmap.org/\${z}/\${x}/\${y}.png",
+		"http://c.tile.openstreetmap.org/\${z}/\${x}/\${y}.png",
+		"http://b.tile.openstreetmap.org/\${z}/\${x}/\${y}.png"]
+	);
+
+	map.addLayer(osm_layer);
+	map.addLayer(markers);
+	map.addControl(new OpenLayers.Control.LayerSwitcher({roundedCorner: true, roundedCornerColor: "darkblue"}));
+	//map.addControl(new OpenLayers.Control.LayerSwitcher({}));
+
+	map.setCenter(new OpenLayers.LonLat(30.37407166138, 60.002114939457)
+  .transform(
+    new OpenLayers.Projection("EPSG:4326"),
+    new OpenLayers.Projection("EPSG:900913")
+  ), 15
+	);
+
+	if (!map.getCenter()) {
+		map.zoomToMaxExtent();
+	}
+
+}
+
+
+function addControl() {
+	// var control = new OpenLayers.Control();
+	// OpenLayers.Util.extend(control, {
+	//     draw: function () {
+	//         // this Handler.Box will intercept the shift-mousedown
+	//         // before Control.MouseDefault gets to see it
+	//         this.box = new OpenLayers.Handler.Box( control,
+	//             {"done": this.notice},
+	//             {keyMask: OpenLayers.Handler.MOD_SHIFT});
+	//         this.box.activate();
+	//     },
+
+	//     notice: function (bounds) {
+	//         OpenLayers.Console.userError(bounds);
+	//     }
+	// });
+	// map.addControl(control);
+}
+/** 
+* Funcion to handle mousclick .
+*/
+
+var markersOnTheMap = 0;
+
+var size = new OpenLayers.Size(21,25);
+var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+var icon1 = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);	
+var icon2 = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker-blue.png', size, offset);	
+var markerOne;
+var markerTwo;
+
+function sendLonLat(lonlat1, lonlat2) {
+	var my_JSON_object = {};
+
+	if (window.XMLHttpRequest) {
+	// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp = new XMLHttpRequest();
+	} else {
+	// code for IE6, IE5
+	  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	}	
+
+	//http_request.open("GET", url, true);
+	//http_request.open("GET","?lon1=" + lonlat1.lon + ";lat1=" + lonlat1.lat
+	//			+ ";lon2=" + lonlat2.lon + ";lat2=" + lonlat2.lat,true);
+
+	xmlhttp.open("GET","?json_par=" + JSON.stringify({
+		"lon1" : lonlat1.lon, 
+		"lat1" : lonlat1.lat,
+		"lon2" : lonlat2.lon,
+		"lat2" : lonlat2.lat
+	}), true);
+
+	xmlhttp.onreadystatechange = function () {
+		var done = 4, ok = 200;
+		if (xmlhttp.readyState == done && xmlhttp.status == ok) {
+			my_JSON_object = JSON.parse(xmlhttp.responseText);
+			// var obj = eval ("(" + my_JSON_object + ")"); // no need in eval...
+			//document.getElementById("resp").innerHTML = xmlhttp.responseText;
+			//drawPath(lonlat1.lon, lonlat1.lat, lonlat2.lon, lonlat2.lat)
+			//var myPoints=new Array(lonlat1.lon, lonlat1.lat, lonlat1.lon + 1000, lonlat1.lat + 500 , lonlat2.lon, lonlat2.lat);
+			var myPoints = obj["array"]
+	
+			drawPolyPath(myPoints);
+		}
+	};
+
+	xmlhttp.send();
+}
+
+function placeMarker(e) {
+	var lonlat = map.getLonLatFromViewPortPx(e.xy);
+
+	if (markersOnTheMap == 0) {
+	//alert(lonlat.lon);
+	// markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(lonlat.lon, lonlat.lat)
+	    //       .transform(
+	    //         new OpenLayers.Projection("EPSG:4326"),
+	    //         new OpenLayers.Projection("EPSG:900913")
+	    //       ),
+	    //       icon.clone())
+	    // );
+		markerOne = new OpenLayers.Marker( lonlat, icon1.clone());
+		markers.addMarker(markerOne);	
+		markerOneLonLat = lonlat;
+		markersOnTheMap = 1;
+	} else if (markersOnTheMap == 1) {
+		markerTwo = new OpenLayers.Marker( lonlat, icon2.clone());
+		markers.addMarker(markerTwo);	
+		markersOnTheMap = 2;
+	} else {
+		markers.removeMarker(markerTwo);
+		markerTwo.destroy();
+		markerTwo = new OpenLayers.Marker( lonlat, icon2.clone());
+		markers.addMarker(markerTwo);	
+	}
+/*    } else if (markersOnTheMap == 2) {
+    	markers.removeMarker(markerOne);
+    	markerOne.destroy();
+    	markerOne = new OpenLayers.Marker( lonlat, icon1.clone());
+    	markers.addMarker(markerOne);	
+    	markersOnTheMap = 3;
+    } else {
+	markers.removeMarker(markerTwo);
+    	markerTwo.destroy();
+    	markerTwo = new OpenLayers.Marker( lonlat, icon2.clone());
+    	markers.addMarker(markerTwo);	
+    	markersOnTheMap = 2;
+    }*/
+
+	if (markersOnTheMap == 2) {
+		sendLonLat(markerOneLonLat, lonlat);
+	}    
+}
+
+function start() {
+	//addControl();
+}

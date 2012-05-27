@@ -1,0 +1,56 @@
+/*#include <iostream>
+#include <cstdio>
+
+class Route{
+
+	double * path;
+	size_t length;
+
+	public:
+		
+		void init_path() {
+			path = new double[6];
+			path[0] = 30.;
+			path[1] = 60.;
+			path[2] = 31.;
+			path[3] = 62.;
+			path[4] = 29.;
+			path[5] = 58.;
+			length = 6;
+		}
+
+		const double * get_path(){
+			return path;
+		}
+
+		size_t size() {
+			return length;
+		}
+};
+
+extern "C" {
+	Route* Route_new(){ return new Route(); }
+	void Route_init_path(Route* r){ r->init_path(); }
+	const double * Route_get_path(Route* r){ return r->get_path(); }
+	size_t Route_size(Route* r){ return r->size(); }
+}
+*/ 
+
+#include <time.h>
+ double My_variable = 3.0;
+ 
+ int fact(int n) {
+     if (n <= 1) return 1;
+     else return n*fact(n-1);
+ }
+ 
+ int my_mod(int x, int y) {
+     return (x%y);
+ }
+ 	
+ char *get_time()
+ {
+     time_t ltime;
+     time(&ltime);
+     return ctime(&ltime);
+ }

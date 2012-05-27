@@ -1,0 +1,5 @@
+gcc -shared -Wl,-soname,your_soname \
+    -o library_name file_list library_list
+
+g++ -fPIC -g -c -Wall -o example.o example.cpp
+g++ -shared -Wl -o example.so example.o -lc

@@ -1,0 +1,7 @@
+swig -swiglib -c++ -python -o libroute_wrap.cpp libroute.i
+gcc -fPIC -c libroute_wrap.cpp -o libroute_wrap.o -I/usr/include/python2.7
+gcc -fPIC -c libroute.cpp -o libroute.o -I/usr/include/python2.7
+g++ -shared libroute_wrap.o libroute.o -o _libroute.so
+
+g++ -fPIC -c -Wall -o example.o example.cpp
+g++ -shared -Wl -o example.so example.o -lc

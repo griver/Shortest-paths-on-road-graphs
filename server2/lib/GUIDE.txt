@@ -1,0 +1,26 @@
+ivanovpc@ivanovpc-desktop:~/workspace/frontend/lib/new$ swig -python example.i
+ivanovpc@ivanovpc-desktop:~/workspace/frontend/lib/new$ gcc -fPIC -c example.c searchlib_wrap.c -I/usr/include/python2.7
+example.c
+ivanovpc@ivanovpc-desktop:~/workspace/frontend/lib/new$ gcc -fPIC -c example.c example_wrap.c -I/usr/include/python2.7
+ivanovpc@ivanovpc-desktop:~/workspace/frontend/lib/new$ ld -shared example.o example_wrap.o -o _example.so
+ivanovpc@ivanovpc-desktop:~/workspace/frontend/lib/new$ python
+Python 2.7.2+ (default, Oct  4 2011, 20:06:09) 
+[GCC 4.6.1] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import example
+>>> example.fact(5)
+120
+>>> example.my_mod(14,5)
+4
+>>> example.get_time(14,5)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: get_time() takes exactly 0 arguments (2 given)
+>>> example.get_time()
+'Sat May 26 04:35:06 2012\n'
+>>> print example.get_time()
+Sat May 26 04:35:19 2012
+
+>>> 
+
+

@@ -1,0 +1,20 @@
+class Route{
+
+	double * path;
+	size_t length;
+
+	public:
+		
+		void init_path();
+		const double * get_path() const;
+		size_t size() const;
+};
+
+/*
+extern "C" {
+	Route* Route_new(){ return new Route(); }
+	void Route_init_path(Route* r){ r->init_path(); }
+	const double * Route_get_path(Route* r){ return r->get_path(); }
+	size_t Route_size(Route* r){ return r->size(); }
+}*/
+
