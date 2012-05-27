@@ -82,7 +82,7 @@ my_graph::vertex_id dijkstra<V, E>::iterate()
     {
         const vertex &v = pgraph_->get_vertex(hv.id);
 
-        for (vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
+        for (typename vertex::adj_iterator it = v.out_begin(); it != v.out_end(); ++it)
         {
             const vertex_id &adj_vid = (*it).v;
             const vertex &adj_v = pgraph_->get_vertex(adj_vid);

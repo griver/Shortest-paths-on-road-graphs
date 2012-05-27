@@ -79,6 +79,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="interface.cpp" />
     <ClCompile Include="routes.cpp" />
     <ClCompile Include="routes_lib.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -26,6 +26,7 @@ vertex_id routes::get_vertex_by_coord(const vis_coord& c) const
             cand = id;
         }
     }
+    return cand;
 }
 
 bool routes::get_path(vertex_id s, vertex_id t, vector<vis_coord> &dst)

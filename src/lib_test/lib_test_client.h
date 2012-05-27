@@ -16,6 +16,12 @@ public:
     ~lib_test_client();
 
     void draw (visualizer &d, draw_scope &scope);
+    virtual void on_mouse_down (int x, int y, int button);
+    virtual void on_key_down   (int key);
+
+private:
+    void build_path();
+    vertex_id get_vertex_by_coord(const vis_coord& c) const;
 private:
     routes r;
     const vis_graph *pgraph_;
@@ -23,4 +29,5 @@ private:
 
     optional<vertex_id> selected_;
     optional<vertex_id> start_, end_;
+    vector<vis_coord> path_;
 };
