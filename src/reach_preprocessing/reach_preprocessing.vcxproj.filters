@@ -59,9 +59,6 @@
     <ClInclude Include="..\shared\draw_scope.h">
       <Filter>shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\loader.h">
-      <Filter>shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\new_vis_graph.h">
       <Filter>shared</Filter>
     </ClInclude>
@@ -99,9 +96,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\tnr_utils\grid_info.h">
-      <Filter>shared</Filter>
-    </ClInclude>
-    <ClInclude Include="grid.h">
       <Filter>shared</Filter>
     </ClInclude>
   </ItemGroup>

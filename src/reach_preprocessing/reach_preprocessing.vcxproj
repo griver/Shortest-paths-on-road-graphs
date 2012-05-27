@@ -249,7 +249,6 @@
     <ClInclude Include="..\shared\osm_loader.h" />
     <ClInclude Include="..\tnr_utils\grid_info.h" />
     <ClInclude Include="graph_serialize.h" />
-    <ClInclude Include="grid.h" />
     <ClInclude Include="penalties_preprocessor.h" />
     <ClInclude Include="reach_client.h" />
     <ClInclude Include="reach_common.h" />
@@ -262,7 +261,6 @@
     <ClInclude Include="..\shared\common.h" />
     <ClInclude Include="..\shared\coord.h" />
     <ClInclude Include="..\shared\draw_scope.h" />
-    <ClInclude Include="..\shared\loader.h" />
     <ClInclude Include="..\shared\new_vis_graph.h" />
     <ClInclude Include="..\shared\visualizer.h" />
   </ItemGroup>

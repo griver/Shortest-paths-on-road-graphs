@@ -30,7 +30,8 @@ vertex_id routes::get_vertex_by_coord(const vis_coord& c) const
 
 bool routes::get_path(vertex_id s, vertex_id t, vector<vis_coord> &dst)
 {
-    path_map tree;
+    //path_map tree;
+    tree.clear();
     dijkstra<vis_vertex_data, vis_edge_data> d (graph, s, tree);
     while (!d.done())
     {

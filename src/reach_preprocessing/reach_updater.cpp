@@ -146,12 +146,12 @@ edge_weight reach_updater::update_reaches_recursive(vertex_id id, edge_weight ro
     const path_vertex &pv = unordered_safe_find_const(tree_, id);
     const edge_weight depth = pv.d + root_penalty;
 
-    if (visited.count(id) != 0)
+    /*if (visited.count(id) != 0)
     {
         cout << "LOOP DETECTED: " << id << ", parent " << *pv.parent << endl;
         throw 0;
     }
-    visited.insert(id);
+    visited.insert(id);*/
     
     edge_weight height = 0;
     bool leaf = true;

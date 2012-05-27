@@ -18,10 +18,7 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dijkstra.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="routes.h">
+    <ClInclude Include="lib_test_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,10 +26,10 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="routes.cpp">
+    <ClCompile Include="lib_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="routes_lib.cpp">
+    <ClCompile Include="lib_test_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

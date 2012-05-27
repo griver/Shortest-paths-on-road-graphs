@@ -84,7 +84,7 @@ edge_id add_shortcuts(reach_graph &g, size_t degree, vector<shortcut> &dst, edge
         adj.clear();
         for (auto adj_it = it->out_begin(); adj_it != it->out_end(); ++adj_it)
         {
-            if (/*!shortcutted[adj_it->v]*/adj_it->v > id)
+            if (!shortcutted[adj_it->v]/*adj_it->v > id*/)
                 adj.push_back(*adj_it);
         }
 

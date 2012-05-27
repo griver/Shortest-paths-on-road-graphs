@@ -108,7 +108,7 @@ bool c9_dijkstra::check_vertex(vertex_id id) const
 {
     const vertex &v = pgraph_->get_vertex(id);
     const coord<int> d = gr_.getCell(v.data.c) - root_cell_;
-    return std::max(std::abs(d.x), std::abs(d.y)) <= 100;
+    return std::max(std::abs(d.x), std::abs(d.y)) <= 4;
 }
 
 my_graph::vertex_id c9_dijkstra::get_next()

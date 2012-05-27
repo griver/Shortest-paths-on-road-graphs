@@ -15,4 +15,3 @@
 #endif
 
 #include "../shared/new_vis_graph.h"
-#include "../shared/common_algorithms/path.h"

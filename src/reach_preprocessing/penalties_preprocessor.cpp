@@ -71,7 +71,7 @@ void penalties_preprocessor::calculate_reaches()
         size_t &counter = vert_counters[omp_get_thread_num()];
         updater.calculate_reaches(*pgraph_, i, epsilon_, local_reaches[omp_get_thread_num()]);
 
-        if (counter % 100 == 0)
+        if (counter % 1000 == 0)
         {
 #pragma omp critical
             {

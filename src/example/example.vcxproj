@@ -182,7 +182,6 @@
   <ItemGroup>
     <ClCompile Include="astar.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\loaders\new_osm_loader.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
