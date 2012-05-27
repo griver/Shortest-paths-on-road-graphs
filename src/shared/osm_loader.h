@@ -90,7 +90,7 @@ void osm_loader<V, E>::load_verts()
         const xml_id id = atol(node->first_attribute("id")->value());
 
         const double lat = atof(node->first_attribute("lat")->value());
-        const double y = 180/M_PI * log(tan(M_PI/4+lat*(M_PI/180)/2));
+        const double y = lat; // 180/M_PI * log(tan(M_PI/4+lat*(M_PI/180)/2));
         const double x = atof(node->first_attribute("lon")->value());
 
         const vis_coord coord (static_cast<vis_coord::value_type>(x), static_cast<vis_coord::value_type>(y));
