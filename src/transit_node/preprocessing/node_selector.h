@@ -86,6 +86,7 @@ namespace tnr{
 					if(in_inner(*coord)) {
 						inner_dfs(iter->v);
 					} else if(in_outer(*coord)) {
+						
 						if(outer_dfs(iter->v)) {
 							//if(selected_nodes.count(iter->v) == 0) {
 							//	std::cout<<"insert  " << ++help_index <<std::endl;
@@ -112,15 +113,20 @@ namespace tnr{
 			
 			std::cout<<"FANTASTIC!!" << std::endl;
 			std::cin>>c;
-			*/
+			//*/
+
+			visited.insert(v_id);
+
 			vertex_t const *v = &(graph.get_vertex(v_id));
 			coord_t const *coord; //координаты чайлдов
 			bool result = false;
-
+			
 			vertex_t::adj_iterator iter = v->out_begin();
 			vertex_t::adj_iterator end = v->out_end();
 
-			for(iter; iter!= end; ++iter) {
+			for(iter; iter != end; ++iter) {
+				if(visited.count(iter->v) != 0)
+					continue;
 				if(is_child(v_id, iter->v)) {
 					coord = &(graph.get_vertex(iter->v).data.c);
 					if(in_outer(*coord)) {

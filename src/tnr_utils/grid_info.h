@@ -24,17 +24,17 @@ namespace tnr {
 		double y_step;
 
 		border_map border_vertices;
-		graph_t const &graph;
+		//graph_t const &graph;
 		//временно.
 
 	public: //constructors
-		grid_info(graph_t const &graph,  int x_partition = 1, int y_partition = 1): graph(graph), x_partition(x_partition), y_partition(y_partition) {
+		grid_info(graph_t const &graph,  int x_partition = 1, int y_partition = 1): x_partition(x_partition), y_partition(y_partition) {
 			calculate_limits(graph);
 			calculate_steps();
 			//calculate_border_vertices(graph);
 		}
 
-		grid_info(graph_t const &graph, my_graph::path_map *path, int x_partition = 1, int y_partition = 1): graph(graph), x_partition(x_partition), y_partition(y_partition) {
+		grid_info(graph_t const &graph, my_graph::path_map *path, int x_partition = 1, int y_partition = 1): x_partition(x_partition), y_partition(y_partition) {
 			calculate_limits(graph);
 			calculate_steps();
 			calculate_border_vertices(graph, path);

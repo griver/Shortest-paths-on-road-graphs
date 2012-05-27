@@ -33,6 +33,9 @@ namespace tnr {
 		selector.set_coordinate_checkers(in_inner, in_outer);
 	
 		for(iter; iter != end; ++iter) {
+			//if(*iter != 38823) 
+			//	continue;
+			//cout<<"start find with root: " << *iter << endl;
 			finder.init_search( (*iter), (*iter));
 			while(filter->get_counter() > 0) {
 				if(finder.is_intersect()) break;
@@ -43,6 +46,7 @@ namespace tnr {
 			for(vertex_set:: const_iterator i = access_nodes.begin(); i != access_nodes.end(); ++i) {
 				transit_nodes.insert((*i));
 			}
+			
 		}
 		cout << "transit_nodes size: " << transit_nodes.size()<< endl;
 	}
@@ -95,7 +99,7 @@ namespace tnr {
 		
 
 		for(iter; iter != end; ++iter) {
-			//if(iter->first.x == 49 && iter->first.y == 89)
+			//if(iter->first.x == 90 && iter->first.y == 47)
 			calculate_cell_access_nodes(iter->first, iter->second, finder, selector, transit_nodes, info, visited_tree);
 		}
 

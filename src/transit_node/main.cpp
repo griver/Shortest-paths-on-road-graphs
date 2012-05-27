@@ -192,6 +192,52 @@ void access_nodes_info(const vis_graph &g, my_graph::vertex_id start, my_graph::
 }
 
 //=================================================
+void add_route(tnr::graph_t & graph, tnr::vertex_id start, tnr::vertex_id end, size_t number) {
+	tnr::vertex_t &start_v = graph.get_vertex(start);
+	tnr::vertex_t &end_v = graph.get_vertex(end);
+	double x_step = (end_v.data.c.x - start_v.data.c.x) / (double)number;
+	double y_step = (end_v.data.c.y - start_v.data.c.y) / (double)number;
+	double current_x = start_v.data.c.x;
+	double current_y = start_v.data.c.y;
+	double rand_x;
+	double rand_y;
+	tnr::vertex_id prev_id = start;
+	for(int i = 1; i < number; ++i) {
+		current_x += x_step;
+		current_y += y_step;
+
+		rand_x = (std::max(y_step, x_step)/20.0)*((double)((rand() % 11) - 5));
+		rand_y = (std::max(y_step, x_step)/20.0)*((double)((rand() % 11) - 5));
+
+		tnr::coord_t coord(current_x + rand_x, current_y + rand_y);
+		vertex_id curr_id = graph.add_vertex(tnr::vertex_t::data_type(coord,start_v.data.orig_id + i));
+		graph.add_edge(prev_id, curr_id, tnr::edge_t::data_type(1.0));
+		prev_id = curr_id;
+	}
+	graph.add_edge(prev_id, end, tnr::edge_t::data_type(1.0));
+}
+
+void create_sample(tnr::graph_t & graph, vis_coord & mins, vis_coord & maxs, int number) {
+	srand ( time(NULL) ); 
+	tnr::vertex_id up_left = graph.add_vertex(tnr::vertex_t::data_type(tnr::coord_t(50.0, 50.0), 100));
+	tnr::vertex_id down_left = graph.add_vertex(tnr::vertex_t::data_type(tnr::coord_t(100.0, 50.0), 200));
+	tnr::vertex_id down_right = graph.add_vertex(tnr::vertex_t::data_type(tnr::coord_t(100.0, 100.0), 300));
+	tnr::vertex_id up_right = graph.add_vertex(tnr::vertex_t::data_type(tnr::coord_t(50.0, 100.0), 400));
+	tnr::vertex_id center = graph.add_vertex(tnr::vertex_t::data_type(tnr::coord_t(75.0, 75.0), 500));
+	add_route(graph, up_left, up_right, number);
+	add_route(graph, up_left, center, number);
+	add_route(graph, up_left, down_left, number);
+	add_route(graph, down_left, center, number);
+	add_route(graph, down_left, down_right, number);
+	add_route(graph, down_right, center, number);
+	add_route(graph, down_right, up_right, number);
+	add_route(graph, up_right, center, number);
+	mins.x = 50.0;
+	mins.y = 50.0;
+	maxs.x = 100.0;
+	maxs.y = 100.0;
+}
+//================================================================
 
 
 int main(int argc, char* argv[])
@@ -202,32 +248,39 @@ int main(int argc, char* argv[])
     vis_coord mins, maxs;
 
     load_osm(argv[1], *pgraph, mins, maxs);
-
-	//tn = tnr::tnr_loader::load_transit_nodes("..\\..\\transit_nodes_data\\ireland.tn");
-	//am  = tnr::tnr_loader::load_access_nodes("..\\..\\transit_nodes_data\\ireland.ian");
-	//dt = tnr::read_dist_table_from("..\\..\\transit_nodes_data\\ireland.idt");
+	
+	//create_sample(*pgraph, mins, maxs, 50);
+	tn = tnr::tnr_loader::load_transit_nodes("..\\..\\transit_nodes_data\\ireland.stn");
+	am  = tnr::tnr_loader::load_access_nodes("..\\..\\transit_nodes_data\\ireland.sian");
+	dt = tnr::read_dist_table_from("..\\..\\transit_nodes_data\\ireland.sidt");
 	grid = shared_ptr<tnr::grid_info>(new tnr::grid_info(*pgraph, 100, 100));
-
-	//tnr::full_distance_table_preprocessor preprocessor(*pgraph, am, tn);
-	//preprocessor.calculate();
-	//preprocessor.write_to("ireland.idt");
-	//cout << "end writing to file" << endl;
-	cout << "run shortcut preprocessing" << endl;
+	
+	/*tnr::distance_table_preprocessor dt_prep(*pgraph, am, tn);
+	dt_prep.calculate();
+	dt_prep.write_to("ireland.sidt");
+	cout << "end of distance table calculation" << endl;
+	/*cout << "run shortcut preprocessing" << endl;
 	cout << "old graph vertices: " << pgraph->v_count() << endl;
-	cout << "old graph edges: " << pgraph->e_count() << endl;
-	tnr::shortcut_preprocessor sh_preprocessor(*pgraph, *grid);
+	cout << "old graph edges: " << pgraph->e_count() << endl; 
+	tnr::shortcut_preprocessor sh_preprocessor(*pgraph, *grid); 
 	shared_ptr <tnr::graph_t> sc_graph = sh_preprocessor.calculate_shourtcuts();
 	cout <<"end shortcut preprocessing" << endl;
 	cout << "new graph vertices: " << sc_graph->v_count() << endl;
-	cout << "new graph edges: " << sc_graph->e_count() << endl;
-	visualizer_client cl (*sc_graph, pvis.get(), pscope, mins, maxs);
+	cout << "new graph edges: " << sc_graph->e_count() << endl;//
+	path_map shortest_path, visited_tree;
+	tn = sh_preprocessor.calculate_transit_nodes(&visited_tree, &shortest_path);
+	cout <<"tn calculation done!" << endl;
+	tnr::write_tansit_nodes_to_file("ireland.stn", tn);
+	cout << "tn write to file done!" << endl; //*/
+	
+	visualizer_client cl (*pgraph, pvis.get(), pscope, mins, maxs);
     
 	//cl.register_algorithm("grid info", calculate_grid_info);
 	cl.register_algorithm("Uni A*", run_astar);
 	cl.register_algorithm("Dijkstra A*", run_dijkstra);
-	//cl.register_algorithm("run tnr check", run_tnr_check);
-	//cl.register_algorithm("run tnr search", tnr_find);
-	//cl.register_algorithm("access node checking dijkstra", an_checking_dijkstra);
+	cl.register_algorithm("run tnr search", tnr_find);
+	cl.register_algorithm("access node checking dijkstra", an_checking_dijkstra);
+	cl.register_algorithm("run tnr check", run_tnr_check);
 
 	//cl.register_algorithm("Run access nodes preprocessing", run_access_node_preprocessing);
 	//cl.register_algorithm("tn checked dijstra", run_tn_checking_astar);
