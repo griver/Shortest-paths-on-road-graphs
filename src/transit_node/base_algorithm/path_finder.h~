@@ -1,9 +1,9 @@
 #ifndef PATH_FINDER_H
 #define PATH_FINDER_H
 
-#include "../shared/common.h"
-#include "../shared/common_algorithms/path.h"
-#include "../shared/new_vis_graph.h"
+//#include "../shared/common.h"
+//#include "../shared/common_algorithms/path.h"
+//#include "../shared/new_vis_graph.h"
 #include <functional>
 #include <map>
 #include <set>

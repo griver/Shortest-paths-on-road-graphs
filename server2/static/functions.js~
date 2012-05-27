@@ -10,7 +10,8 @@ function init() {
 
 	var options = {
 		maxExtent: new OpenLayers.Bounds(0, 0, 70, 70),
-		center: new OpenLayers.LonLat(30.37407166138, 60.002114939457).transform(
+		//center: new OpenLayers.LonLat(30.37407166138, 60.002114939457).transform(
+        center: new OpenLayers.LonLat(-6.2913, 53.3424).transform(
 			new OpenLayers.Projection("EPSG:4326"),
 			new OpenLayers.Projection("EPSG:900913")
 		)
@@ -98,10 +99,6 @@ var markerTwo;
 
 function sendLonLat(lonlat1st, lonlat2) {
 	var my_JSON_object = {};
-	lonlat1 = new OpenLayers.LonLat(lonlat1st.lon, lonlat1st.lat).transform(
-		new OpenLayers.Projection("EPSG:4326"),
-		new OpenLayers.Projection("EPSG:900913")
-  	)
 
 	if (window.XMLHttpRequest) {
 	// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -114,10 +111,10 @@ function sendLonLat(lonlat1st, lonlat2) {
 	//http_request.open("GET", url, true);
 	//http_request.open("GET","?lon1=" + lonlat1.lon + ";lat1=" + lonlat1.lat
 	//			+ ";lon2=" + lonlat2.lon + ";lat2=" + lonlat2.lat,true);
-	lonlat1.transform(
+	lonlat1 = new OpenLayers.LonLat(lonlat1st.lon, lonlat1st.lat).transform(
 			new OpenLayers.Projection("EPSG:900913"),
 			new OpenLayers.Projection("EPSG:4326")
-		)
+  	)
 	lonlat2.transform(
 			new OpenLayers.Projection("EPSG:900913"),
 			new OpenLayers.Projection("EPSG:4326")

@@ -10,7 +10,8 @@ function init() {
 
 	var options = {
 		maxExtent: new OpenLayers.Bounds(0, 0, 70, 70),
-		center: new OpenLayers.LonLat(30.37407166138, 60.002114939457).transform(
+		//center: new OpenLayers.LonLat(30.37407166138, 60.002114939457).transform(
+        center: new OpenLayers.LonLat(-6.2913, 53.3424).transform(
 			new OpenLayers.Projection("EPSG:4326"),
 			new OpenLayers.Projection("EPSG:900913")
 		)
