@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "../shared/new_vis_graph.h"
+#include "../shared/osm_loader.h"
 
-class osm_loader
+/*class osm_loader
 {
 private:
     typedef rapidxml::xml_document<> xml_document;
@@ -159,4 +160,4 @@ void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis
     loader.load();
     ref_mins = loader.get_mins();
     ref_maxs = loader.get_maxs();
-}
+}*/

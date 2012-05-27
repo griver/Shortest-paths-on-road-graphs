@@ -15,9 +15,9 @@ public:
     typedef my_graph::path_vertex path_vertex;
     typedef my_graph::heap_vertex heap_vertex;
 
-    typedef vis_graph graph;
-    typedef vis_vertex vertex;
-    typedef vis_edge edge;
+    typedef reach_graph graph;
+    typedef reach_vertex vertex;
+    typedef reach_edge edge;
     typedef boost::function<bool(vertex_id)> vert_checker;
 
     //reach_dijkstra(const graph &ref_graph, vertex_id start, path_map &ref_out);

@@ -1,9 +1,18 @@
 #pragma once
 
 #include "../shared/base_visualizer_client.h"
+#include "penalties_preprocessor.h"
+#include "../shared/new_vis_graph.h"
+#include "../shared/grid.h"
 
-struct reach_client : base_visualizer_client
+class reach_client : public base_visualizer_client
 {
+public:
+    typedef reach_vertex vertex;
+    typedef reach_edge edge;
+    typedef reach_graph graph;
+
+public:
     reach_client (const string &filename, visualizer *pvis, draw_scope *pscope);
     ~reach_client();
 
@@ -21,11 +30,15 @@ struct reach_client : base_visualizer_client
 
 private:
     void print_stats() const;
+    void delete_verts();
+    void check_multiple_edges();
+    void reset_graph(reach_graph *p);
+    void build_c9_tree(vertex_id id);
 private:
     bool draw_graph;
     bool draw_shortcuts;
 
-    boost::scoped_ptr<vis_graph> pgraph_;
+    boost::scoped_ptr<reach_graph> pgraph_;
     graph_desc g_desc;
 
     boost::optional<my_graph::vertex_id> selected_;
@@ -36,5 +49,15 @@ private:
     coord<float> mouse_coords_world_;
     float radius_;
 
+    coord<float> square1_, square2_;
+    bool selecting_;
+
     boost::optional<tree_desc> lit1_, lit2_;
+    unordered_set<my_graph::vertex_id> marked_;
+
+    boost::scoped_ptr<penalties_preprocessor> pprep_;
+
+    boost::scoped_ptr<grid> pgrid_;
+    path_map tree_;
+  
 };

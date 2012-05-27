@@ -3,10 +3,10 @@
 #include "../shared/new_vis_graph.h"
 #include "../shared/loader.h"
 #include "../visualizer_client/visualizer_client.h"
+#include "../shared/osm_loader.h"
 
 visualizer *create_visualizer(draw_scope **ppscope);
 
-void load_osm(const string &path, vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_maxs);
 
 using my_graph::vertex_id;
 using my_graph::edge_id;
@@ -53,14 +53,14 @@ void dummy_loader (vis_graph &ref_graph, vis_coord &ref_mins, vis_coord &ref_max
 
 int main(int argc, char* argv[])
 {
-    graph_loader loader;
+    /*graph_loader loader;
     if (argc < 2)
         loader = dummy_loader;
     else
     {
         string path = argv[1];
         loader = boost::bind (load_osm, path, _1, _2, _3);
-    }
+    }*/
 
 
     draw_scope *pscope = NULL;
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
     scoped_ptr<vis_graph> pgraph(new vis_graph());
     vis_coord mins, maxs;
 
-    loader(*pgraph, mins, maxs);
+    load_osm(argv[1], *pgraph, mins, maxs);
 
     visualizer_client cl (*pgraph, pvis.get(), pscope, mins, maxs);
     

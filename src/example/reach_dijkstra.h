@@ -13,7 +13,7 @@ public:
     typedef my_graph::path_vertex path_vertex;
     typedef my_graph::path_map path_map;
     typedef my_graph::edge_weight edge_weight;
-    typedef my_graph::reach_map reach_map;
+//    typedef my_graph::reach_map reach_map;
 public:
     typedef vis_graph graph;
     typedef vis_vertex vertex;

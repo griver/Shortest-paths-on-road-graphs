@@ -21,9 +21,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\loaders\new_osm_loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="reach_updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -34,6 +31,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="reach_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="penalties_preprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,9 +59,6 @@
     <ClInclude Include="..\shared\draw_scope.h">
       <Filter>shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\shared\loader.h">
-      <Filter>shared</Filter>
-    </ClInclude>
     <ClInclude Include="..\shared\new_vis_graph.h">
       <Filter>shared</Filter>
     </ClInclude>
@@ -72,6 +69,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\shared\base_visualizer_client.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\osm_loader.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\graph_base.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared\graph_filter.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="reach_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="reach_graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shortcuts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graph_serialize.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="penalties_preprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tnr_utils\grid_info.h">
       <Filter>shared</Filter>
     </ClInclude>
   </ItemGroup>

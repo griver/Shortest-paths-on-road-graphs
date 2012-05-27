@@ -6,3 +6,4 @@ src/ipch/*
 Debug_*/*
 Release_*/*
 data/*
+out/*

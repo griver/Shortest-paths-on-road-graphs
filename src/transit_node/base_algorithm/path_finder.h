@@ -8,11 +8,10 @@
 #include <map>
 #include <set>
 #include "priority_queue.h"
-#include "algorithm_utils.h"
-#include "queue_filter.h"
-#include "coordinate_filter.h"
+#include "filter/queue_filter.h"
+#include "filter/coordinate_filter.h"
 
-namespace my_algorithm {
+namespace base_algorithm {
 
 	class path_finder{
 	public:
@@ -46,24 +45,28 @@ namespace my_algorithm {
 			weight_function const &get_weight,
 			estimate_function const &get_estimate,
 			my_graph::path_map* visited): graph_(graph),get_weight_(get_weight), visited_(visited), get_estimate_(get_estimate){
-			this->init(graph->v_count());
 			filter_ptr_ = shared_ptr<queue_filter>(new queue_filter("Deafault Filter"));
+			this->init(graph->v_count());
 		}
 
-			path_finder(graph_t const *graph,
+		path_finder(graph_t const *graph,
 			weight_function const &get_weight,
 			my_graph::path_map* visited): graph_(graph),get_weight_(get_weight), visited_(visited), get_estimate_(default_estimate){
-			this->init(graph->v_count());
 			filter_ptr_ = shared_ptr<queue_filter>(new queue_filter("Deafault Filter"));
+			this->init(graph->v_count());
 		}
 
 		void init(size_t vertex_number) {	
+			//std::cout <<"init" << std::endl;
 			this->priority_queue_.reserve(vertex_number + 1);
 
 			visited_->clear();
+			filter_ptr_->clear();
+			
 			border_set_ = NULL;
 			other_visited_ = NULL;
 			this->is_initialized_ = false;
+			//std::cout <<"init end" << std::endl;
 		}
 
 	public:
@@ -82,7 +85,9 @@ namespace my_algorithm {
 
 			dist_to_target_ = (boost::bind(get_estimate_, _1, graph_->get_vertex(end_vertex)));
 			this->priority_queue_.insert(0.0, start_vertex);
-			on_push(start_vertex);								// третья проверка фильтра. всего три.
+			//std::cout <<"on push start" << std::endl;
+			on_push(start_vertex, start_vertex);	// третья проверка фильтра. всего три.
+			//std::cout <<"end on push start" << std::endl;
 			(*visited_)[start_vertex] = path_vertex(start_vertex, 0.0);
 			
 			this->is_initialized_ = true;
@@ -99,8 +104,11 @@ namespace my_algorithm {
 			my_graph::vertex_id v_id = -1;				//v->get_id();
 			my_graph::vertex_id u_id = -1;				//u->get_id();
 
-			heap_vertex = priority_queue_.pop();			//deleteMin
-			on_pop(heap_vertex.id);						// Здесь как раз проверка фильтра!
+			heap_vertex = priority_queue_.pop();				//deleteMin
+			if(on_pop(heap_vertex.id) != true) {		// Здесь как раз проверка фильтра!
+				std::cout << "WHAT THE FUCK!!!" << std::endl;
+				return;
+			}
 
 			v = &(graph_->get_vertex(heap_vertex.id));
 			v_id = heap_vertex.id;
@@ -115,6 +123,10 @@ namespace my_algorithm {
 				iter = v->out_begin();
 				end = v->out_end();
 			}
+			/*static int val = 0;
+			cout <<"-----------------------------" << endl; 
+			cout << "iteration: " << ++val << endl;
+			cout << "vertex: " << v_id << " has: " << end - iter << endl;*/
 
 			for(iter; iter != end; ++iter) {
 				u_id = (*iter).v;
@@ -126,7 +138,7 @@ namespace my_algorithm {
 						
 				weight_v_u = get_weight_(/**/graph_->get_edge((*iter).e)/**/);
 				estimate = dist_to_target_(graph_->get_vertex(u_id));
-				
+				//cout << "    neighbor: " << u_id << " edge v to u: " << weight_v_u << endl;	
 				if(other_visited_ != 0)
 					if(border_set_ != 0)
 						if(other_visited_->count(u_id) != 0)
@@ -136,18 +148,26 @@ namespace my_algorithm {
 					(*visited_)[u_id] = my_graph::path_vertex(u_id, 
 														(*visited_)[v_id].d + weight_v_u,
 														(*iter).e, v_id);
-					priority_queue_.insert((*visited_)[u_id].d + estimate, u_id);
-					on_push(u_id);					// filter
+					if(on_push(v_id, u_id) == true ) 
+						priority_queue_.insert((*visited_)[u_id].d + estimate, u_id);
+					
 
 				}else if((*visited_)[u_id].d > ((*visited_)[v_id].d + weight_v_u) ) {
 					(*visited_)[u_id].d  = (*visited_)[v_id].d + weight_v_u;
 					(*visited_)[u_id].inc = (*iter).e;
 					(*visited_)[u_id].parent = v_id;
 
-					if(priority_queue_.is_in_Queue(u_id))
-						priority_queue_.decrease_key((*visited_)[u_id].d + estimate, u_id);
-					else
-						priority_queue_.insert((*visited_)[u_id].d + estimate, u_id);
+					if(priority_queue_.is_in_Queue(u_id)) {
+						if(on_decrease(v_id, u_id) == true) 
+							priority_queue_.decrease_key((*visited_)[u_id].d + estimate, u_id);
+						else
+							std::cout << "WHAT THE FUCK!!!" << std::endl;			
+					} else {
+						if(on_push(v_id, u_id) == true)
+							priority_queue_.insert((*visited_)[u_id].d + estimate, u_id);
+						else 
+							std::cout << "WHAT THE FUCK!!!" << std::endl;
+					} //if(priority_queue_.is_in_Queue(u_id))
 				}
 										   
 			}//for(Vertex::ve_const_iterator iter = v->out_begin(); iter != v->out_end(); ++iter) {
@@ -198,10 +218,14 @@ namespace my_algorithm {
 		inline bool on_pop(vertex_id id) const {	
 			return filter_ptr_->on_pop(graph_->get_vertex(id));
 		}
-		inline bool on_push(vertex_id id) const { 
-			return filter_ptr_->on_push(graph_->get_vertex(id));
-		}
 
+		inline bool on_push(vertex_id parent, vertex_id vertex) const { 
+			return filter_ptr_->on_push(graph_->get_vertex(parent),graph_->get_vertex(vertex));
+		}
+		
+		inline bool on_decrease(vertex_id parent, vertex_id vertex) const {
+			return filter_ptr_->on_decrease(graph_->get_vertex(parent), graph_->get_vertex(vertex));
+		}
 	};
 
 }

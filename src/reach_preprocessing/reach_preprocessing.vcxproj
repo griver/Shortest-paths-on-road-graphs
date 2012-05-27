@@ -106,7 +106,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SERIALIZE_GRAPH;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -145,7 +145,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_OPENMP;SERIALIZE_GRAPH;WIN32;NDEBUG;_CONSOLE;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <OpenMPSupport>true</OpenMPSupport>
@@ -229,7 +229,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\loaders\new_osm_loader.cpp" />
+    <ClCompile Include="penalties_preprocessor.cpp" />
     <ClCompile Include="reach_client.cpp" />
     <ClCompile Include="reach_updater.cpp" />
     <ClCompile Include="shortcuts.cpp" />
@@ -244,15 +244,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\shared\base_visualizer_client.h" />
+    <ClInclude Include="..\shared\graph_base.h" />
+    <ClInclude Include="..\shared\graph_filter.h" />
+    <ClInclude Include="..\shared\osm_loader.h" />
+    <ClInclude Include="..\tnr_utils\grid_info.h" />
+    <ClInclude Include="graph_serialize.h" />
+    <ClInclude Include="penalties_preprocessor.h" />
     <ClInclude Include="reach_client.h" />
+    <ClInclude Include="reach_common.h" />
     <ClInclude Include="reach_dijkstra.h" />
+    <ClInclude Include="reach_graph.h" />
     <ClInclude Include="reach_updater.h" />
+    <ClInclude Include="shortcuts.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="..\shared\client.h" />
     <ClInclude Include="..\shared\common.h" />
     <ClInclude Include="..\shared\coord.h" />
     <ClInclude Include="..\shared\draw_scope.h" />
-    <ClInclude Include="..\shared\loader.h" />
     <ClInclude Include="..\shared\new_vis_graph.h" />
     <ClInclude Include="..\shared\visualizer.h" />
   </ItemGroup>
