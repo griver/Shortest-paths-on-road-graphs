@@ -13,7 +13,7 @@ public:
 private:
     typedef rapidxml::xml_document<> xml_document;
     typedef rapidxml::xml_node<> xml_node;
-    typedef unsigned __int64 xml_id;
+    typedef  __int64 xml_id;
     typedef my_graph::vertex_id vertex_id;
 
     static const size_t PRINT_EVERY = 100000;
@@ -81,9 +81,6 @@ void osm_loader<V, E>::load()
 template<typename V, typename E>
 void osm_loader<V, E>::load_verts()
 {
-    const double M_PI = 3.14159265358979323846;
-
-    
     cout << "Loading verts" << endl;
 
     const char node_name[] = "node";
