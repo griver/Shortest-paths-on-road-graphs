@@ -1,6 +1,11 @@
 
 #pragma once
 
+
+#ifndef __int64
+typedef long long __int64;
+#endif
+
 #if defined (WIN32)
 #include <Windows.h>
 #else

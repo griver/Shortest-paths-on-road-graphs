@@ -2,11 +2,13 @@ import json
 import web
 from ctypes import *
 
-libc = CDLL("/home/ivanovpc/workspace/server2/lib/libroute.so")     
+libc = CDLL("/home/ivanovpc/workspace/sandbox/server2/lib/libroute.so")     
 
 libc.get_i.restype = c_float;
 libc.get_path.restype = c_void_p
 libc.search.argtypes = [c_float, c_float, c_float, c_float]
+libc.myinit()
+
 
 def build_list(nitems):
 	l = []
