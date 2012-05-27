@@ -1,7 +1,7 @@
 #ifndef GRID_INFO_H
 #define GRID_INFO_H
 
-#include "stdafx.h"
+//#include "stdafx.h"
 
 
 

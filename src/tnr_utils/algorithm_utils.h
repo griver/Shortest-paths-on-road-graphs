@@ -1,6 +1,6 @@
 #ifndef GRAPH_UTILS_H
 #define GRAPH_UTILS_H
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "../shared/new_vis_graph.h"
 #include "../shared/coord.h"
 #include "../shared/common.h"

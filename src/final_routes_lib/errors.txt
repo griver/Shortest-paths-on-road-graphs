@@ -1,0 +1,37 @@
+In file included from stdafx.h:10:0,
+                 from interface.cpp:1:
+../shared/common.h:46:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+../shared/common.h:47:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:10:0,
+                 from interface.cpp:1:
+../shared/common.h:52:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:10:0,
+                 from routes.cpp:1:
+../shared/common.h:46:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+../shared/common.h:47:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:10:0,
+                 from routes.cpp:1:
+../shared/common.h:52:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from routes.cpp:4:0:
+dijkstra.h: In instantiation of 'dijkstra<V, E>::dijkstra(const graph&, dijkstra<V, E>::vertex_id, dijkstra<V, E>::path_map&, const vert_checker&) [with V = vis_vertex_data; E = vis_edge_data; dijkstra<V, E>::graph = my_graph::graph_base<vis_vertex_data, vis_edge_data>; dijkstra<V, E>::vertex_id = unsigned int; dijkstra<V, E>::path_map = boost::unordered::unordered_map<unsigned int, my_graph::path_vertex>; dijkstra<V, E>::vert_checker = boost::function<bool(unsigned int)>]':
+routes.cpp:36:63:   required from here
+dijkstra.h:44:12: warning: 'dijkstra<vis_vertex_data, vis_edge_data>::max_heap_size_' will be initialized after [-Wreorder]
+dijkstra.h:42:18: warning:   'dijkstra<vis_vertex_data, vis_edge_data>::vert_checker dijkstra<vis_vertex_data, vis_edge_data>::vert_checker_' [-Wreorder]
+dijkstra.h:48:1: warning:   when initialized here [-Wreorder]
+dijkstra.h: In instantiation of 'my_graph::vertex_id dijkstra<V, E>::iterate() [with V = vis_vertex_data; E = vis_edge_data; my_graph::vertex_id = unsigned int]':
+routes.cpp:39:40:   required from here
+dijkstra.h:88:27: warning: unused variable 'adj_v' [-Wunused-variable]
+In file included from stdafx.h:10:0,
+                 from routes_lib.cpp:4:
+../shared/common.h:46:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+../shared/common.h:47:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:10:0,
+                 from routes_lib.cpp:4:
+../shared/common.h:52:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:10:0,
+                 from stdafx.cpp:5:
+../shared/common.h:46:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+../shared/common.h:47:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
+In file included from stdafx.h:10:0,
+                 from stdafx.cpp:5:
+../shared/common.h:52:0: warning: ignoring #pragma warning  [-Wunknown-pragmas]
