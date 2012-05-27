@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 
     reach_graph graph;
     reach_coord mins, maxs;
-    load_osm(filename, graph, mins, maxs);
+    //load_osm(filename, graph, mins, maxs);
 
     grid gr(mins, maxs, 100, 100);
 

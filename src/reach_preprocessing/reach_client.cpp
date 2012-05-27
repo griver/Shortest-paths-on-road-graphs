@@ -60,6 +60,7 @@ void get_mins_maxs(const reach_graph &g, vis_coord &mins, vis_coord &maxs)
 
 reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope *pscope)
     : base_visualizer_client(pvis, pscope)
+    , filename_(filename)
     , pgraph_(new reach_graph())
     , shortcuts_added (false)
     
@@ -68,7 +69,7 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
 
 {
     const bool save_shortcuts = true, save_graph = false;
-    reach_coord mins, maxs;
+
 
 
     if(save_graph)
@@ -93,6 +94,7 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
 
     cout << "Graph: " << pgraph_->v_count() << " verts, " << pgraph_->e_count() << " edges" << endl;
     inject_ids(*pgraph_);
+
 
     print_stats();
     n_original_edges = pgraph_->e_count();
@@ -130,6 +132,7 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
 
     pgrid_.reset(new grid(mins, maxs, 100, 100));
 
+    load_reaches(filename);
     //check_multiple_edges();
 }
 
@@ -139,7 +142,60 @@ reach_client::~reach_client()
     free_ib(g_desc.ib);
 }
 
+
+
+void reach_client::load_reaches(const string &filename)
+{
+    cout << "loading reaches...";
+    std::ifstream ifs (filename + ".reaches_shortcuts", std::ios_base::in | std::ios_base::binary);
+    const edge_weight big_reach = std::max (maxs.x - mins.x, maxs.y - mins.y);
+    if (!ifs.is_open())
+    {
+        cout << "not found" << endl;
+
+        reaches_.resize(pgraph_->v_count(), big_reach);
+        return;
+    }
+    boost::archive::binary_iarchive ar (ifs);
+    ar >> reaches_;
+    cout << "done" << endl;
+    
+    //cout << "uploading reaches" << endl;
+    edge_weight min_reach = big_reach;
+    edge_weight max_reach = 0;
+    for (size_t i = 0; i < reaches_.size(); ++i)
+    {
+        if (reaches_[i] > max_reach)
+            max_reach = reaches_[i];
+        if (reaches_[i] < min_reach)
+            min_reach = reaches_[i];
+    }
+    cout << "Max reach: " << max_reach << endl;
+    cout << "Min reach: " << min_reach << endl;
+
+
+    b_vertex *pv = get_visualizer().lock_vb(g_desc.vb, 0, g_desc.vb_size);
+    for (size_t i = 0; i < reaches_.size(); ++i)
+    {
+        double n = (reaches_[i] - min_reach) / (max_reach - min_reach);
+        n = pow (n, 0.2);
+        int c = n * 255;
+        pv[i].color = (0xff << 24) | (c << 16) | (c << 8) | c;
+    }
+    get_visualizer().unlock_vb (g_desc.vb);
+
+}
+
+
+
+
+
+
+
+
+
 extern vertex_id g_marked_v1, g_marked_v2;
+
 
 void reach_client::draw(visualizer &d, draw_scope &scope)
 {
@@ -160,9 +216,10 @@ void reach_client::draw(visualizer &d, draw_scope &scope)
         d.draw_buffers(g_desc.vb, 0, pgraph_->v_count(), g_desc.ib, n_original_edges, pgraph_->e_count() - n_original_edges);
     }*/
 
-    if (draw_graph)
+    if (draw_graph && pgraph_->v_count() != 0 && pgraph_->e_count() != 0)
     {
-        d.set_color(64, 64, 64);
+        //d.set_color(64, 64, 64);
+        d.unset_color();
         d.draw_buffers(g_desc.vb, 0, pgraph_->v_count(), g_desc.ib, 0, pgraph_->e_count());
     }
 
@@ -298,6 +355,8 @@ void reach_client::on_key_down(int key)
     case 'M':
     case 'm':
         reset_graph(pprep_->iterate());
+        if (pgraph_->v_count() == 0)
+            pprep_->save_reaches_and_shortcurs(filename_);
         break;
         //pgraph_.reset(pprep_->iterate())
         /*if (lit1_.is_initialized())
@@ -454,7 +513,8 @@ void reach_client::reset_graph(reach_graph *p)
 
     free_vb(g_desc.vb);
     free_ib(g_desc.ib);
-    g_desc = upload_graph(*pgraph_);
+    if (pgraph_->v_count() != 0 && pgraph_->e_count() != 0)
+        g_desc = upload_graph(*pgraph_);
 
 }
 

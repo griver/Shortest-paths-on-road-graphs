@@ -34,7 +34,12 @@ private:
     void check_multiple_edges();
     void reset_graph(reach_graph *p);
     void build_c9_tree(vertex_id id);
+
+    void load_reaches(const string &filename);
 private:
+    const string filename_;
+    reach_coord mins, maxs;
+
     bool draw_graph;
     bool draw_shortcuts;
 
@@ -59,5 +64,6 @@ private:
 
     boost::scoped_ptr<grid> pgrid_;
     path_map tree_;
+    vector<edge_weight> reaches_;
   
 };

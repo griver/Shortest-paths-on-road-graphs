@@ -51,7 +51,7 @@ void penalties_preprocessor::filter_graph()
 
 void penalties_preprocessor::add_shortcuts()
 {
-    ::add_shortcuts(*pgraph_, 3, shortcuts_, next_edge_id_);
+    next_edge_id_ = ::add_shortcuts(*pgraph_, 3, shortcuts_, next_edge_id_);
 }
 
 void penalties_preprocessor::calculate_reaches()
@@ -101,6 +101,8 @@ void penalties_preprocessor::calculate_penalties()
     cout << "calculating penalties..." << endl;
     
     path_map tree;
+    vector<shortcut> new_shortcurs;
+    
     for (auto it = pgraph_->v_begin(); it != pgraph_->v_end(); ++it)
     {
         const vertex_id root_id = pgraph_->get_vertex_id(it);
@@ -128,12 +130,16 @@ void penalties_preprocessor::calculate_penalties()
                     it->data.penalty = d;
                     pen_cand = new_v.data.orig_id;
                 }
+            } 
+            else if (new_id != root_id)
+            {
+                
             }
         }
-        if (it->data.orig_id == 77722)
+        /*if (it->data.orig_id == 77722)
         {
             cout << "Penalty at " << pen_cand << endl;
-        }
+        }*/
 
         //if ()
     }
@@ -151,4 +157,15 @@ void penalties_preprocessor::zero_penalties()
 {
     for (auto it = pgraph_->v_begin(); it != pgraph_->v_end(); ++it)
         it->data.penalty = 0;
+}
+
+void penalties_preprocessor::save_reaches_and_shortcurs(const string &filename)
+{
+    cout << "saving reaches and shortcuts ...";
+    std::ofstream ofs (filename + ".reaches_shortcuts", std::ios_base::out | std::ios_base::binary);
+    boost::archive::binary_oarchive ar (ofs);
+    ar << reaches_;
+    ar << shortcuts_;
+    cout << "done" << endl;
+
 }

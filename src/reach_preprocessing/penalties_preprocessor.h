@@ -14,6 +14,7 @@ public:
     penalties_preprocessor(reach_graph *pg, edge_weight epsilon0, size_t num_threads);
     reach_graph* iterate();
     void add_shortcuts();
+    void save_reaches_and_shortcurs(const string &filename);
 
     const vector<edge_weight> &get_reaches() {return reaches_;}
 private:
