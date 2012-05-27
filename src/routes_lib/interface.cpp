@@ -26,15 +26,17 @@ float *get_path()
 }
 
 void mysearch(float x1, float y1, float x2, float y2) {
-	//std::cout << "In mysearch" << std::endl;
-	if (g_proutes == NULL) {	    
+
+	if (g_proutes == NULL) {	   
 		return;
 	}
 	
 	//std::cout << "I see routes..." << std::endl;
 	const vertex_id start = g_proutes->get_vertex_by_coord(vis_coord(x1, y1));
 	const vertex_id end = g_proutes->get_vertex_by_coord(vis_coord(x2, y2));
-	
+	g_orig_path.clear();
+	g_path.clear();
+	//std::cout << x1 << " " << y1 << " " << x2 << " " << y2 << std::endl;	
 	g_proutes->get_path(start, end, g_orig_path);
 
 	g_path.resize(g_orig_path.size() * 2);

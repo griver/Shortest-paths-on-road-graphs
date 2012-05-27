@@ -55,10 +55,10 @@ class index:
         #web.header('Content-Type', 'application/json')
         #data = [30, 60, 31, 61, 32, 59]
 		ll = json.loads(i.json_par)
-		print ll["lon1"]
-		print ll["lat1"]
-		print ll["lon2"]
-		print ll["lat2"]
+		#print ll["lon1"]
+		#print ll["lat1"]
+		#print ll["lon2"]
+		#print ll["lat2"]
 		libc.mysearch(ll["lon1"], ll["lat1"], ll["lon2"], ll["lat2"])		
 		data = build_list(libc.get_size())
 		libc.free_mem()

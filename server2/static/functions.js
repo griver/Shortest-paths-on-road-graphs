@@ -96,7 +96,7 @@ var icon2 = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker-blue.p
 var markerOne;
 var markerTwo;
 
-function sendLonLat(lonlat1, lonlat2) {
+function sendLonLat(lonlat1st, lonlat2) {
 	var my_JSON_object = {};
 
 	if (window.XMLHttpRequest) {
@@ -110,10 +110,10 @@ function sendLonLat(lonlat1, lonlat2) {
 	//http_request.open("GET", url, true);
 	//http_request.open("GET","?lon1=" + lonlat1.lon + ";lat1=" + lonlat1.lat
 	//			+ ";lon2=" + lonlat2.lon + ";lat2=" + lonlat2.lat,true);
-	lonlat1.transform(
+	lonlat1 = new OpenLayers.LonLat(lonlat1st.lon, lonlat1st.lat).transform(
 			new OpenLayers.Projection("EPSG:900913"),
 			new OpenLayers.Projection("EPSG:4326")
-		)
+  	)
 	lonlat2.transform(
 			new OpenLayers.Projection("EPSG:900913"),
 			new OpenLayers.Projection("EPSG:4326")
