@@ -10,7 +10,7 @@ FLAGS2=-shared -Wl
 prog: $(SFILES) $(HFILES)
 	$(XX) $(FLAGS) ${SFILES}
 	
-routelib.so: interface.o routes_lib.o routes.o stdafx.o 
+lib: interface.o routes_lib.o routes.o stdafx.o 
 	$(XX) $(FLAGS2) -o $(SO_DST_NAME) *.o
 
 

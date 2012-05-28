@@ -6,6 +6,8 @@ vector<vis_coord> g_orig_path;
 vector<float> g_path;
 
 extern "C" {
+	int get_access_size();
+	float get_access_i(int);
 	void free_mem();
 	float get_i(int i);
 	void myinit();
@@ -18,9 +20,9 @@ void myinit()
 {
 	std::cout << "Loading OSM map file..." << std::endl;
 	//g_proutes.reset(new routes("/home/ivanovpc/workspace/server2/map/city_of_st_petersburg.highway.osm"));
-    string osmf = "/home/griver/routing_data/osm/ireland.osm";
-    string anf =  "/home/griver/routing_data/tnr/ireland.sian";
-    string dtf = "/home/griver/routing_data/tnr/ireland.sidt";
+    string osmf = "/home/ivanovak/workspace/Practice/Shortest-paths-on-road-graphs/osm_maps/ireland.osm";
+    string anf =  "/home/ivanovak/workspace/Practice/Shortest-paths-on-road-graphs/transit_nodes_data/ireland.sian";
+    string dtf = "/home/ivanovak/workspace/Practice/Shortest-paths-on-road-graphs/transit_nodes_data/ireland.sidt";
     g_proutes.reset(new routes(osmf, anf, dtf));
 }
 
@@ -70,6 +72,16 @@ float get_i(int i)
 void free_mem()
 {
 	g_path.clear();
+}
+
+float get_access_i(int i)
+{
+	return points!!;
+}
+
+int get_access_size()
+{
+	return 8887 * 2;
 }
 
 

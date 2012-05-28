@@ -5,6 +5,7 @@ from ctypes import *
 libc = CDLL("lib/libroute.so") 
 
 libc.get_i.restype = c_float;
+libc.get_access_i.restype = c_float;
 libc.get_path.restype = c_void_p
 libc.mysearch.argtypes = [c_float, c_float, c_float, c_float]
 
@@ -12,6 +13,12 @@ def build_list(nitems):
 	l = []
 	for i in range(0, nitems):
 		l.append(libc.get_i(i))
+	return l
+	
+def build_list2(nitems):
+	l = []
+	for i in range(0, nitems):
+		l.append(libc.get_access_i(i))
 	return l
 
 #libc.search(30., 60., 31., 61.)
@@ -35,7 +42,8 @@ urls = (
 class index:
 	def GET(self):
 		json_par = 0
-		i = web.input(json_par=None)
+		points = 0
+		i = web.input(json_par=None, points=None)
 
 		#print(i.lon1)
 		#print(i.lat2)
@@ -44,10 +52,13 @@ class index:
 			Here comes a map page request (without a route)
 		"""
 
-		if (i.json_par is None):
+		if (i.json_par is None and i.points is None):
 			web.header('Content-Type', 'text/html')
 			return render.map()
-	
+		
+		if not (i.points is None):			
+			data = build_list2(libc.get_access_size())
+			return json.dumps({ "array": data })	
 		"""
 			Processing the route right here
 		"""

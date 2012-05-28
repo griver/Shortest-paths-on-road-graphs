@@ -4,7 +4,8 @@ var mousePosition_control;
 //var vector_layer = new OpenLayers.Layer.Vector('Basic Vector Layer');
 var markers = new OpenLayers.Layer.Markers( "Markers" );
 var markerOneLonLat;
-var lineLayer = new OpenLayers.Layer.Vector("Line Layer"); 
+var vectorLayer = new OpenLayers.Layer.Vector("Line Layer"); 
+var pointsLayer = new OpenLayers.Layer.Vector("Points Layer"); 
 
 function init() {
 
@@ -23,8 +24,10 @@ function init() {
 		projection: "EPSG:4326", 
 		controls: []
 	});*/
-	map.addLayer(lineLayer);       
-	map.addControl(new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path));               
+	map.addLayer(vectorLayer);
+	map.addLayer(pointsLayer);     
+	map.addControl(new OpenLayers.Control.DrawFeature(pointsLayer, OpenLayers.Handler.Point))  
+	map.addControl(new OpenLayers.Control.DrawFeature(vectorLayer, OpenLayers.Handler.Path));               
 
 	navigation_control = new OpenLayers.Control.Navigation({});
 	mousePosition_control = new OpenLayers.Control.MousePosition();
@@ -62,7 +65,8 @@ function init() {
 	if (!map.getCenter()) {
 		map.zoomToMaxExtent();
 	}
-
+	
+	getPoints();
 }
 
 
@@ -126,7 +130,7 @@ function sendLonLat(lonlat1st, lonlat2) {
 		"lat2" : lonlat2.lat
 	}), true);
 
-	xmlhttp.onreadystatechange = function () {
+	xmlhttp.onreadystatechange = function () {http://localhost:8080/
 		var done = 4, ok = 200;
 		if (xmlhttp.readyState == done && xmlhttp.status == ok) {
 			my_JSON_object = JSON.parse(xmlhttp.responseText);
@@ -136,12 +140,41 @@ function sendLonLat(lonlat1st, lonlat2) {
 			//var myPoints=new Array(lonlat1.lon, lonlat1.lat, lonlat1.lon + 1000, lonlat1.lat + 500 , lonlat2.lon, lonlat2.lat);
 			var myPoints = my_JSON_object["array"]
 	
-			drawPolyPath(myPoints);
+			//drawPointsArray(myPoints);
+			drawPolyPath(myPoints)
 		}
 	};
 
 	xmlhttp.send();
 }
+
+function getPoints() {
+	var my_JSON_object = {};
+
+	if (window.XMLHttpRequest) {
+	// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp = new XMLHttpRequest();
+	} else {
+	// code for IE6, IE5
+	  xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	}	
+
+	xmlhttp.open("GET","?points=" + JSON.stringify({
+		"getPoints" : true
+	}), true);
+
+	xmlhttp.onreadystatechange = function () {http://localhost:8080/
+		var done = 4, ok = 200;
+		if (xmlhttp.readyState == done && xmlhttp.status == ok) {
+			my_JSON_object = JSON.parse(xmlhttp.responseText);
+			var myPoints = my_JSON_object["array"]	
+			drawPointsArray(myPoints);
+		}
+	};
+
+	xmlhttp.send();
+}
+
 
 function placeMarker(e) {
 	var lonlat = map.getLonLatFromViewPortPx(e.xy);
@@ -174,7 +207,7 @@ function placeMarker(e) {
     	markerOne.destroy();
     	markerOne = new OpenLayers.Marker( lonlat, icon1.clone());
     	markers.addMarker(markerOne);	
-    	markersOnTheMap = 3;
+    	markersOnTheMap = 3\;
     } else {
 	markers.removeMarker(markerTwo);
     	markerTwo.destroy();

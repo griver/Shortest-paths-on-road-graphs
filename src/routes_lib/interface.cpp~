@@ -8,6 +8,8 @@ vector<float> g_path;
 extern "C" {
 	void free_mem();
 	float get_i(int i);
+	float get_access_i(int);
+	int get_access_size();
 	void myinit();
 	int get_size();
 	float * get_path();
@@ -18,7 +20,7 @@ void myinit()
 {
 	std::cout << "Loading OSM map file..." << std::endl;
 	//g_proutes.reset(new routes("/home/ivanovpc/workspace/server2/map/city_of_st_petersburg.highway.osm"));
-    g_proutes.reset(new routes("/home/griver/osm_maps/ireland.osm"));
+    g_proutes.reset(new routes("/home/ivanovak/workspace/Practice/Shortest-paths-on-road-graphs/osm_maps/ireland.osm"));
 }
 
 float *get_path() 
@@ -62,6 +64,16 @@ int get_size()
 float get_i(int i)
 {
 	return g_path[i];
+}
+
+float get_access_i(int i)
+{
+	return 0.;
+}
+
+int get_access_size()
+{
+	return 0;
 }
 
 void free_mem()
