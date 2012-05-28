@@ -21,7 +21,10 @@ function drawPolyPath(arr) {
 	var points = new Array();
 	
 	for (i = 0; i < arr.length; i += 2) {
-		points.push(new OpenLayers.Geometry.Point(arr[i], arr[i + 1]))
+		points.push(new OpenLayers.Geometry.Point(arr[i], arr[i + 1]).transform(
+			new OpenLayers.Projection("EPSG:4326"),
+			new OpenLayers.Projection("EPSG:900913")
+		))
 	}
 
 	var line = new OpenLayers.Geometry.LineString(points);

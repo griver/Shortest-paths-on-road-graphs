@@ -18,10 +18,10 @@ function drawPath(lon1, lat1, lon2, lat2) {
 }
 
 function drawPolyPath(arr) {   
-	var lines = new Array();
+	var points = new Array();
 	
 	for (i = 0; i < arr.length; i += 2) {
-		lines.push(new OpenLayers.Geometry.Point(arr[i], arr[i + 1]))
+		points.push(new OpenLayers.Geometry.Point(arr[i], arr[i + 1]))
 	}
 
 	var line = new OpenLayers.Geometry.LineString(points);

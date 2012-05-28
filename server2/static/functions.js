@@ -7,9 +7,22 @@ var markerOneLonLat;
 var lineLayer = new OpenLayers.Layer.Vector("Line Layer"); 
 
 function init() {
-	map = new OpenLayers.Map('map_element', { 
+
+	var options = {
+		maxExtent: new OpenLayers.Bounds(0, 0, 70, 70),
+		//center: new OpenLayers.LonLat(30.37407166138, 60.002114939457).transform(
+        center: new OpenLayers.LonLat(-6.2913, 53.3424).transform(
+			new OpenLayers.Projection("EPSG:4326"),
+			new OpenLayers.Projection("EPSG:900913")
+		)
+	};
+
+	map = new OpenLayers.Map("map_element", options);
+
+	/*map = new OpenLayers.Map('map_element', {
+		projection: "EPSG:4326", 
 		controls: []
-	});
+	});*/
 	map.addLayer(lineLayer);       
 	map.addControl(new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path));               
 
@@ -39,12 +52,12 @@ function init() {
 	map.addControl(new OpenLayers.Control.LayerSwitcher({roundedCorner: true, roundedCornerColor: "darkblue"}));
 	//map.addControl(new OpenLayers.Control.LayerSwitcher({}));
 
-	map.setCenter(new OpenLayers.LonLat(30.37407166138, 60.002114939457)
+	/*map.setCenter(new OpenLayers.LonLat(30.37407166138, 60.002114939457)
   .transform(
     new OpenLayers.Projection("EPSG:4326"),
     new OpenLayers.Projection("EPSG:900913")
   ), 15
-	);
+	);*/
 
 	if (!map.getCenter()) {
 		map.zoomToMaxExtent();
@@ -84,7 +97,7 @@ var icon2 = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker-blue.p
 var markerOne;
 var markerTwo;
 
-function sendLonLat(lonlat1, lonlat2) {
+function sendLonLat(lonlat1st, lonlat2) {
 	var my_JSON_object = {};
 
 	if (window.XMLHttpRequest) {
@@ -98,7 +111,14 @@ function sendLonLat(lonlat1, lonlat2) {
 	//http_request.open("GET", url, true);
 	//http_request.open("GET","?lon1=" + lonlat1.lon + ";lat1=" + lonlat1.lat
 	//			+ ";lon2=" + lonlat2.lon + ";lat2=" + lonlat2.lat,true);
-
+	lonlat1 = new OpenLayers.LonLat(lonlat1st.lon, lonlat1st.lat).transform(
+			new OpenLayers.Projection("EPSG:900913"),
+			new OpenLayers.Projection("EPSG:4326")
+  	)
+	lonlat2.transform(
+			new OpenLayers.Projection("EPSG:900913"),
+			new OpenLayers.Projection("EPSG:4326")
+		)
 	xmlhttp.open("GET","?json_par=" + JSON.stringify({
 		"lon1" : lonlat1.lon, 
 		"lat1" : lonlat1.lat,

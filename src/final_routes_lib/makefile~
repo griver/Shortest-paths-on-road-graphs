@@ -1,15 +1,17 @@
 DST_NAME=../../server2/lib/libroute.o
 SO_DST_NAME=../../server2/lib/libroute.so
 SFILES=*.cpp
-HFILES=*.h ../shared/*.h ../reach_preprocessing/reach_graph.h
+HFILES=*.h ../shared/*.h ../reach_preprocessing/reach_graph.h ../tnr_utils/*.h
 
 XX=g++
-FLAGS=-fPIC -c -Wall -g -O2 -std=c++0x
+FLAGS=-fPIC -c -g -O2 -std=c++0x
 FLAGS2=-shared -Wl
 
 prog: $(SFILES) $(HFILES)
 	$(XX) $(FLAGS) ${SFILES}
 	
+lib: routelib.so 
+
 routelib.so: interface.o routes_lib.o routes.o stdafx.o 
 	$(XX) $(FLAGS2) -o $(SO_DST_NAME) *.o
 

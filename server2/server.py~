@@ -2,11 +2,11 @@ import json
 import web
 from ctypes import *
 
-libc = CDLL("/home/ivanovpc/workspace/server2/lib/libroute.so")     
+libc = CDLL("lib/libroute.so") 
 
 libc.get_i.restype = c_float;
 libc.get_path.restype = c_void_p
-libc.search.argtypes = [c_float, c_float, c_float, c_float]
+libc.mysearch.argtypes = [c_float, c_float, c_float, c_float]
 
 def build_list(nitems):
 	l = []
@@ -55,8 +55,13 @@ class index:
         #web.header('Content-Type', 'application/json')
         #data = [30, 60, 31, 61, 32, 59]
 		ll = json.loads(i.json_par)
-		libc.search(ll["lon1"], ll["lat1"], ll["lon2"], ll["lat2"])		
+		#print ll["lon1"]
+		#print ll["lat1"]
+		#print ll["lon2"]
+		#print ll["lat2"]
+		libc.mysearch(ll["lon1"], ll["lat1"], ll["lon2"], ll["lat2"])		
 		data = build_list(libc.get_size())
+		libc.free_mem()
 		return json.dumps({ "array": data })
 		#return render.route(i.lon1, i.lat1, i.lon1 + 500, i.lat1 + 1000)
 
@@ -75,6 +80,7 @@ class index:
 	#def GET(self, name):
 	#	return render.index(name)
 
-if __name__ == "__main__": 
+if __name__ == "__main__":     
+	libc.myinit()
 	app = web.application(urls, globals())
 	app.run()   

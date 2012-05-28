@@ -7,7 +7,6 @@
 namespace tnr {
 	typedef table_info table_cell;
 	class dist_table {
-    public:
 		unordered_map<vertex_id, vertex_id> mapping;
 		size_t size;
 		table_cell**  table;
@@ -68,7 +67,7 @@ namespace tnr {
 			if(mapping.at(from) < 0 || mapping.at(from) >= size) throw mapping_exception("mapping.at(from) < 0 || mapping.at(from) >= size");
 			if(mapping.at(to) < 0 || mapping.at(to) >= size) throw mapping_exception("mapping.at(to) < 0 || mapping.at(to) >= size");
 		}
-		//friend void write_dist_table_to(dist_table const& table, string const & filname);
+		friend static void write_dist_table_to(dist_table const& table, string const & filname);
 	};
 
 	static void write_dist_table_to(dist_table const& table, string const & filename) {

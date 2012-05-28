@@ -18,7 +18,10 @@ void myinit()
 {
 	std::cout << "Loading OSM map file..." << std::endl;
 	//g_proutes.reset(new routes("/home/ivanovpc/workspace/server2/map/city_of_st_petersburg.highway.osm"));
-    g_proutes.reset(new routes("/home/griver/osm_maps/ireland.osm"));
+    string osmf = "/home/griver/routing_data/osm/ireland.osm";
+    string anf =  "/home/griver/routing_data/tnr/ireland.sian";
+    string dtf = "/home/griver/routing_data/tnr/ireland.sidt";
+    g_proutes.reset(new routes(osmf, anf, dtf));
 }
 
 float *get_path() 
