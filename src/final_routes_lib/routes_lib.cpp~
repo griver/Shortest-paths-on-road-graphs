@@ -7,7 +7,7 @@
 int main(int argc, char* argv[])
 {
 	vector<vis_coord> path;
-    routes r("spb.osm", "ireland.sian", "ireland.sidt");
+    routes r("spb.osm");
 
     cout << r.get_path(0, 45867, path) << endl;
 

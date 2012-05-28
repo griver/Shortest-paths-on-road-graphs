@@ -1,7 +1,7 @@
 DST_NAME=../../server2/lib/libroute.o
 SO_DST_NAME=../../server2/lib/libroute.so
 SFILES=*.cpp
-HFILES=*.h ../shared/*.h ../reach_preprocessing/reach_graph.h 
+HFILES=*.h ../shared/*.h ../reach_preprocessing/reach_graph.h ../tnr_utils/*.h
 
 XX=g++
 FLAGS=-fPIC -c -g -O2 -std=c++0x

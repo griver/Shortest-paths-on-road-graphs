@@ -28,7 +28,7 @@ public:
     //--/tnr--
     
 private:
-    inline bool is_far_enouth(vis_coord const & a, vis_coord const & b);
+    bool is_far_enouth(vis_coord const & a, vis_coord const & b);
 private:
     vis_coord mins, maxs;
     vis_graph graph;

@@ -32,7 +32,7 @@ namespace tnr {
 		table_info(my_graph::vertex_id next , my_graph::edge_weight dist): next(next), dist(dist) {}
 	};
 	
-	static bool operator<(access_info const & a, access_info const & b) {
+	bool operator<(access_info const & a, access_info const & b) {
 		return a.dist < b.dist;
 	}
 
