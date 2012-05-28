@@ -4,8 +4,11 @@
 #include "penalties_preprocessor.h"
 #include "reach_client.h"
 #include "reach_dijkstra.h"
+#include "c9_astar.h"
 #include "shortcuts.h"
 #include "../shared/grid.h"
+
+
 
 void test_reach_updater(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
 void draw_circle(const reach_graph &ref_graph, my_graph::vertex_id start, my_graph::edge_weight dist, my_graph::path_map &ref_out, my_graph::path_map &ref_out2);
@@ -132,7 +135,8 @@ reach_client::reach_client(const string &filename, visualizer *pvis, draw_scope 
 
     pgrid_.reset(new grid(mins, maxs, 100, 100));
 
-    load_reaches(filename);
+    load_reaches_simple(filename);
+    upload_reaches();
     //check_multiple_edges();
 }
 
@@ -161,6 +165,38 @@ void reach_client::load_reaches(const string &filename)
     cout << "done" << endl;
     
     //cout << "uploading reaches" << endl;
+
+
+}
+
+void reach_client::load_reaches_simple(const string &filename)
+{
+    cout << "loading simple reaches...";
+    std::ifstream ifs (filename + ".c9_reaches", std::ios_base::in | std::ios_base::binary);
+    const edge_weight big_reach = std::max (maxs.x - mins.x, maxs.y - mins.y);
+    reaches_.resize(pgraph_->v_count(), big_reach);
+    if (!ifs.is_open())
+    {
+        cout << "not found" << endl;
+        return;
+    }
+
+    for (size_t i = 0; i < reaches_.size(); ++i)
+    {
+        unsigned int temp;
+        ifs.read((char*)&temp, 4);
+        ifs.read((char*)&temp, 4);
+        ifs.read((char*)&(reaches_[i]), sizeof(edge_weight));
+
+        //ofs.write((char*)&i, sizeof(size_t));
+    }
+    
+}
+
+
+void reach_client::upload_reaches()
+{
+    const edge_weight big_reach = std::max (maxs.x - mins.x, maxs.y - mins.y);
     edge_weight min_reach = big_reach;
     edge_weight max_reach = 0;
     for (size_t i = 0; i < reaches_.size(); ++i)
@@ -173,19 +209,17 @@ void reach_client::load_reaches(const string &filename)
     cout << "Max reach: " << max_reach << endl;
     cout << "Min reach: " << min_reach << endl;
 
-
     b_vertex *pv = get_visualizer().lock_vb(g_desc.vb, 0, g_desc.vb_size);
     for (size_t i = 0; i < reaches_.size(); ++i)
     {
         double n = (reaches_[i] - min_reach) / (max_reach - min_reach);
-        n = pow (n, 0.2);
+        n = pow (n, 1);
         int c = n * 255;
         pv[i].color = (0xff << 24) | (c << 16) | (c << 8) | c;
     }
     get_visualizer().unlock_vb (g_desc.vb);
 
 }
-
 
 
 
@@ -291,11 +325,15 @@ void reach_client::on_mouse_down(int x, int y, int button)
     if (button == 0)
         selected_ = hover;
 
-    if (button == 1 && hover.is_initialized()) {
+    /*if (button == 1 && hover.is_initialized()) {
         if (marked_.count(*hover) == 0)
             marked_.insert(*hover);
         else
             marked_.erase(*hover);
+    }*/
+    if (button == 1 && selected_.is_initialized()&& hover.is_initialized())
+    {
+        run_astar(*selected_, *hover);
     }
 
 
@@ -530,7 +568,7 @@ void reach_client::build_c9_tree(vertex_id root_id)
     {
         const vertex &v = pgraph_->get_vertex(id);
         const coord<int> d = pgrid_->getCell(v.data.c) - root_cell;
-        return std::max(std::abs(d.x), std::abs(d.y)) <= 100;
+        return std::max(std::abs(d.x), std::abs(d.y)) <= 4;
     });
 
     size_t count = 0;
@@ -548,4 +586,43 @@ void reach_client::build_c9_tree(vertex_id root_id)
     desc.ib = g_desc.ib;
     desc.ib_size = g_desc.ib_size;
     lit1_.reset(upload_tree(tree_, desc));
+}
+
+void reach_client::run_astar(vertex_id id1, vertex_id id2)
+{
+    const int C9_RADIUS = 4;
+    
+    const vertex &v1 = pgraph_->get_vertex(id1);
+    const vertex &v2 = pgraph_->get_vertex(id2);
+    const coord<int> v1_cell = pgrid_->getCell(v1.data.c);
+    const coord<int> v2_cell = pgrid_->getCell(v2.data.c);
+    
+    const coord<int> d = v2_cell - v1_cell;
+    const int dist = std::max(std::abs(d.x), std::abs(d.y));
+    if (dist > 4)
+    {
+        cout << "Too far for c9 astar!" << endl;
+        return;
+    }
+
+    tree_.clear();
+    c9_astar astar (*pgraph_, id1, id2, tree_, *pgrid_, reaches_);
+    /*{
+        const vertex &v = pgraph_->get_vertex(id);
+
+        
+
+        const coord<int> cell_d = pgrid_->getCell(v.data.c) - v1_cell;
+        return std::max(std::abs(cell_d.x), std::abs(cell_d.y)) <= C9_RADIUS;
+    });*/
+    while (!astar.done())
+        astar.iterate();
+
+    if (!tree_.empty())
+    {
+        tree_desc desc;
+        desc.ib = g_desc.ib;
+        desc.ib_size = g_desc.ib_size;
+        lit1_.reset(upload_tree(tree_, desc));
+    }
 }

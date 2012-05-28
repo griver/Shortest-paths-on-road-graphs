@@ -15,8 +15,11 @@ void c9_prep::save_reaches(const string &filename)
 {
     cout << "saving reaches...";
     std::ofstream ofs (filename, std::ios_base::out | std::ios_base::binary);
-    boost::archive::binary_oarchive ar (ofs);
-    ar << reaches_;
+    for (size_t i = 0; i < reaches_.size(); ++i)
+    {
+        ofs.write((char*)&i, sizeof(size_t));
+        ofs.write((char*)&(reaches_[i]), sizeof(edge_weight));
+    }
     cout << "done" << endl;
 }
 

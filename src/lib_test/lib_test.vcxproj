@@ -78,7 +78,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\reach_preprocessing\graph_serialize.h" />
+    <ClInclude Include="..\shared\base_visualizer_client.h" />
+    <ClInclude Include="..\shared\client.h" />
+    <ClInclude Include="..\shared\common.h" />
+    <ClInclude Include="..\shared\coord.h" />
+    <ClInclude Include="..\shared\draw_scope.h" />
+    <ClInclude Include="..\shared\graph_base.h" />
+    <ClInclude Include="..\shared\graph_filter.h" />
+    <ClInclude Include="..\shared\grid.h" />
+    <ClInclude Include="..\shared\new_vis_graph.h" />
+    <ClInclude Include="..\shared\osm_loader.h" />
+    <ClInclude Include="..\shared\visualizer.h" />
     <ClInclude Include="lib_test_client.h" />
+    <ClInclude Include="raster.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

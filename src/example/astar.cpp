@@ -132,9 +132,9 @@ void run_vis_astar(const vis_graph &ref_graph, vertex_id start, vertex_id end, p
         pv = unordered_safe_find_const(ref_out, vid);
     }
 
-    cout << "Max heap: " << d.max_heap_size_ << endl;
+    /*cout << "Max heap: " << d.max_heap_size_ << endl;
 
-    /*vertex_id vid = end;
+    vertex_id vid = end;
     const path_vertex &pv = unordered_safe_find_const(ref_out, vid);
     while (pv.inc.is_initialized())
     {
@@ -142,7 +142,6 @@ void run_vis_astar(const vis_graph &ref_graph, vertex_id start, vertex_id end, p
         vid = ref_graph(*pv.inc)  g.get_edge(*pv.inc).get_v1().get_id();
         pv = pout1->find(vid)->second;
     }*/
-
 }
 
 

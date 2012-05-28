@@ -36,6 +36,10 @@ private:
     void build_c9_tree(vertex_id id);
 
     void load_reaches(const string &filename);
+    void load_reaches_simple(const string &filename);
+    void upload_reaches();
+
+    void run_astar (vertex_id id1, vertex_id id2);
 private:
     const string filename_;
     reach_coord mins, maxs;

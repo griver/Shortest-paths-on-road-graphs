@@ -98,5 +98,8 @@
     <ClInclude Include="..\tnr_utils\grid_info.h">
       <Filter>shared</Filter>
     </ClInclude>
+    <ClInclude Include="c9_astar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

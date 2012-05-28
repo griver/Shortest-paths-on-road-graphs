@@ -44,6 +44,8 @@ void lib_test_client::draw(visualizer &d, draw_scope &scope)
         d.set_color(0, 255, 0);
         draw_vertex(*selected_, 3);
     }
+    d.set_color(255, 255, 255);
+    draw_vertex(87909, 3);
 
     if (!path_.empty())
     {
@@ -56,6 +58,7 @@ void lib_test_client::draw(visualizer &d, draw_scope &scope)
             last = path_[i];
         }
     }
+
 }
 
 void lib_test_client::on_mouse_down(int x, int y, int button)

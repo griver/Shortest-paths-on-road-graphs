@@ -20,6 +20,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "c9_reaches", "c9_reaches\c9_reaches.vcxproj", "{E12B247D-F869-401A-9F32-A986869A0230}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib_test", "lib_test\lib_test.vcxproj", "{8547B774-A87E-47F4-9110-AE60FB885E09}"
+	ProjectSection(ProjectDependencies) = postProject
+		{923271F7-8946-418C-9055-8D8405AC14AB} = {923271F7-8946-418C-9055-8D8405AC14AB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "routes_lib", "routes_lib\routes_lib.vcxproj", "{923271F7-8946-418C-9055-8D8405AC14AB}"
 EndProject

@@ -248,6 +248,7 @@
     <ClInclude Include="..\shared\graph_filter.h" />
     <ClInclude Include="..\shared\osm_loader.h" />
     <ClInclude Include="..\tnr_utils\grid_info.h" />
+    <ClInclude Include="c9_astar.h" />
     <ClInclude Include="graph_serialize.h" />
     <ClInclude Include="penalties_preprocessor.h" />
     <ClInclude Include="reach_client.h" />
